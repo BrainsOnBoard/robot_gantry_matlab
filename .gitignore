@@ -1,0 +1,8 @@
+
+# temporary files
+*~
+*.asv # temporary matlab file
+
+data/*
+figures/*
+
