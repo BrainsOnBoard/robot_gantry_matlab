@@ -3,6 +3,6 @@
 *~
 *.asv # temporary matlab file
 
-data/*
-figures/*
-
+data/
+figures/
+circstat/
