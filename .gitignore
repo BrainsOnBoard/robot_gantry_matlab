@@ -1,7 +1,7 @@
 
 # temporary files
 *~
-*.asv # temporary matlab file
+*.asv
 
 data/
 figures/
