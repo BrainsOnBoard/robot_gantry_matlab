@@ -1,36 +1,28 @@
 classdef gantry_agent < handle
-    properties (GetAccess=private, SetAccess=private)
-        stepsize;
-        x = 0;
-        y = 0;
-        z;
+    properties (GetAccess=public, SetAccess=private)
+        limitmm;
     end
-    
+
     properties (GetAccess=private, SetAccess=private)
         gantry_obj;
+        unwrapparams;
     end
     
     methods
-        function g = gantry_agent(stepsize_in_mm, z)
-            g.stepsize = stepsize_in_mm;
-            g.z = z;
-            
+        function g = gantry_agent
             g.gantry_obj = gantry_default;
+            g.limitmm = g.gantry_obj.limitmm;
+            
+            load('gantry_centrad.mat','unwrapparams')
+            g.unwrapparams = unwrapparams;
         end
         
         function im = get_image(g)
-            im = flipud(g.gantry_obj.getFrame);
+            im = circshift(fliplr(andy_unwrap(rgb2gray(g.gantry_obj.getRawFrame),g.unwrapparams)),0.25*size(g.unwrapparams.xM,2),2);
         end
         
-        function stepforward(g, heading)
-            [xoff,yoff] = pol2cart(heading * pi/180, g.stepsize);
-            g.move_to_point(g.x + xoff, g.y + yoff);
-        end
-        
-        function move_to_point(g, x, y)
-            g.x = x;
-            g.y = y;
-            g.gantry_obj.moveToPoint([x, y, g.z]);
+        function move_to_point(g, x, y, z)
+            g.gantry_obj.moveToPoint([x, y, z]);
         end
         
         function delete(g)
