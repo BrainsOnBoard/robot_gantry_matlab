@@ -1,6 +1,12 @@
-clear
+function imdb_getridfheads(whdshort, dosave)
+if nargin < 2
+    dosave = false;
+end
+if nargin < 1 || isempty(whdshort)
+    [~,whdshort] = imdb_choosedb;
+end
 
-whd = imdb_choosedb;
+whd = fullfile(imdbdir,whdshort);
 
 load(fullfile(whd,'im_params.mat'));
 load('gantry_cropparams.mat');
@@ -28,8 +34,13 @@ for yi = 1:size(idf,1)
 end
 
 %%
+flabel = imdb_getlabel(whd);
+
 figure(2);clf
 surf(p.xs,p.ys,idf)
+if dosave
+    gantry_savefig([flabel '_idf'], [16 10]);
+end
 
 figure(1);clf
 hold on
@@ -42,3 +53,6 @@ plot(p.xs(refxi),p.ys(refyi),'ro','LineWidth',4,'MarkerSize',10)
 axis equal tight
 xlabel('x (mm)')
 ylabel('y (mm)')
+if dosave
+    gantry_savefig([flabel '_ridf_quiver'], [10 10]);
+end

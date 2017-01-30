@@ -1,4 +1,6 @@
 function [whd,whdshort,label]=imdb_choosedb(is3d)
+%function [whd,whdshort,label]=imdb_choosedb(is3d)
+
 if ~nargin
     is3d = false;
 end
