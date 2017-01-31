@@ -14,6 +14,7 @@ end
 
 [gx,gy] = meshgrid(p.xs,p.ys);
 ind = find(fex);
+[imyi,imxi] = ind2sub(size(fex),ind);
 
 figure(1);clf
 axis equal
@@ -30,8 +31,9 @@ if ~isempty(p.arenafn)
     drawobjverts(objverts,[],'k');
 end
 
-rx = [];
-ry = [];
+snx = [];
+sny = [];
+snth = [];
 while true
     [bx,by,but]=ginput(1);
     if isempty(but)
@@ -44,14 +46,18 @@ while true
     [~,nearest] = min(hypot(imx-bx,imy-by));
     cx = imx(nearest);
     cy = imy(nearest);
-    plot(cx,cy,'bo');
-    if ~isempty(rx)
-        plot([p.xs(rx(end)) cx], [p.ys(ry(end)) cy], 'b');
-    end
+    snx(end+1) = 1 + cx / p.imsep;
+    sny(end+1) = 1 + cy / p.imsep;
     
-    rx(end+1) = 1 + cx / p.imsep;
-    ry(end+1) = 1 + cy / p.imsep;
+    plot(cx,cy,'bo');
+    if length(snx) > 1
+        plot([p.xs(snx(end-1)) cx], [p.ys(sny(end-1)) cy], 'b');
+        
+        snth(end+1) = atan2(sny(end) - sny(end-1), snx(end) - snx(end-1));
+    end
 end
+snth(end+1) = snth(end);
+snth = mod(snth,2*pi);
 
 if dosave
     if ~exist(imdb_routedir,'dir')
@@ -68,5 +74,5 @@ if dosave
     end
     
     fprintf('Saving to %s...\n', datafn);
-    save(datafn,'p','shortwhd','rx','ry','unwrapparams');
+    save(datafn,'p','shortwhd','snx','sny','snth','imxi','imyi');
 end
