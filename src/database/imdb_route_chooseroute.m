@@ -2,8 +2,14 @@ clear
 
 dosave = true;
 
-[whd,shortwhd,label] = imdb_choosedb;
-load(fullfile(whd,'im_params.mat'))
+p = load('arenadim.mat');
+p.imsep = 100; % mm
+p.xs = 0:p.imsep:p.lim(1);
+p.ys = 0:p.imsep:p.lim(2);
+p.zht = 150;
+p.objgridac = 10; % mm
+p.headclear = 150;
+badzone = gantry_getbadzoneim('arena1_boxes.mat',p.objgridac,p.headclear);
 
 fex = false(length(p.ys),length(p.xs));
 for xi = 1:length(p.xs)

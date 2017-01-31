@@ -3,6 +3,5 @@
 *~
 *.asv
 
-data/
-figures/
-circstat/
+/data/
+/figures/
