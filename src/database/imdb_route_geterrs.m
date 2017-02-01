@@ -8,8 +8,10 @@ figdatfn = fullfile(imdb_route_figdatdir,sprintf('imdb_route_geterrs_%s_%03d_res
 if exist(figdatfn,'file')
     load(figdatfn);
 else
-    [snaps,snx,sny,snth,crop]=imdb_route_getsnaps(shortwhd,routenum,res);
-    load(fullfile(whd,'im_params.mat'),'p');
+    [snaps,clickis,snx,sny,snth,crop,p]=imdb_route_getsnaps(shortwhd,routenum,res);
+    snaps = snaps(:,:,clickis);
+    snx = snx(clickis);
+    sny = sny(clickis);
     
     [heads,whsn] = deal(NaN(length(p.ys),length(p.xs)));
     startprogbar(10,numel(heads))
