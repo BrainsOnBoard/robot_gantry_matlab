@@ -9,12 +9,12 @@ p.ys = 0:p.imsep:p.lim(2);
 p.zht = 150;
 p.objgridac = 10; % mm
 p.headclear = 150;
-badzone = gantry_getbadzoneim('arena1_boxes.mat',p.objgridac,p.headclear);
+p.arenafn = 'arena1_boxes.mat';
 
 fex = false(length(p.ys),length(p.xs));
 for xi = 1:length(p.xs)
     for yi = 1:length(p.ys)
-        fex(yi,xi) = exist(fullfile(whd,sprintf('im_%03d_%03d.mat',yi,xi)),'file');
+        fex(yi,xi) = exist(fullfile(imdbdir,'unwrap_imdb_2016-02-05_001',sprintf('im_%03d_%03d.mat',yi,xi)),'file');
     end
 end
 
@@ -32,10 +32,8 @@ imy = gy(ind);
 plot(gx,gy,'r.',imx,imy,'g.','MarkerSize',10)
 title('Click where you want snapshots and press return to finish');
 
-if ~isempty(p.arenafn)
-    load(fullfile(arenadir,p.arenafn),'objverts');
-    drawobjverts(objverts,[],'k');
-end
+load(fullfile(arenadir,p.arenafn),'objverts');
+drawobjverts(objverts,[],'k');
 
 snx = [];
 sny = [];
@@ -72,7 +70,7 @@ if dosave
     
     filei = 1;
     while true
-        datafn = fullfile(imdb_routedir,sprintf('%s_%s_%03d.mat',label,shortwhd,filei));
+        datafn = fullfile(imdb_routedir,sprintf('route_%03d.mat',filei));
         if ~exist(datafn,'file')
             break;
         end
@@ -80,5 +78,5 @@ if dosave
     end
     
     fprintf('Saving to %s...\n', datafn);
-    save(datafn,'p','shortwhd','snx','sny','snth','imxi','imyi');
+    save(datafn,'p','snx','sny','snth');
 end
