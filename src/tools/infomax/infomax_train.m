@@ -1,5 +1,6 @@
 function [W]=infomax_train(nhid,D,W)
-
+% function [W]=infomax_train(nhid,D,W)
+%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % inputs
 % nhid - size of the hidden layer of the network noramlly set to number of
@@ -12,39 +13,43 @@ function [W]=infomax_train(nhid,D,W)
 % filename - name of file used to save figure
 % W - optional input containing pretrained weights of the Infomax
 % network,server to re-run a same memory
-
-% outputs 
+%
+% outputs
 % W -   trained network weights
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+%
 % load the training data
 % load(runName0); % x y th D runName
-% mat file containing the following data 
+% mat file containing the following data
 % x - [1 x number of training points] vector
 % y - [1 x number of training points] vector
 % th - [1 x number of training points] vector
-% D - [number of training points x num pixels in image] training views made into a vector and stacked up
-% 
+% D - [num pixels in image x number of training points]
 
 % if only 2 inputs initialise a new network
 if nargin<3 || isempty(W)
-    ninput= length (D(1,:)); % number of pixels determines the size of the input
+    ninput = size(D,1); % number of pixels determines the size of the input
     W = infomax_init2(ninput,nhid);
-else W=W';
+else
+    W=W';
 end
-    % learning rate
-    mu=0.001;
-    % this while loop just reduces the learning rate if the weights blow up
-    while(1)
-        try
-            W = infomax_learn2(W',D',[],mu);
-            break;
-        catch
-            mu = mu*0.99;
-        end
+
+D = im2double(D); % make sure we have the correct input type - uint8 images won't work
+
+% learning rate
+mu=0.001;
+% this while loop just reduces the learning rate if the weights blow up
+while true
+    try
+        W = infomax_learn2(W',D,[],mu);
+        break;
+    catch ex
+        keyboard
+        mu = mu*0.99;
     end
-    clear D
-    
+end
+clear D
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % INFOMAX FUNCTIONS
@@ -83,14 +88,14 @@ for i=1:P
     if any(any(isnan(weights)))
         str='Weights blew up';
         id='LearningRule:WeightBlowUpError';
-%         fd_error(str, id);
+        %         fd_error(str, id);
     end
 end
-% 
+%
 % function decs = infomax_decision(weights,patts)
 % % Infomax decision function, using the sum of the absolute values of
 % % membrane potentials
-% 
+%
 % result = weights*patts;
 % decs = sum(abs(result));
 
@@ -113,19 +118,19 @@ end
 % %	See also
 % %	GMMACTIV, KMEANS, RBFFWD
 % %
-% 
+%
 % %	Copyright (c) Ian T Nabney (1996-2001)
-% 
+%
 % [ndata, dimx] = size(x);
 % [ncentres, dimc] = size(c);
 % if dimx ~= dimc
 % 	error('Data dimension does not match dimension of centres')
 % end
-% 
+%
 % n2 = (ones(ncentres, 1) * sum((x.^2)', 1))' + ...
 %   ones(ndata, 1) * sum((c.^2)',1) - ...
 %   2.*(x*(c'));
-% 
+%
 % % Rounding errors occasionally cause negative entries in n2
 % if any(any(n2<0))
 %   n2(n2<0) = 0;

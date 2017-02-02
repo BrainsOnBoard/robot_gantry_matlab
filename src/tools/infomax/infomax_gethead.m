@@ -9,6 +9,10 @@ if nargin < 4 || isempty(angleunit)
     angleunit = 2*pi;
 end
 
+if isempty(imsz)
+    imsz = size(im);
+end
+
 im = im2double(im);
 
 imvars = nth/(imsz(2)*360/fov);

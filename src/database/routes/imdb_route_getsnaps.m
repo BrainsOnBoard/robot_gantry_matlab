@@ -10,23 +10,7 @@ oldsnx = snx;
 oldsny = sny;
 load(fullfile(whd,'im_params.mat'),'p');
 
-imgrid = false(length(p.ys),length(p.xs));
-imgrid(sub2ind(size(imgrid),sny,snx)) = true;
-imgrid2 = imbwdrawline(imgrid,snx,sny);
-
-[sny,snx] = ind2sub(size(imgrid2),find(imgrid2));
-% hack to swap adjacent snap positions to make sure the order is correct
-for i = 1:length(snx)-2
-    diffs = hypot(sny(i)-sny(i+[1 2]),snx(i)-snx(i+[1 2]));
-    if diffs(1) > diffs(2)
-        tmpx = snx(i+1);
-        snx(i+1) = snx(i+2);
-        snx(i+2) = tmpx;
-        tmpy = sny(i+1);
-        sny(i+1) = sny(i+2);
-        sny(i+2) = tmpy;
-    end
-end
+[snx,sny] = bresenham_xy(oldsnx,oldsny);
 
 [clickis,~] = find(bsxfun(@eq,snx,oldsnx) & bsxfun(@eq,sny,oldsny));
 

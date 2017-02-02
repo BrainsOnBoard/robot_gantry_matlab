@@ -22,10 +22,10 @@ for i = 1:length(flist)
         
         sz = size(fovsnaps);
         imsz = round((cfov/360)*[sz(1)*imw/sz(2),imw]);
-        D = NaN(sz(3),prod(imsz));
+        D = NaN([prod(imsz), sz(3)]);
         for j = 1:sz(3)
             cim = imresize(im2double(fovsnaps(:,:,j)),imsz,'bilinear');
-            D(j,:) = cim(:);
+            D(:,j) = cim(:);
             %     figure(1);clf
             %     imshow(cim)
             %     return
