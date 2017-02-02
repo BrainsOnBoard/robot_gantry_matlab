@@ -3,7 +3,7 @@ if nargin
     if isempty(olddate)
         olddate = datestr(now,'yyyy-mm-dd');
     end
-    imdirrt = fullfile(mfiledir,sprintf('imdb3d_%s_%03d',olddate,oldind));
+    imdirrt = fullfile(imdbdir,sprintf('imdb3d_%s_%03d',olddate,oldind));
     load(fullfile(imdirrt,'im_params.mat'));
 else
     p = load('arenadim.mat');
@@ -13,8 +13,8 @@ else
     p.zclear = 50;
     p.zoffs = 50;
     p.objgridac = 10; % mm
-    p.headclear = 150; % clearance for head (camera) in mm
-    p.arenafn = 'arena1_boxes.mat';
+    p.headclear = 100; % clearance for head (camera) in mm
+    p.arenafn = 'arena2_pile.mat';
     
     p.maxV = [240;240;151];
     p.maxA = [20;20;20];

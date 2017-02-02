@@ -7,17 +7,10 @@ objverts = {[540 50 295 515 445 590 680 125], ...
 
 objhts = [392 98 604 420 502];
 
-% objverts = {[50 540 515 295 590 445 125 680], ...
-%             [1130 430 1320 850 1565 750 1375 320], ...
-%             [310 1425 30 1550 200 1965 490 1840], ...
-%             [940 2130 1085 2590 1505 2405 1350 1985]};
-%         
-%                     [540 730 675 795 760 595 625 550], ...
-
-fn = 'arena1_boxes.mat';
+fn = fullfile(arenadir,'arena1_boxes.mat');
 
 if exist(fn,'file')
     error('file already exists')
 else
-    save('arena1_boxes.mat','objverts','objhts');
+    save(fn,'objverts','objhts');
 end
