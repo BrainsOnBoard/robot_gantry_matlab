@@ -4,12 +4,12 @@ function gantry_rf_choosetrainpath(arenafn,objgridac,headclear)
 % objgridac = 10; % mm
 % headclear = 150;
 
-if nargin < 4 || isempty(objgridac)
+if nargin < 3 || isempty(headclear)
     p.headclear = 150;
 else
     p.headclear = headclear;
 end
-if nargin < 3 || isempty(objgridac)
+if nargin < 2 || isempty(objgridac)
     p.objgridac = 10;
 else
     p.objgridac = objgridac;
@@ -20,14 +20,16 @@ else
     p.arenafn = arenafn;
 end
 
-p.arenascale = 10; % * true size
+p.arenascale = 20; % * true size
 p.snapsep = 0.25; % m
 p.stepsize = p.snapsep;
 p.routeinterpdist = 0.01; % m
 p.recapstartoffs = -p.stepsize; % how far along route to start recap (so as not to start at the same pos as first snap)
-p.datadir = fullfile(mfiledir,'routedat');
+p.datadir = routes_routedir;
 
 p.startoffs = -2:2;
+
+cd(fullfile(mfiledir,'../..'));
 
 if ~exist(p.datadir,'dir')
     mkdir(p.datadir)
@@ -297,8 +299,4 @@ catch ex
     if ~strcmp(ex.identifier,'MATLAB:ginput:FigureDeletionPause') && ~strcmp(ex.identifier,'MATLAB:ginput:Interrupted')
         rethrow(ex)
     end
-end
-
-%     function [xint,yint] = getintersect(m,
-%     end
 end

@@ -1,8 +1,6 @@
-function gantry_rf_train
-% clear
+function gantry_rf_train(arenafn,routenum)
 
-arenafn = []; %'arena1_boxes';
-whroute = 5;
+cd(fullfile(mfiledir,'../..'));
 
 ptr.zht = 200; % mm
 
@@ -11,10 +9,9 @@ ptr.maxA = [20;20;20];
 acuity = 1;
 g = alexGantry(false,true,false,acuity,ptr.maxV,ptr.maxA);
 
-for curroute=whroute
-    datadir = fullfile(mfiledir,'routedat');
+for curroute=routenum
     datafn = sprintf('route_%s_%03d',arenafn,curroute);
-    dataffn = fullfile(datadir,datafn);
+    dataffn = fullfile(routes_routedir,datafn);
     load(dataffn,'p','clx','cly','cli','whclick','rclx','rcly')
     
     if isempty(arenafn)
@@ -26,7 +23,7 @@ for curroute=whroute
     g.moveToPoint([0;0;minht]);
     
     load('gantry_centrad','unwrapparams')
-    snapdir = fullfile(datadir,['snaps_' datafn]);
+    snapdir = fullfile(routes_snapdir,['snaps_' datafn]);
     if exist(snapdir,'dir')
         error('snap dir already exists')
     end
@@ -54,6 +51,6 @@ end
 g.homeGantry(false)
 delete(g)
 
-for curroute=whroute
+for curroute=routenum
     gantry_rf_uwsnaps(arenafn,curroute)
 end
