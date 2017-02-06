@@ -7,37 +7,34 @@ end
 % TODO: add capability to resume
 
 pr.ntrialsperroute = 1;
-arenafn = []; %'arena1_boxes';
-whroute = 5;
+arenafn = 'arena2_pile'; %[];
+routenum = 1;
 pr.dummy = false;
 pr.fov = 360;
 pr.turnmax = 90;
 
 turnmaxrad = pr.turnmax*pi/180;
 
-datadir = fullfile(mfiledir,'routedat','data');
-
 pr.maxlen = 2; % times the length of the route
 
-routefn = sprintf('route_%s_%03d',matfileremext(arenafn),whroute);
-load(fullfile(mfiledir,'routedat',routefn))
+routefn = sprintf('route_%s_%03d',matfileremext(arenafn),routenum);
 snfn = sprintf('snaps_%s_fov%03d',routefn,pr.fov);
 % if fov==360
 %     rd = load(rdataffn);
 %     snths = atan2(diff(rd.cly),diff(rd.clx));
 %     snths(end+1) = snths(end);
 % else
-load(fullfile(mfiledir,'routedat',routefn),'p','clx','cly','cli','whclick','rclx','rcly','ptr');
+load(fullfile(routes_routedir,routefn),'p','clx','cly','cli','whclick','rclx','rcly','ptr');
 pr.routedat_p = p;
 
-pr.stepsize = p.snapsep*1000/p.arenascale;
+pr.stepsize = 2*p.snapsep*1000/p.arenascale;
 pr.maxdistfromroute = 2*pr.stepsize;
 pr.stopdistfromend = pr.stepsize; % distance from end of route at which to stop
 pr.routegridsep = 1;
 pr.zht_mean = 200;
 pr.zht_std = pr.zht_mean/2;
 pr.head_noise_std = 2; % degrees
-pr.snapweighting = 'infomax120'; %'wta'; %{'norm',5};
+pr.snapweighting = 'wta'; %{'norm',5}; % 'infomax120';
 pr.nth = 360;
 
 if startswith(pr.snapweighting,'infomax')
@@ -45,26 +42,23 @@ if startswith(pr.snapweighting,'infomax')
     load(fullfile(mfiledir,'routedat',sprintf('infomax_%s_w%03d.mat',snfn,snwt{2})),'imsz','W')
     isinfomax = true;
 else
-    load(fullfile(mfiledir,'routedat',snfn));
+    load(fullfile(routes_fovsnapdir,snfn),'fovsnaps');
     isinfomax = false;
 end
 
 if isempty(arenafn)
     pr.objzht = pr.zht_mean;
 else
-    load(fullfile(mfiledir,arenafn),'objhts')
+    load(fullfile(arenadir,arenafn),'objhts')
     pr.objzht = max(objhts);
 end
 
 pr.maxV = [240;240;151];
 pr.maxA = [20;20;20];
 
-% alexGantry(debug, homeGantry, disableZ, acuity, maxV, maxA, showvidpreview, simulate)
-g = alexGantry(false,true,false,1,pr.maxV,pr.maxA,false,pr.dummy);
-
 [objim,badzone,oxs,oys,goxs,goys] = gantry_getbadzoneim(arenafn,p.objgridac,p.headclear,eps(0));
-% oxs = p.arenascale*oxs/1000;
-% oys = p.arenascale*oys/1000;
+oxs = p.arenascale*oxs/1000;
+oys = p.arenascale*oys/1000;
 
 rclx = round(rclx*1000/p.arenascale);
 rcly = round(rcly*1000/p.arenascale);
@@ -92,18 +86,17 @@ pr.unwrapparams = unwrapparams;
 pr.crop = load('gantry_cropparams.mat');
 
 pr.maxnsteps = ceil(pr.maxlen*sum(hypot(diff(rclx),diff(rcly)),1)/pr.stepsize);
-% pr.maxnsteps = 20*ones(1,size(rclx,2));
 
 if nargin
     disp('LOADING DATA')
-    cdatadir = fullfile(datadir,sprintf('%s_%03d',routefn,fnind));
+    cdatadir = fullfile(routes_datadir,sprintf('%s_%03d',routefn,fnind));
     load(fullfile(cdatadir,'params.mat'),'pr');
     
     %     load(fullfile(cdatadir,sprintf('trial%04d_offs%04d_step%04d.mat',
 else
     fnind = 1;
     while true
-        cdatadir = fullfile(datadir,sprintf('%s_%03d',routefn,fnind));
+        cdatadir = fullfile(routes_datadir,sprintf('%s_%03d',routefn,fnind));
         if ~exist(cdatadir,'dir')
             mkdir(cdatadir)
             break
@@ -117,12 +110,16 @@ else
     d.cury = 0;
 end
 
+% alexGantry(debug, homeGantry, disableZ, acuity, maxV, maxA, showvidpreview, simulate)
+g = alexGantry(false,true,false,1,pr.maxV,pr.maxA,false,pr.dummy);
+
 noffs = length(p.startoffs);
 ntrialtot = noffs*pr.ntrialsperroute;
 load('arenadim.mat','lim')
-pausefig;
+pausefig(oxs,oys,objim,rclx,rcly,clx,cly,p);
 tott=tic;
 pauset=0;
+[xs,ys,badxs,badys] = deal([]);
 for i = sttrial:pr.ntrialsperroute
     if i==sttrial
         offsi = stoffs:noffs;
@@ -158,7 +155,7 @@ for i = sttrial:pr.ntrialsperroute
             else
                 [d.head,d.minval,d.whsn,d.ridfs] = ridfheadmulti(d.curfr,fovsnaps,pr.snapweighting,[],pr.nth);
             end
-
+            
             d.headnoise = capminmax(randn*pr.head_noise_std*pi/180,-pi,pi);
             thnoise = d.head+d.headnoise;
             d.dth = circ_dist(d.curth,thnoise);
@@ -216,6 +213,10 @@ for i = sttrial:pr.ntrialsperroute
                     disp('bad heading (out of arena)')
                 end
                 
+                % for plotting
+                badxs = [badxs; d.curx * p.arenascale/1000];
+                badys = [badys; d.cury * p.arenascale/1000];
+                
                 nextI = min(length(rclxfull{j}),d.whnearest+round(pr.stepsize/pr.routegridsep));
                 d.curx = rclxfull{j}(nextI);
                 d.cury = rclyfull{j}(nextI);
@@ -228,10 +229,15 @@ for i = sttrial:pr.ntrialsperroute
                 d.curth = d.bear;
             end
             
+            xs = [xs; d.curx * p.arenascale/1000];
+            ys = [ys; d.cury * p.arenascale/1000];
+            plot(xs,ys,'g+',badxs,badys,'r+');
+            drawnow;
+            
             if ~ishandle(1)
                 pausetic = tic;
                 input('Press enter to continue. REMEMBER TO UNDO STOP BUTTON. ')
-                pausefig;
+                pausefig(oxs,oys,objim,rclx,rcly,clx,cly,p);
                 pauset = pauset+toc(pausetic);
             end
             
@@ -273,15 +279,25 @@ delete(g)
 % set(gca,'YDir','normal')
 % hold on
 % plot(clx,cly,clx,cly,'b+',stx,sty,'g+')
-
 end
 
 function genzht=newzht(pr,lim)
 genzht = capminmax(pr.zht_mean+randn*pr.zht_std,0,lim(3));
 end
 
-function pausefig
+function cappedval=capminmax(val,minval,maxval)
+cappedval = max(minval,min(val,maxval));
+end
+
+function pausefig(oxs,oys,objim,rclx,rcly,clx,cly,p)
 figure(1);clf
 title('close me to pause program')
+image(oxs,oys,objim)
+set(gca,'YDir','normal')
+axis equal
+xlim([0 max(oxs(:))])
+ylim([0 max(oys(:))])
+hold on
+plot(rclx*p.arenascale/1000,rcly*p.arenascale/1000,'k',clx,cly,'kx')
 drawnow
 end

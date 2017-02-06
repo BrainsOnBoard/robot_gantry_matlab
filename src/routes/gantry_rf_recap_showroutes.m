@@ -1,6 +1,6 @@
 clear
 
-wharena = 'arena1_boxes';
+wharena = 'arena2_pile';
 whroute = 1;
 whdataset = 2;
 dosave = false;
