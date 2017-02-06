@@ -16,7 +16,7 @@ assignin('caller','metadata',metadata);
 if numel(varargin)==0
     varstr = '';
 else
-    varstr = [',''metadata'',''', joinstr(''',''',varargin), ''''];
+    varstr = [',''metadata'',''', strjoin(varargin,''','''), ''''];
 end
 
 lst = find(fname=='/' | fname=='\',1,'last');
