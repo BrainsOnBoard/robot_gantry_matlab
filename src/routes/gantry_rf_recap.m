@@ -34,12 +34,12 @@ pr.routegridsep = 1;
 pr.zht_mean = 200;
 pr.zht_std = pr.zht_mean/2;
 pr.head_noise_std = 2; % degrees
-pr.snapweighting = 'wta'; %{'norm',5}; % 'infomax120';
+pr.snapweighting = 'infomax120'; %'wta'; %{'norm',5};
 pr.nth = 360;
 
 if startswith(pr.snapweighting,'infomax')
     snwt = parseweightstr(pr.snapweighting);
-    load(fullfile(mfiledir,'routedat',sprintf('infomax_%s_w%03d.mat',snfn,snwt{2})),'imsz','W')
+    load(fullfile(routes_infomaxweightsdir,sprintf('infomax_%s_w%03d.mat',snfn,snwt{2})),'imsz','W')
     isinfomax = true;
 else
     load(fullfile(routes_fovsnapdir,snfn),'fovsnaps');
@@ -146,7 +146,7 @@ for i = sttrial:pr.ntrialsperroute
         d.curth = atan2(diff(rcly(1:2,j)),diff(rclx(1:2,j)));
         
         for k = 1:pr.maxnsteps(j)
-            fprintf('step %d (%d max) (offset %d/%d)\n',k,pr.maxnsteps(j),j,noffs)
+            fprintf('step %d (%d max) (offset %d/%d) (height %g)\n',k,pr.maxnsteps(j),j,noffs,d.curz)
             
             d.curfr = gantry_processim(rgb2gray(g.getRawFrame),pr.unwrapparams,pr.crop);
             if isinfomax
@@ -234,7 +234,7 @@ for i = sttrial:pr.ntrialsperroute
             plot(xs,ys,'g+',badxs,badys,'r+');
             drawnow;
             
-            if ~ishandle(1)
+            if ~any(findall(0,'Type','Figure')==1)
                 pausetic = tic;
                 input('Press enter to continue. REMEMBER TO UNDO STOP BUTTON. ')
                 pausefig(oxs,oys,objim,rclx,rcly,clx,cly,p);

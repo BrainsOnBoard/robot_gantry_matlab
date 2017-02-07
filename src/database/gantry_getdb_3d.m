@@ -25,7 +25,7 @@ else
     p.zs = 0:p.imsep:500; %p.lim(3); % +p.zoffs mm
     p.imsz = [576,720,3];
     
-    imdirrt = fullfile(mfiledir,['imdb3d_' datestr(now,'yyyy-mm-dd') '_']);
+    imdirrt = fullfile(imdbdir,['imdb3d_' datestr(now,'yyyy-mm-dd') '_']);
     dind = 1;
     while true
         p.imdir = sprintf('%s%03d',imdirrt,dind);
