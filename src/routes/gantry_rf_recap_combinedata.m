@@ -11,20 +11,19 @@ clear
 fields = {'curx','cury','curth','goalx','goaly','isbad','head','headnoise','whsn','curz'};
 fscale = [true true false true true false false false false false false];
 
-maindatadir = fullfile(mfiledir,'routedat');
-dlist = dir(fullfile(maindatadir,'data','route_*'));
+dlist = dir(fullfile(routes_datadir,'route_*'));
 for i = 1:length(dlist)
     if dlist(i).isdir
         cdname = dlist(i).name;
-        datadir = fullfile(maindatadir,'data',cdname);
-        datafn = fullfile(datadir,'params.mat');
+        cdatadir = fullfile(routes_datadir,cdname);
+        datafn = fullfile(cdatadir,'params.mat');
         % sprintf('route_%s_%03d_trial_%04d_offs_%04d.mat',arenafn,whroute,whtrial,whoffs));
         load(datafn)
         p = pr.routedat_p;
         
-        rd = load(fullfile(maindatadir,cdname(1:end-4)),'clx','cly','rclx','rcly','cli','whclick');
+        rd = load(fullfile(routes_routedir,cdname(1:end-4)),'clx','cly','rclx','rcly','cli','whclick');
         
-        outfn = fullfile(maindatadir,'data',['comb_' cdname '.mat']);
+        outfn = fullfile(routes_datadir,['comb_' cdname '.mat']);
         if exist(outfn,'file')
             warning('file %s already exists. skipping.',outfn)
             continue
@@ -41,7 +40,7 @@ for i = 1:length(dlist)
             %             isbad{j} = false(pr.maxnsteps(j)+1,pr.ntrialsperroute);
             for k = 1:pr.ntrialsperroute
                 for l = 1:pr.maxnsteps(j)
-                    cfn = fullfile(datadir,sprintf('trial%04d_offs%04d_step%04d.mat',k,j,l));
+                    cfn = fullfile(cdatadir,sprintf('trial%04d_offs%04d_step%04d.mat',k,j,l));
                     if ~exist(cfn,'file')
                         break
                     end

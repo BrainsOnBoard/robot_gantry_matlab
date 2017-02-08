@@ -1,9 +1,9 @@
-function gantry_rf_getinfomaxweightsfov %(arenafn,whroute,fov,imw)
-if nargin < 4
-    imw = 120;
+function gantry_rf_getinfomaxweightsfov(imw)
+if nargin < 1
+    imw = 360;
 end
 
-flist = dir(fullfile(routes_fovsnapdir,'snaps_*_fov*.mat'));
+flist = dir(fullfile(routes_fovsnapdir,sprintf('snaps_*_imw%03d.mat',imw)));
 
 for i = 1:length(flist)
     cfn = flist(i).name;
@@ -11,17 +11,17 @@ for i = 1:length(flist)
     fprintf('Loading %s...\n',cfn)
     
     datafn = fullfile(routes_fovsnapdir,cfn);
-    outfn = fullfile(routes_infomaxweightsdir,sprintf('infomax_%s_w%03d.mat',matfileremext(cfn),imw));
+    outfn = fullfile(routes_infomaxweightsdir,sprintf('infomax_%s.mat',matfileremext(cfn)));
     
     if exist(outfn,'file')
         warning('%s exists. skipping.',outfn)
     else
         load(datafn);
+        imsz = [size(fovsnaps,1), size(fovsnaps,2)];
         
-        cfov = str2double(cfn(end-6:end-4));
+%         cfov = str2double(cfn(end-6:end-4));
         
         sz = size(fovsnaps);
-        imsz = round((cfov/360)*[sz(1)*imw/sz(2),imw]);
         D = NaN([prod(imsz), sz(3)]);
         for j = 1:sz(3)
             cim = imresize(im2double(fovsnaps(:,:,j)),imsz,'bilinear');
@@ -36,7 +36,7 @@ for i = 1:length(flist)
         tic
         W=infomax_train(size(D,1),D);
         traint=toc;
-        fprintf('%gs taken to train network',traint)
+        fprintf('%gs taken to train network\n',traint)
         
         savemeta(outfn,'W','imsz','traint');
     end

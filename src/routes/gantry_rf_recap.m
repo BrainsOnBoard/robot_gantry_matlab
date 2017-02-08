@@ -1,4 +1,4 @@
-function gantry_rf_recap(fnind,sttrial,stoffs,ststep)
+function gantry_rf_recap(fnind,sttrial,stoffs)
 % clear
 if ~nargin
     sttrial = 1;
@@ -11,6 +11,7 @@ arenafn = 'arena2_pile'; %[];
 routenum = 1;
 pr.dummy = false;
 pr.fov = 360;
+pr.res = 90;
 pr.turnmax = 90;
 
 turnmaxrad = pr.turnmax*pi/180;
@@ -18,32 +19,28 @@ turnmaxrad = pr.turnmax*pi/180;
 pr.maxlen = 2; % times the length of the route
 
 routefn = sprintf('route_%s_%03d',matfileremext(arenafn),routenum);
-snfn = sprintf('snaps_%s_fov%03d',routefn,pr.fov);
-% if fov==360
-%     rd = load(rdataffn);
-%     snths = atan2(diff(rd.cly),diff(rd.clx));
-%     snths(end+1) = snths(end);
-% else
-load(fullfile(routes_routedir,routefn),'p','clx','cly','cli','whclick','rclx','rcly','ptr');
+snfn = sprintf('snaps_%s_fov%03d_imw%03d',routefn,pr.fov,pr.res);
+load(fullfile(routes_routedir,routefn),'p','clx','cly','cli','rclx','rcly','ptr');
 pr.routedat_p = p;
 
 pr.stepsize = 2*p.snapsep*1000/p.arenascale;
-pr.maxdistfromroute = 2*pr.stepsize;
+pr.maxdistfromroute = 1.5*max(abs(p.startoffs))*1000/p.arenascale;
 pr.stopdistfromend = pr.stepsize; % distance from end of route at which to stop
-pr.routegridsep = 1;
+pr.routegridsep = 1*1000/p.arenascale;
 pr.zht_mean = 200;
 pr.zht_std = pr.zht_mean/2;
 pr.head_noise_std = 2; % degrees
-pr.snapweighting = 'infomax120'; %'wta'; %{'norm',5};
+pr.snapweighting = 'infomax'; %{'norm',5}; %'wta';
 pr.nth = 360;
 
-if startswith(pr.snapweighting,'infomax')
+if strcmp(pr.snapweighting,'infomax')
     snwt = parseweightstr(pr.snapweighting);
-    load(fullfile(routes_infomaxweightsdir,sprintf('infomax_%s_w%03d.mat',snfn,snwt{2})),'imsz','W')
+    load(fullfile(routes_infomaxweightsdir,sprintf('infomax_%s.mat',snfn)),'imsz','W')
     isinfomax = true;
 else
     load(fullfile(routes_fovsnapdir,snfn),'fovsnaps');
     isinfomax = false;
+    imsz = [size(fovsnaps,1),size(fovsnaps,2)];
 end
 
 if isempty(arenafn)
@@ -62,24 +59,24 @@ oys = p.arenascale*oys/1000;
 
 rclx = round(rclx*1000/p.arenascale);
 rcly = round(rcly*1000/p.arenascale);
-rclxfull = num2cell(rclx(1,:));
-rclyfull = num2cell(rcly(1,:));
-whclick  = num2cell(ones(1,size(rclx,2)));
-for i = 1:size(rclx,1)-1
-    xdiff = diff(rclx([i i+1],:));
-    ydiff = diff(rcly([i i+1],:));
-    crad = round(hypot(xdiff,ydiff));
-    cnstep = crad/pr.routegridsep; %(pr.stepsize*1000/p.arenascale);
-    %     if ~all(floor(cnstep)==cnstep)
-    %         error('not a round number of steps between specified route points')
-    %     end
-    for j = 1:size(rclx,2)
-        rcurx = round(rclx(i,j)+(xdiff(j)/cnstep(j))*(1:cnstep)');
-        rclxfull{j} = [rclxfull{j}; rcurx];
-        rclyfull{j} = [rclyfull{j}; round(rcly(i,j)+(ydiff(j)/cnstep(j))*(1:cnstep)')];
-        whclick{j} = [whclick{j}; (i+1)*ones(size(rcurx))];
-    end
-end
+clx = round(clx*1000/p.arenascale);
+cly = round(cly*1000/p.arenascale);
+% rclxfull = rclx(1,:);
+% rclyfull = rcly(1,:);
+% for i = 1:size(rclx,1)-1
+%     xdiff = diff(rclx([i i+1],:));
+%     ydiff = diff(rcly([i i+1],:));
+%     crad = round(hypot(xdiff,ydiff));
+%     cnstep = crad/pr.routegridsep; %(pr.stepsize*1000/p.arenascale);
+%     %     if ~all(floor(cnstep)==cnstep)
+%     %         error('not a round number of steps between specified route points')
+%     %     end
+%     for j = 1:size(rclx,2)
+%         rcurx = round(rclx(i,j)+(xdiff(j)/cnstep(j))*(1:cnstep)');
+%         rclxfull{j} = [rclxfull{j}; rcurx];
+%         rclyfull{j} = [rclyfull{j}; round(rcly(i,j)+(ydiff(j)/cnstep(j))*(1:cnstep)')];
+%     end
+% end
 
 load('gantry_centrad.mat','unwrapparams');
 pr.unwrapparams = unwrapparams;
@@ -104,7 +101,9 @@ else
         fnind = fnind+1;
     end
     paramfn = fullfile(cdatadir,'params.mat');
-    savemeta(paramfn,'pr');
+    
+    label = sprintf('wt: %s, res: %d, z: %g, zstd: %g', pr.snapweighting,pr.res,pr.zht_mean,pr.zht_std);
+    savemeta(paramfn,'pr','label');
     
     d.curx = 0;
     d.cury = 0;
@@ -137,8 +136,8 @@ for i = sttrial:pr.ntrialsperroute
         
         g.moveToPoint([d.curx d.cury pr.objzht]) % raise gantry head
         % move to start position
-        d.curx = rclxfull{j}(1);
-        d.cury = rclyfull{j}(1);
+        d.curx = rclx(1,j);
+        d.cury = rcly(1,j);
         d.curz = newzht(pr,lim);
         g.moveToPoint([d.curx d.cury pr.objzht])
         g.moveToPoint([d.curx d.cury d.curz])
@@ -146,14 +145,14 @@ for i = sttrial:pr.ntrialsperroute
         d.curth = atan2(diff(rcly(1:2,j)),diff(rclx(1:2,j)));
         
         for k = 1:pr.maxnsteps(j)
-            fprintf('step %d (%d max) (offset %d/%d) (height %g)\n',k,pr.maxnsteps(j),j,noffs,d.curz)
+            fprintf('\nstep %d (%d max) (offset %d/%d) (height %g)\n',k,pr.maxnsteps(j),j,noffs,d.curz)
             
             d.curfr = gantry_processim(rgb2gray(g.getRawFrame),pr.unwrapparams,pr.crop);
             if isinfomax
                 [d.head,d.minval,d.ridfs] = infomax_gethead(d.curfr,imsz,W,[],pr.nth,pr.fov);
                 d.whsn = [];
             else
-                [d.head,d.minval,d.whsn,d.ridfs] = ridfheadmulti(d.curfr,fovsnaps,pr.snapweighting,[],pr.nth);
+                [d.head,d.minval,d.whsn,d.ridfs] = ridfheadmulti(imresize(d.curfr,imsz,'bilinear'),fovsnaps,pr.snapweighting,[],pr.nth);
             end
             
             d.headnoise = capminmax(randn*pr.head_noise_std*pi/180,-pi,pi);
@@ -176,25 +175,10 @@ for i = sttrial:pr.ntrialsperroute
             [~,d.goalyi] = min(abs(d.goaly-oys));
             
             % (could only check shortest route if not also about to collide)
-            dists = hypot(rclyfull{j}-d.goaly,rclxfull{j}-d.goalx);
+            dists = hypot(cly-d.goaly,clx-d.goalx);
             [d.shortestdisttoroute,d.whnearest] = min(dists);
             fprintf('(%g m from route)\n',d.shortestdisttoroute*p.arenascale/1000);
-            %             [sdists,dI] = sort(dists);
-            %             for l = 1:length(dists)
-            %                 if dI(l)==1
-            %                     x = rclx(1:2,j);
-            %                     y = rcly(1:2,j);
-            %                 else
-            %                     x = rclx(i:i+1,j);
-            %                     y = rcly(i:i+1,j);
-            %                 end
-            %                 m = diff(y)/diff(x);
-            %                 c = y(1)-m*x(1);
-            %                 mperp = -1/m;
-            %                 cperp = d.goaly+mperp*d.goalx;
-            %                 sol = [m 1; mperp 1]'*[c; cperp];
-            %                 keyboard
-            %             end
+
             d.bad_collision = badzone(d.goalyi,d.goalxi);
             d.bad_distfromroute = d.shortestdisttoroute > pr.maxdistfromroute;
             d.bad_outofarena = d.goalx < 0 || d.goalx > lim(1) || d.goaly < 0 || d.goaly > lim(2);
@@ -217,10 +201,10 @@ for i = sttrial:pr.ntrialsperroute
                 badxs = [badxs; d.curx * p.arenascale/1000];
                 badys = [badys; d.cury * p.arenascale/1000];
                 
-                nextI = min(length(rclxfull{j}),d.whnearest+round(pr.stepsize/pr.routegridsep));
-                d.curx = rclxfull{j}(nextI);
-                d.cury = rclyfull{j}(nextI);
-                d.curth = atan2(diff(rclyfull{j}(nextI-1:nextI)),diff(rclxfull{j}(nextI-1:nextI)));
+                nextI = min(length(clx),d.whnearest+round(pr.stepsize/pr.routegridsep));
+                d.curx = clx(nextI);
+                d.cury = cly(nextI);
+                d.curth = atan2(diff(cly(nextI-1:nextI)),diff(clx(nextI-1:nextI)));
                 
                 d.toterrs = d.toterrs+1;
             else
@@ -236,7 +220,7 @@ for i = sttrial:pr.ntrialsperroute
             
             if ~any(findall(0,'Type','Figure')==1)
                 pausetic = tic;
-                input('Press enter to continue. REMEMBER TO UNDO STOP BUTTON. ')
+                input('Press enter to continue. REMEMBER TO UNDO STOP BUTTON.')
                 pausefig(oxs,oys,objim,rclx,rcly,clx,cly,p);
                 pauset = pauset+toc(pausetic);
             end
@@ -298,6 +282,6 @@ axis equal
 xlim([0 max(oxs(:))])
 ylim([0 max(oys(:))])
 hold on
-plot(rclx*p.arenascale/1000,rcly*p.arenascale/1000,'k',clx,cly,'kx')
+plot(rclx*p.arenascale/1000,rcly*p.arenascale/1000,'k',clx*p.arenascale/1000,cly*p.arenascale/1000,'kx')
 drawnow
 end
