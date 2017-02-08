@@ -1,4 +1,4 @@
-function [snaps,clickis,snx,sny,snth,crop,p]=imdb_route_getsnaps(shortwhd,routenum,res)
+function [snaps,clickis,snx,sny,snth,pxsnx,pxsny,pxsnth,crop,p]=imdb_route_getsnaps(shortwhd,routenum,res)
 
 imw = 720;
 
@@ -6,29 +6,30 @@ whd = fullfile(imdbdir,shortwhd);
 
 crop = load('gantry_cropparams.mat');
 load(fullfile(imdb_routedir,sprintf('route_%03d.mat',routenum)),'snx','sny','snth');
-oldsnx = snx;
-oldsny = sny;
 load(fullfile(whd,'im_params.mat'),'p');
 
-[snx,sny] = bresenham_xy(oldsnx,oldsny);
+[pxsnx,pxsny] = bresenham_xy(snx,sny);
 
-[clickis,~] = find(bsxfun(@eq,snx,oldsnx) & bsxfun(@eq,sny,oldsny));
+[clickis,~] = find(bsxfun(@eq,pxsnx,snx) & bsxfun(@eq,pxsny,sny));
 
-snth = atan2(diff(sny),diff(snx));
-snth = mod(snth,2*pi);
-snth(end+1) = snth(end);
+pxsnth = NaN(size(pxsnx));
+for i = 2:length(clickis)
+    ind = clickis(i-1):clickis(i)-1;
+    pxsnth(ind) = atan2(pxsny(clickis(i))-pxsny(ind),pxsnx(clickis(i))-pxsnx(ind));
+end
+pxsnth(end) = snth(end);
 
 newimsz = [round((crop.y2 - crop.y1 + 1)*res/imw) res];
-snaps = zeros([newimsz,length(snx)],'uint8');
+snaps = zeros([newimsz,length(pxsnx)],'uint8');
 
 % figure(1);clf
 % [gx,gy] = meshgrid(p.xs,p.ys);
 % plot(gx,gy,'g.',p.xs(snx),p.ys(sny),p.xs(snx(clickis)),p.xs(sny(clickis)),'ro')
 
 %     figure(1);clf
-for i = 1:length(snx)
-    csnap = imdb_getim(whd,sny(i),snx(i),crop);
-    snaps(:,:,i) = imresize(circshift(csnap,round(snth(i) * imw / (2*pi)),2),newimsz,'bilinear');
+for i = 1:length(pxsnx)
+    csnap = imdb_getim(whd,pxsny(i),pxsnx(i),crop);
+    snaps(:,:,i) = imresize(circshift(csnap,round(pxsnth(i) * imw / (2*pi)),2),newimsz,'bilinear');
     
     %         ind = 2*(i-1)+1;
     %         subplot(length(snx),2,ind);
@@ -39,3 +40,9 @@ for i = 1:length(snx)
 end
 %     keyboard
 
+% % check headings are correct
+% figure(10);clf
+% endx = pxsnx + cos(pxsnth);
+% endy = pxsny + sin(pxsnth);
+% plot([pxsnx, endx]', [pxsny, endy]', 'b', snx, sny, 'ro')
+% keyboard

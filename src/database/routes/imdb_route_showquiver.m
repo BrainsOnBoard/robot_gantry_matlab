@@ -1,7 +1,8 @@
 
 clear
 
-dosave = true;
+dosave = false;
+showfigs = true;
 
 shortwhd={
     'unwrap_imdb_2016-02-04_002', ... % empty, open
@@ -11,11 +12,15 @@ shortwhd={
     };
 res = [360 180 90];
 
-for useinfomax = true %[false true]
+for useinfomax = [false true]
     for cres = res
         for i = 1:length(shortwhd)
             for routenum = 1:2
-                [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,p] = imdb_route_geterrs(shortwhd{i},routenum,cres,useinfomax);
+                [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p] = imdb_route_geterrs(shortwhd{i},routenum,cres,useinfomax,false);
+                
+                if ~showfigs
+                    continue
+                end
                 
                 whd = fullfile(imdbdir,shortwhd{i});
                 flabel = imdb_getlabel(whd);
@@ -27,7 +32,10 @@ for useinfomax = true %[false true]
                     drawobjverts(objverts,[],'k')
                 end
                 
-                anglequiver(p.xs(imxi),p.ys(imyi),heads);
+%                 plot(p.xs(imxi(~errsel)),p.ys(imyi(~errsel)),'b+')
+%                 plot(p.xs(imxi(errsel)),p.ys(imyi(errsel)),'g+')
+                anglequiver(p.xs(imxi(~errsel)),p.ys(imyi(~errsel)),heads(~errsel));
+                anglequiver(p.xs(imxi(errsel)),p.ys(imyi(errsel)),heads(errsel),[],'g')
                 plot(p.xs(snx),p.ys(sny),'ro',p.xs(snx),p.ys(sny),'g','MarkerSize',5)
                 axis equal tight
                 xlabel('x (mm)')
@@ -37,7 +45,7 @@ for useinfomax = true %[false true]
                 else
                     methodstr = 'ridf';
                 end
-                title(sprintf('%s (route %d, res %d, %s)', flabel, routenum, cres, methodstr))
+                title(sprintf('%s (route %d, res %d, %s) (err: %g, std: %g)', flabel, routenum, cres, methodstr, mean(err(errsel)), std(err(errsel))))
                 
                 if dosave
                     if useinfomax

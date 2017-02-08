@@ -1,4 +1,7 @@
-function [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,p]=imdb_route_geterrs(shortwhd,routenum,res,useinfomax)
+function [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p]=imdb_route_geterrs(shortwhd,routenum,res,useinfomax,forcegen)
+if nargin < 5
+    forcegen = false;
+end
 
 whd = fullfile(imdbdir,shortwhd);
 
@@ -7,17 +10,21 @@ if useinfomax
 else
     infomaxstr = '';
 end
-figdatfn = fullfile(imdb_route_figdatdir,sprintf('imdb_route_geterrs_%s_%03d_res%03d_%s.mat',shortwhd,routenum,res,infomaxstr));
+figdatfn = fullfile(imdb_route_figdatdir,sprintf('imdb_route_geterrs_%s_%03d_res%03d%s.mat',shortwhd,routenum,res,infomaxstr));
 
-if exist(figdatfn,'file')
+if exist(figdatfn,'file') && ~forcegen
     load(figdatfn);
 else
-    [snaps,clickis,snx,sny,snth,crop,p]=imdb_route_getsnaps(shortwhd,routenum,res);
+    if forcegen
+        warning('generating fig data even if it already exists')
+    end
+    
+    [snaps,clickis,snx,sny,snth,pxsnx,pxsny,pxsnth,crop,p]=imdb_route_getsnaps(shortwhd,routenum,res);
     
     heads = NaN(length(p.ys),length(p.xs));
     
     newsz = [size(snaps,1),size(snaps,2)];
-    startprogbar(10,numel(heads))
+    startprogbar(10,numel(heads),'calculating headings',true)
     if useinfomax
         infomax_wts = infomax_train(size(snaps,3), reshape(snaps,[prod(newsz), size(snaps,3)]));
 
@@ -40,8 +47,10 @@ else
         
         % select only the points on the route which were clicked on
         snaps = snaps(:,:,clickis);
-        snx = snx(clickis);
-        sny = sny(clickis);
+%         snx = snx(clickis);
+%         sny = sny(clickis);
+%         snth = atan2(diff(sny),diff(snx));
+%         snth(end+1) = snth(end);
         
         for i = 1:length(p.ys)
             for j = 1:length(p.xs)
@@ -74,12 +83,34 @@ else
     snth = snth(:);
     err = circ_dist(heads, snth(nearest));
     err = abs(err);
-    err = min(pi,err) * pi/180;
+    err = min(pi/2,err) * 180/pi;
+    
+    err_corridor = 2;
+    interpsep = 0.1;
+    
+    dx = diff(snx);
+    dy = diff(sny);
+    snh = hypot(dx,dy);
+
+    rx = [];
+    ry = [];
+    for j = 1:length(snh)-1
+        ch = 0:interpsep:snh(j);
+
+        cx = snx(j) + ch * cos(snth(j));
+        cy = sny(j) + ch * sin(snth(j));
+
+        rx = [rx; cx(:)];
+        ry = [ry; cy(:)];
+    end
+
+    mindist = min(hypot(bsxfun(@minus, imxi(:)', rx), bsxfun(@minus, imyi(:)', ry)));
+    errsel = mindist <= err_corridor;
     
     if ~exist(imdb_route_figdatdir,'dir')
         mkdir(imdb_route_figdatdir);
     end
-    save(figdatfn,'imxi','imyi','heads','whsn','err','nearest','dist','snx','sny','snth','p');
+    save(figdatfn,'imxi','imyi','heads','whsn','err','nearest','dist','snx','sny','snth','pxsnx','pxsny','pxsnth','err_corridor','errsel','rx','ry','p');
 end
 
     function loadedim=loadim(x,y)
