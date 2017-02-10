@@ -1,13 +1,14 @@
 
 clear
+close all
 
-dosave = false;
+dosave = true;
 showfigs = true;
 
 shortwhd={
     'unwrap_imdb_2016-02-04_002', ... % empty, open
-    'unwrap_imdb_2016-02-09_002', ... % empty, closed
     'unwrap_imdb_2016-02-09_001', ... % boxes, open
+    'unwrap_imdb_2016-02-09_002', ... % empty, closed
     'unwrap_imdb_2016-02-05_001'      % boxes, closed
     };
 res = [360 180 90];
@@ -45,13 +46,14 @@ for useinfomax = [false true]
                 else
                     methodstr = 'ridf';
                 end
-                title(sprintf('%s (route %d, res %d, %s) (err: %g, std: %g)', flabel, routenum, cres, methodstr, mean(err(errsel)), std(err(errsel))))
+                title(sprintf('%s (route %d, res %d, %s)', flabel, routenum, cres, methodstr))
+                gantry_setfigfont
                 
                 if dosave
                     if useinfomax
                         infomaxstr = '_infomax';
                     else
-                        infomaxstr = '';
+                        infomaxstr = '_pm';
                     end
                     gantry_savefig(sprintf('%s_res%03d_route%d_ridf_quiver%s',flabel,cres,routenum,infomaxstr),[10 10]);
                 else
