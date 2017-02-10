@@ -1,6 +1,6 @@
 function gantry_rf_getinfomaxweightsfov(imw)
 if nargin < 1
-    imw = 360;
+    imw = 90;
 end
 
 flist = dir(fullfile(routes_fovsnapdir,sprintf('snaps_*_imw%03d.mat',imw)));

@@ -4,7 +4,7 @@ function imdb3d_unwrap_ims
 load('gantry_centrad.mat','unwrapparams')
 crop = load('gantry_cropparams.mat');
 
-d = dir(fullfile(mfiledir,'imdb3d_*'));
+d = dir(fullfile(imdbdir,'imdb3d_*'));
 ds = {};
 for i = 1:length(d)
     if d(i).isdir
@@ -30,8 +30,8 @@ end
 
 for i = whd
     disp(ds{i})
-    olddir = fullfile(mfiledir,ds{i});
-    uwdir = fullfile(mfiledir,['unwrap_' ds{i}]);
+    olddir = fullfile(imdbdir,ds{i});
+    uwdir = fullfile(imdbdir,['unwrap_' ds{i}]);
     if ~exist(uwdir,'dir')
         mkdir(uwdir)
     end

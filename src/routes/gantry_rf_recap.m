@@ -8,7 +8,7 @@ end
 
 pr.ntrialsperroute = 1;
 arenafn = 'arena2_pile'; %[];
-routenum = 1;
+routenum = 3;
 pr.dummy = false;
 pr.fov = 360;
 pr.res = 90;
@@ -30,7 +30,7 @@ pr.routegridsep = 1*1000/p.arenascale;
 pr.zht_mean = 200;
 pr.zht_std = pr.zht_mean/2;
 pr.head_noise_std = 2; % degrees
-pr.snapweighting = 'infomax'; %{'norm',5}; %'wta';
+pr.snapweighting = 'wta'; %'infomax'; %{'norm',5};
 pr.nth = 360;
 
 if strcmp(pr.snapweighting,'infomax')
@@ -218,7 +218,9 @@ for i = sttrial:pr.ntrialsperroute
             plot(xs,ys,'g+',badxs,badys,'r+');
             drawnow;
             
-            if ~any(findall(0,'Type','Figure')==1)
+            if any(findall(0,'Type','Figure')==1)
+                disp('FIGURE EXISTS')
+            else
                 pausetic = tic;
                 input('Press enter to continue. REMEMBER TO UNDO STOP BUTTON.')
                 pausefig(oxs,oys,objim,rclx,rcly,clx,cly,p);

@@ -48,9 +48,9 @@ for curroute=routenum
     g.moveToPoint([clx(i);cly(i);minht])    
 end
 
-g.homeGantry(false)
 delete(g)
 
+disp('Unwrapping images...')
 for curroute=routenum
     gantry_rf_uwsnaps(arenafn,curroute)
 end

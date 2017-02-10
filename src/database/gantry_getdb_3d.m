@@ -34,8 +34,13 @@ else
         end
         dind = dind+1;
     end
-    if ~p.dummy && ~exist(p.imdir,'dir')
-        mkdir(p.imdir)
+    
+    if ~p.dummy
+        if ~exist(p.imdir,'dir')
+            mkdir(p.imdir)
+        end
+        
+        save(fullfile(p.imdir,'im_params.mat'),'p')
     end
 end
 
@@ -60,9 +65,7 @@ nim = length(p.xs)*length(p.ys)*length(p.zs);
 fprintf('getting image database\n%dx%dx%d (=%d) ims\nx: [%g %g]\ny: [%g %g]\nz: [%g %g]\n\n', ...
     length(p.ys),length(p.xs),length(p.zs),nim,p.xs(1),p.xs(end),p.ys(1),p.ys(end),p.zs(1),p.zs(2))
 
-if ~p.dummy
-    save(fullfile(p.imdir,'im_params.mat'),'p')
-    
+if ~p.dummy    
     g.homeGantry(false);
 end
 
@@ -105,7 +108,7 @@ try
             com3(crow,ccol,2) = collides;
             com3(crow,ccol,3) = false;
             imshow(flipud(255*com3))
-%             pause(.25)
+            %             pause(.25)
             
             if xi==1 && yi==1
                 czs = 1:length(p.zs);
@@ -160,37 +163,42 @@ try
                 end
                 
                 if ~ishandle(1)
-                    input('Press enter to continue.')
-                    pausefig;
-                    clf
-                    oendx = find(curx<=oxs,1)-1;
-                    oendy = find(cury<=oys,1)-1;
-                    com3 = om3;
-                    crow = max(1,oendy-headcleari):min(length(oys)-1,oendy+headcleari);
-                    ccol = max(1,oendx-headcleari):min(length(oxs)-1,oendx+headcleari);
-                    collides = objmap(crow,ccol);
-                    com3(crow,ccol,1) = ~collides;
-                    com3(crow,ccol,2) = collides;
-                    com3(crow,ccol,3) = false;
-                    imshow(flipud(255*com3))
-                    pause(.4)
+                    waittocontinue
                 end
                 
-                curz = p.zs(zi);
-                if (curx~=lastx || cury~=lasty) && lastz < minghtpath % then raise gantry
-                    disp('retracting head')
-                    movetopoint(lastx,lasty,minghtpath)
-                    if curz < minghtpath
-                        movetopoint(curx,cury,minghtpath) % make sure going over object
+                while true
+                    try
+                        curz = p.zs(zi);
+                        if (curx~=lastx || cury~=lasty) && lastz < minghtpath % then raise gantry
+                            disp('retracting head')
+                            movetopoint(lastx,lasty,minghtpath)
+                            if curz < minghtpath
+                                movetopoint(curx,cury,minghtpath) % make sure going over object
+                            end
+                        end
+                        movetopoint(curx,cury,curz);
+                    catch ex
+                        if strcmp(ex.identifier,'gantry:stopped')
+                            waittocontinue
+                            continue
+                        else
+                            rethrow(ex)
+                        end
                     end
+                    
+                    break
                 end
-                movetopoint(curx,cury,curz);
                 
                 if p.dummy
                     disp('(would be getting frame now...)')
                 else
                     fr = g.getRawFrame;
                     timestamp = now;
+                    
+                    %                     figure(10);clf
+                    %                     imshow(fr)
+                    %                     drawnow
+                    
                     save(curimfn,'fr','timestamp')
                 end
                 
@@ -230,12 +238,29 @@ end
                 tmove = tic;
                 g.moveToPoint([x;y;z]);
                 if toc(tmove) < 0.1
-                    error('gantry appears to be stopped')
+                    error('gantry:stopped','gantry appears to be stopped')
                 end
             end
         else
             disp('same pos, not moving gantry')
         end
+    end
+
+    function waittocontinue
+        input('Press enter to continue.')
+        pausefig;
+        clf
+        oendx = find(curx<=oxs,1)-1;
+        oendy = find(cury<=oys,1)-1;
+        com3 = om3;
+        crow = max(1,oendy-headcleari):min(length(oys)-1,oendy+headcleari);
+        ccol = max(1,oendx-headcleari):min(length(oxs)-1,oendx+headcleari);
+        collides = objmap(crow,ccol);
+        com3(crow,ccol,1) = ~collides;
+        com3(crow,ccol,2) = collides;
+        com3(crow,ccol,3) = false;
+        imshow(flipud(255*com3))
+        pause(.4)
     end
 
 end

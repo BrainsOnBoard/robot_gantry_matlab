@@ -27,9 +27,10 @@ for i = 1:length(d)
         for cfov = fov
             newsz = round(cimw * [size(snaps,1)/size(snaps,2), cfov/360]);
             outfn = fullfile(snapdir,sprintf('snaps_%s_fov%03d_imw%03d.mat',matfileremext(d(i).name),cfov,cimw));
-%             if exist(outfn,'file')
-%                 error('file %s already exists',outfn)
-%             end
+            if exist(outfn,'file')
+                warning('file %s already exists, skipping...',outfn)
+                continue
+            end
             
             sz = [newsz,size(snaps,3)];
             fovsnaps = zeros(sz,'uint8');

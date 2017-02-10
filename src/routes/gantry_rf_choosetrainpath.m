@@ -21,7 +21,7 @@ else
 end
 
 p.arenascale = 20; % * true size
-p.snapsep = 0.25; % m
+p.snapsep = 0.50; % m
 p.stepsize = p.snapsep;
 p.routeinterpdist = 0.01; % m
 p.recapstartoffs = -p.stepsize; % how far along route to start recap (so as not to start at the same pos as first snap)
