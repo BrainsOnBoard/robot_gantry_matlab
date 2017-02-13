@@ -17,7 +17,11 @@ for useinfomax = [false true]
     for cres = res
         for i = 1:length(shortwhd)
             for routenum = 1:2
-                [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p] = imdb_route_geterrs(shortwhd{i},routenum,cres,useinfomax,false);
+                [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,pxsnx,pxsny,pxsnth] = imdb_route_geterrs(shortwhd{i},routenum,cres,useinfomax,false);
+                
+%                 figure(10);clf
+%                 plot(imxi,imyi,'g.',imxi(errsel),imyi(errsel),'b.',snx,sny,'ro',pxsnx,pxsny,'k+')
+%                 return
                 
                 if ~showfigs
                     continue

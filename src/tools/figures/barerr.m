@@ -31,16 +31,22 @@ if ~ih
     hold on
 end
 
-sgn = sign(y);
-L = -(sgn==-1).*err;
-U = (sgn==1).*err;
+if ~isempty(err)
+    sgn = sign(y);
+    L = -(sgn==-1).*err;
+    U = (sgn==1).*err;
+end
 
 if exist('x','var')
     h=bar(x,y,'FaceColor',col);
-    errorbar(x,y,L,U,'Color','k','LineStyle','none');
+    if ~isempty(err)
+        errorbar(x,y,L,U,'Color','k','LineStyle','none');
+    end
 else
     h=bar(y,'FaceColor',col);
-    errorbar(h.XData+h.XOffset,y,L,U,'Color','k','LineStyle','none');
+    if ~isempty(err)
+        errorbar(h.XData+h.XOffset,y,L,U,'Color','k','LineStyle','none');
+    end
 end
 
 if ~ih

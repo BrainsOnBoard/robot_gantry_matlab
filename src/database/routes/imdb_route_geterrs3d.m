@@ -1,7 +1,9 @@
-function [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,pxsnx,pxsny,pxsnth]=imdb_route_geterrs(shortwhd,routenum,res,useinfomax,forcegen)
+function [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,pxsnx,pxsny,pxsnth]=imdb_route_geterrs3d(shortwhd,routenum,res,zht,useinfomax,forcegen)
 if nargin < 5
     forcegen = false;
 end
+
+trainheight = 200;
 
 whd = fullfile(imdbdir,shortwhd);
 
@@ -10,7 +12,7 @@ if useinfomax
 else
     infomaxstr = '';
 end
-figdatfn = fullfile(imdb_route_figdatdir,sprintf('imdb_route_geterrs_%s_%03d_res%03d%s.mat',shortwhd,routenum,res,infomaxstr));
+figdatfn = fullfile(imdb_route_figdatdir,sprintf('imdb3d_route_geterrs_%s_%03d_res%03d_z%d%s.mat',shortwhd,routenum,res,zht,infomaxstr));
 
 if exist(figdatfn,'file') && ~forcegen
     load(figdatfn);
@@ -21,7 +23,8 @@ else
     
     weight_update_count = 30;
     
-    [snaps,clickis,snx,sny,snth,pxsnx,pxsny,pxsnth,crop,p]=imdb_route_getsnaps(shortwhd,routenum,res);
+    [snaps,clickis,snx,sny,snth,pxsnx,pxsny,pxsnth,crop,p]=imdb_route_getsnaps3d(shortwhd,routenum,trainheight,res);
+    zi = find(p.zs==zht);
     
     heads = NaN(length(p.ys),length(p.xs));
     
@@ -35,7 +38,7 @@ else
 
         for i = 1:length(p.ys)
             for j = 1:length(p.xs)
-                fr = loadim(j,i);
+                fr = loadim(i,j,zi);
                 if ~isempty(fr)
                     heads(i,j) = infomax_gethead(fr,[],infomax_wts);
                 end
@@ -115,11 +118,11 @@ else
     if ~exist(imdb_route_figdatdir,'dir')
         mkdir(imdb_route_figdatdir);
     end
-    save(figdatfn,'imxi','imyi','heads','whsn','err','nearest','dist','snx','sny','snth','pxsnx','pxsny','pxsnth','err_corridor','errsel','p','weight_update_count');
+    save(figdatfn,'imxi','imyi','heads','whsn','err','nearest','dist','snx','sny','snth','pxsnx','pxsny','pxsnth','err_corridor','errsel','p','weight_update_count','zht');
 end
 
-    function loadedim=loadim(x,y)
-        loadedim = imdb_getim(whd,y,x,crop);
+    function loadedim=loadim(x,y,z)
+        loadedim = imdb_getim3d(whd,x,y,z,crop);
         if ~isempty(loadedim)
             loadedim = imresize(loadedim,newsz,'bilinear');
         end
