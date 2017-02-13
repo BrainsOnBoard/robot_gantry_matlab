@@ -1,4 +1,4 @@
-function [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,pxsnx,pxsny,pxsnth]=imdb_route_geterrs3d(shortwhd,routenum,res,zht,useinfomax,forcegen)
+function [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,pxsnx,pxsny,pxsnth,isnew]=imdb_route_geterrs3d(shortwhd,routenum,res,zht,useinfomax,forcegen)
 if nargin < 5
     forcegen = false;
 end
@@ -14,7 +14,8 @@ else
 end
 figdatfn = fullfile(imdb_route_figdatdir,sprintf('imdb3d_route_geterrs_%s_%03d_res%03d_z%d%s.mat',shortwhd,routenum,res,zht,infomaxstr));
 
-if exist(figdatfn,'file') && ~forcegen
+isnew = ~exist(figdatfn,'file');
+if ~isnew && ~forcegen
     load(figdatfn);
 else
     if forcegen
@@ -32,15 +33,19 @@ else
     startprogbar(10,numel(heads),'calculating headings',true)
     if useinfomax        
         infomax_wts = [];
-        for i = 1:weight_update_count
+        for xi = 1:weight_update_count
             infomax_wts = infomax_train(size(snaps,3), reshape(snaps,[prod(newsz), size(snaps,3)]), infomax_wts);
         end
 
-        for i = 1:length(p.ys)
-            for j = 1:length(p.xs)
-                fr = loadim(i,j,zi);
+        for xi = 1:length(p.xs)
+            for yi = 1:length(p.ys)
+                fr = loadim(xi,yi,zi);
                 if ~isempty(fr)
-                    heads(i,j) = infomax_gethead(fr,[],infomax_wts);
+                    heads(yi,xi) = infomax_gethead(fr,[],infomax_wts);
+                    
+%                     if(isnan(heads(xi,yi)))
+%                         keyboard
+%                     end
                 end
                 
                 if progbar
