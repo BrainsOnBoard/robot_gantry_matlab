@@ -120,7 +120,7 @@ else
 %         ry = [ry; cy(:)];
 %     end
 
-    mindist = min(hypot(bsxfun(@minus, imxi(:)', snx * 1000/(p.imsep*p.areanscale), bsxfun(@minus, imyi(:)', pxsny * 1000/(p.imsep*p.areanscale)))));
+    mindist = min(hypot(bsxfun(@minus, imxi(:)', snx * 1000/(p.imsep*p.arenascale), bsxfun(@minus, imyi(:)', pxsny * 1000/(p.imsep*p.arenascale)))));
     errsel = mindist <= err_corridor;
     
     if ~exist(imdb_route_figdatdir,'dir')
