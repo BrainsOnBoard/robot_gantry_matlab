@@ -11,5 +11,5 @@ snfn = sprintf('snaps_%s_fov%03d_imw%03d',routefn,fov,res);
 load(fullfile(routes_fovsnapdir,snfn),'fovsnaps')
 
 load(fullfile(routes_routedir,sprintf('route_%s_%03d.mat',arenafn,routenum)),'p','clx','cly','whclick','ptr')
-clth = atan2(diff(clx),diff(cly));
+clth = atan2(diff(cly),diff(clx));
 clth(end+1) = clth(end);
