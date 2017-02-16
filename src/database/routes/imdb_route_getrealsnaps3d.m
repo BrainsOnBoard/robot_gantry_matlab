@@ -1,9 +1,9 @@
 function [fovsnaps,whclick,clx,cly,clth,p,ptr]=imdb_route_getrealsnaps3d(arenafn,routenum,res)
 % function [snaps,clickis,snx,sny,snth,pxsnx,pxsny,pxsnth,crop,p]=imdb_route_getsnaps3d(shortwhd,routenum,zht,res)
-clear
-arenafn = 'arena2_pile';
-routenum = 3;
-res = 90;
+% clear
+% arenafn = 'arena2_pile';
+% routenum = 3;
+% res = 90;
 fov = 360;
 
 routefn = sprintf('route_%s_%03d',matfileremext(arenafn),routenum);

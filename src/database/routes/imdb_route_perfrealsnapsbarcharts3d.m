@@ -8,11 +8,12 @@ shortwhd={
     };
 zht = 0:100:500;
 [stderrs,means] = deal(NaN(length(useinfomax),length(res),length(shortwhd),2,length(zht)));
+routenums = 3;
 
 for i = 1:length(useinfomax)
     for j = 1:length(res)
         for k = 1:length(shortwhd)
-            for routenum = 1:2
+            for routenum = routenums
                 for l = 1:length(zht)
 %                     imdb_route_getrealsnapserrs3d(shortwhd{i},'arena2_pile',routenum,cres,czht,useinfomax,false);
                     [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p] = imdb_route_getrealsnapserrs3d(shortwhd{k},'arena2_pile',routenum,res(j),zht(l),useinfomax(i),false);
