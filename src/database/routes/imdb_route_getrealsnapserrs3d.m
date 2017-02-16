@@ -16,6 +16,7 @@ else
 end
 figdatfn = fullfile(imdb_route_figdatdir,sprintf('imdb3d_route_geterrs_%s_%s_%03d_res%03d_z%d%s.mat',shortwhd,matfileremext(arenafn),routenum,res,zht,infomaxstr));
 
+fprintf('target file: %s\n',figdatfn);
 isnew = ~exist(figdatfn,'file');
 if ~isnew && ~forcegen
     load(figdatfn);
