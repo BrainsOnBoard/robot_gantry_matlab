@@ -2,7 +2,7 @@ function imdb_route_showrealsnapsquiver3d(douseinfomax)
 
 close all
 
-dosave = true;
+dosave = false;
 showfigs = true;
 newonly = false;
 forcegen = false;
@@ -11,7 +11,7 @@ shortwhd={
     'unwrap_imdb3d_2017-02-09_001'      % open, new boxes
     %'unwrap_imdb3d_2016-03-23_001', ... % open, empty
     };
-res = [360 180 90];
+res = [90 180 360];
 zht = 0:100:500;
 routenums = 3;
 
@@ -25,7 +25,7 @@ for useinfomax = douseinfomax
             for routenum = routenums
                 for czht = zht
                     [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew] = imdb_route_getrealsnapserrs3d(shortwhd{i},'arena2_pile',routenum,cres,czht,useinfomax,forcegen);
-                    
+
                     if ~showfigs || (newonly && ~isnew)
                         continue
                     end

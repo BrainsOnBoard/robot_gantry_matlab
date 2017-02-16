@@ -26,7 +26,7 @@ else
     
     weight_update_count = 30;
     
-%     function [snaps,whclick,clx,cly,clth,p,ptr]=imdb_route_getrealsnaps3d(arenafn,routenum)
+    %     function [snaps,whclick,clx,cly,clth,p,ptr]=imdb_route_getrealsnaps3d(arenafn,routenum)
     [snaps,clickis,snx,sny,snth]=imdb_route_getrealsnaps3d(arenafn,routenum,res);
     load(fullfile(whd,'im_params.mat'),'p')
     crop = load('gantry_cropparams.mat');
@@ -36,21 +36,21 @@ else
     
     newsz = [size(snaps,1),size(snaps,2)];
     startprogbar(10,numel(heads),'calculating headings',true)
-    if useinfomax        
+    if useinfomax
         infomax_wts = [];
         for xi = 1:weight_update_count
             infomax_wts = infomax_train(size(snaps,3), reshape(snaps,[prod(newsz), size(snaps,3)]), infomax_wts);
         end
-
+        
         for xi = 1:length(p.xs)
             for yi = 1:length(p.ys)
                 fr = loadim(xi,yi,zi);
                 if ~isempty(fr)
                     heads(yi,xi) = infomax_gethead(fr,[],infomax_wts);
                     
-%                     if(isnan(heads(xi,yi)))
-%                         keyboard
-%                     end
+                    %                     if(isnan(heads(xi,yi)))
+                    %                         keyboard
+                    %                     end
                 end
                 
                 if progbar
@@ -64,11 +64,11 @@ else
         whsn = NaN(size(heads));
         
         % select only the points on the route which were clicked on
-%         snaps = snaps(:,:,clickis);
-%         snx = snx(clickis);
-%         sny = sny(clickis);
-%         snth = atan2(diff(sny),diff(snx));
-%         snth(end+1) = snth(end);
+        %         snaps = snaps(:,:,clickis);
+        %         snx = snx(clickis);
+        %         sny = sny(clickis);
+        %         snth = atan2(diff(sny),diff(snx));
+        %         snth(end+1) = snth(end);
         
         for yi = 1:length(p.ys)
             for xi = 1:length(p.xs)
@@ -97,22 +97,26 @@ else
     end
     save(figdatfn,'imxi','imyi','heads','whsn','snx','sny','snth','p','weight_update_count','zht');
 end
-    
-    dx = bsxfun(@minus,imxi(:)',snx(:));
-    dy = bsxfun(@minus,imyi(:)',sny(:));
-    alldist = p.imsep * hypot(dy, dx);
-    [dist,nearest] = min(alldist);
-    
-    % calculate error on heading (0 to 90 deg)
-    snth = snth(:);
-    err = circ_dist(heads, snth(nearest));
-    err = abs(err);
-    err = min(pi/2,err) * 180/pi;
-    
-    err_corridor = 2;
 
-    mindist = min(hypot(bsxfun(@minus, imxi(:)', 1 + snx(:) * 1000/(p.imsep*20)), bsxfun(@minus, imyi(:)', 1 + sny(:) * 1000/(p.imsep*20))));
-    errsel = mindist <= err_corridor;
+snxi = 1+snx(:) * 1000/(p.imsep*20);
+snyi = 1+sny(:) * 1000/(p.imsep*20);
+
+dx = bsxfun(@minus,imxi(:)',snxi);
+dy = bsxfun(@minus,imyi(:)',snyi);
+alldist = p.imsep * hypot(dy, dx);
+[dist,nearest] = min(alldist);
+
+% calculate error on heading (0 to 90 deg)
+snth = snth(:);
+target_heads = snth(nearest);
+err = circ_dist(heads, target_heads);
+err = abs(err);
+err = min(pi/2,err) * 180/pi;
+
+err_corridor = 2;
+
+mindist = min(hypot(dx,dy));
+errsel = mindist <= err_corridor;
 
     function loadedim=loadim(x,y,z)
         loadedim = imdb_getim3d(whd,x,y,z,crop);
