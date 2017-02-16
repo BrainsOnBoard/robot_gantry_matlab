@@ -92,7 +92,10 @@ else
     
     [imyi,imxi] = ind2sub(size(valids),find(valids));
     
-    savemeta(figdatfn,'imxi','imyi','heads','whsn','dist','snx','sny','snth','p','weight_update_count','zht');
+    if ~exist(imdb_route_figdatdir,'dir')
+        mkdir(imdb_route_figdatdir);
+    end
+    save(figdatfn,'imxi','imyi','heads','whsn','snx','sny','snth','p','weight_update_count','zht');
 end
     
     dx = bsxfun(@minus,imxi(:)',snx(:));
