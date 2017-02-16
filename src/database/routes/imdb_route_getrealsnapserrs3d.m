@@ -3,6 +3,8 @@ if nargin < 5
     forcegen = false;
 end
 
+cd(fullfile(mfiledir,'..','..','..'))
+
 trainheight = 200;
 
 whd = fullfile(imdbdir,shortwhd);
@@ -90,6 +92,9 @@ else
     
     [imyi,imxi] = ind2sub(size(valids),find(valids));
     
+    savemeta(figdatfn,'imxi','imyi','heads','whsn','dist','snx','sny','snth','p','weight_update_count','zht');
+end
+    
     dx = bsxfun(@minus,imxi(:)',snx(:));
     dy = bsxfun(@minus,imyi(:)',sny(:));
     alldist = p.imsep * hypot(dy, dx);
@@ -102,32 +107,9 @@ else
     err = min(pi/2,err) * 180/pi;
     
     err_corridor = 2;
-%     interpsep = 0.1;
-    
-%     dx = diff(snx);
-%     dy = diff(sny);
-%     snh = hypot(dx,dy);
 
-%     rx = [];
-%     ry = [];
-%     for j = 1:length(snh)-1
-%         ch = 0:interpsep:snh(j);
-% 
-%         cx = snx(j) + ch * cos(snth(j));
-%         cy = sny(j) + ch * sin(snth(j));
-% 
-%         rx = [rx; cx(:)];
-%         ry = [ry; cy(:)];
-%     end
-
-    mindist = min(hypot(bsxfun(@minus, imxi(:)', snx * 1000/(p.imsep*p.arenascale), bsxfun(@minus, imyi(:)', pxsny * 1000/(p.imsep*p.arenascale)))));
+    mindist = min(hypot(bsxfun(@minus, imxi(:)', 1 + snx(:) * 1000/(p.imsep*20)), bsxfun(@minus, imyi(:)', 1 + sny(:) * 1000/(p.imsep*20))));
     errsel = mindist <= err_corridor;
-    
-    if ~exist(imdb_route_figdatdir,'dir')
-        mkdir(imdb_route_figdatdir);
-    end
-    save(figdatfn,'imxi','imyi','heads','whsn','err','nearest','dist','snx','sny','snth','err_corridor','errsel','p','weight_update_count','zht');
-end
 
     function loadedim=loadim(x,y,z)
         loadedim = imdb_getim3d(whd,x,y,z,crop);
