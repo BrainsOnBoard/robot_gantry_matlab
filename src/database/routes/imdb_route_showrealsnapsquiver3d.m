@@ -5,7 +5,7 @@ close all
 dosave = false;
 showfigs = true;
 newonly = false;
-forcegen = false;
+forcegen = true;
 
 shortwhd={
     'unwrap_imdb3d_2017-02-09_001'      % open, new boxes
@@ -25,7 +25,7 @@ for useinfomax = douseinfomax
             for routenum = routenums
                 for czht = zht
                     [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew] = imdb_route_getrealsnapserrs3d(shortwhd{i},'arena2_pile',routenum,cres,czht,useinfomax,forcegen);
-
+                    
                     if ~showfigs || (newonly && ~isnew)
                         continue
                     end

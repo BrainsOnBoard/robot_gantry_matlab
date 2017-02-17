@@ -1,4 +1,7 @@
-function imdb_route_perfrealsnapsbarcharts3d
+function imdb_route_perfrealsnapsbarcharts3d(dosave)
+if ~nargin
+    dosave = false;
+end
 
 useinfomax = [false true];
 res = [90 180 360];
@@ -52,27 +55,27 @@ for i = 1:length(zht)
     labels{5}{i} = num2str(zht(i));
 end
 
+cattitles = {'Both','Perfect memory','Infomax'};
+
 showstats(1)
 showstats(2)
 %showstats(3)
 %showstats(4)
 showstats(5)
 
-pm_title = 'Perfect memory only';
 pm_means = means(~useinfomax,:,:,:,:);
 pm_stds = means(~useinfomax,:,:,:,:);
-showstats(2,pm_means,pm_stds,pm_title)
-%showstats(3,pm_means,pm_stds,pm_title)
-%showstats(4,pm_means,pm_stds,pm_title)
-showstats(5,pm_means,pm_stds,pm_title)
+showstats(2,pm_means,pm_stds,2)
+%showstats(3,pm_means,pm_stds,2)
+%showstats(4,pm_means,pm_stds,2)
+showstats(5,pm_means,pm_stds,2)
 
-inf_title = 'Infomax only';
 inf_means = means(useinfomax,:,:,:,:);
 inf_stds = stderrs(useinfomax,:,:,:,:);
-showstats(2,inf_means,inf_stds,inf_title)
-%showstats(3,inf_means,inf_stds,inf_title)
-%showstats(4,inf_means,inf_stds,inf_title)
-showstats(5,inf_means,inf_stds,inf_title)
+showstats(2,inf_means,inf_stds,3)
+%showstats(3,inf_means,inf_stds,3)
+%showstats(4,inf_means,inf_stds,3)
+showstats(5,inf_means,inf_stds,3)
 
 % for i = 1:length(labels)
 %     fprintf('%s ONLY\n', upper(labels{i}))
@@ -82,22 +85,25 @@ showstats(5,inf_means,inf_stds,inf_title)
 %     showstats('res', res, cmeans, cstds, 2);
 % end
 
-    function showstats(dim,cmeans,cstds,ctitle)
+    function showstats(dim,cmeans,cstderrs,whcat)
+        if nargin < 4
+            whcat = 1;
+        end
         if nargin < 2
             cmeans = means;
-            cstds = stderrs;
+            cstderrs = stderrs;
         end
         
-        avdims = 1:ndims(cmeans);
-        avdims = avdims(avdims ~= dim);
-        for avdimsi = 1:length(avdims)
-            cmeans = mean(cmeans,avdims(avdimsi));
-            cstds = mean(cstds,avdims(avdimsi));
-        end
-        cmeans = shiftdim(cmeans);
-        cstds = shiftdim(cstds);
+        cmeans = shiftdim(cmeans,dim-1);
+        cstderrs = shiftdim(cstderrs,dim-1);
+        cmeans = mean(cmeans(:,:),2);
+        cstderrs = mean(cstderrs(:,:),2);
         
-        figure
+        if dosave
+            figure(1);clf
+        else
+            figure
+        end
         barerr(cmeans,[])
         
         ylabel('Error')
@@ -106,10 +112,12 @@ showstats(5,inf_means,inf_stds,inf_title)
         set(gca,'XTick',1:length(cmeans),'XTickLabel',labels{dim})
         xlabel(titles{dim})
         
-        if nargin >=4
-            title(ctitle)
-        end
+        title(cattitles{whcat})
         
         gantry_setfigfont
+        
+        if dosave
+            gantry_savefig(sprintf('%s_%s',cattitles{whcat},titles{dim}),[20 10]);
+        end
     end
 end
