@@ -1,0 +1,6 @@
+
+*	text=auto	eol=LF
+
+*.m	text
+*.mat	binary
+
