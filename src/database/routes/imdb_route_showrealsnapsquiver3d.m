@@ -5,7 +5,7 @@ close all
 dosave = false;
 showfigs = true;
 newonly = false;
-forcegen = true;
+forcegen = false;
 
 shortwhd={
     'unwrap_imdb3d_2017-02-09_001'      % open, new boxes

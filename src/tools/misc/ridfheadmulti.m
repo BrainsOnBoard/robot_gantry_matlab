@@ -1,13 +1,10 @@
-function [head,minval,whsn,diffs] = ridfheadmulti(im,imref,snapweighting,angleunit,nth,snths)
-% function [head,minval,whsn,diffs] = ridfheadmulti(im,imref,snapweighting,angleunit,nth,snths)
+function [head,minval,whsn,diffs] = ridfheadmulti(im,imref,snapweighting,angleunit,nth,snths,getallwhsn)
+% function [head,minval,whsn,diffs] = ridfheadmulti(im,imref,snapweighting,angleunit,nth,snths,getallwhsn)
+% TODO: make getallwhsn parameter also apply for weighting schemes other than WTA
 
-% weightings: 'wta', 'norm', {'norm', num},
-
-% if nargin < 7
-%     fov = 360;
-% end
-% fovpx = round(size(im,2)*fov/360);
-
+if nargin < 7
+    getallwhsn = false;
+end
 if nargin < 6 || isempty(snths)
     snths = zeros(1,size(imref,3));
 else
@@ -20,7 +17,7 @@ if nargin < 4 || isempty(angleunit)
     angleunit = 2*pi;
 end
 if nargin < 3 || isempty(snapweighting)
-    sweightstr = 'wta';
+    sweightstr = 'wta'; % default is winner-takes-all
 elseif iscell(snapweighting)
     sweightstr = snapweighting{1};
     sweightparam = snapweighting{2};
@@ -40,16 +37,21 @@ for i = 1:nth
     diffs(i,:) = shiftdim(sumabsdiff(cshiftcut(im,size(imref,2),rots(i)),imref),1);
 end
 
-[minvalall,I] = min(diffs);
-if strcmpi(sweightstr,'wta')
-    [minval,whsn] = min(minvalall);
-    head = angleunit*(snths(whsn)/(2*pi)+(I(whsn)-1)/nth);
+[minvalall,I] = min(diffs); % find minimum for each RIDF
+
+if strcmpi(sweightstr,'wta') % winner take all weighting
+    if getallwhsn
+        [minval,whsn] = sort(minvalall);
+    else
+        [minval,whsn] = min(minvalall);
+    end
+    head = angleunit*(snths(whsn(1))/(2*pi)+(I(whsn(1))-1)/nth);
 else
     switch sweightstr
-        case 'equal'
+        case 'equal' % weight all snapshots equally
             wt = ones(1,size(imref,3));
             whsn = 1:size(imref,3);
-        case 'norm'
+        case 'norm' % normalised weights
             if isempty(sweightparam)
                 wt = min(minvalall)./minvalall;
                 whsn = 1:size(imref,3);
@@ -58,7 +60,7 @@ else
                 whsn = whsn(1:sweightparam);
                 wt = min(minvalall)./smin(1:sweightparam);
             end
-        case ''
+        case '' % fixed weights
             whsn = 1:length(wt);
     end
     mhead = circ_mean(snths(whsn)+(I(whsn)-1)*2*pi/nth,wt,2);

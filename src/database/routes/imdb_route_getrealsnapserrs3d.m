@@ -1,7 +1,9 @@
-function [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew]=imdb_route_getrealsnapserrs3d(shortwhd,arenafn,routenum,res,zht,useinfomax,forcegen)
+function [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew,allwhsn]=imdb_route_getrealsnapserrs3d(shortwhd,arenafn,routenum,res,zht,useinfomax,forcegen)
 if nargin < 5
     forcegen = false;
 end
+
+getallwhsn = true;
 
 cd(fullfile(mfiledir,'..','..','..'))
 
@@ -21,8 +23,8 @@ isnew = ~exist(figdatfn,'file');
 if ~isnew && ~forcegen
     load(figdatfn);
 else
-    if forcegen
-        warning('generating fig data even if it already exists')
+    if forcegen && ~isnew
+        warning('generating fig data even though it already exists')
     end
     
     weight_update_count = 30;
@@ -61,8 +63,9 @@ else
         end
         
         whsn = [];
+        allwhsn = [];
     else
-        whsn = NaN(size(heads));
+        allwhsn = NaN([size(heads),size(snaps,3)]);
         
         % select only the points on the route which were clicked on
         %         snaps = snaps(:,:,clickis);
@@ -75,7 +78,9 @@ else
             for xi = 1:length(p.xs)
                 fr = loadim(xi,yi,zi);
                 if ~isempty(fr)
-                    [heads(yi,xi),~,whsn(yi,xi)] = ridfheadmulti(fr,snaps,'wta',[],360);
+                    % function [head,minval,whsn,diffs] = ridfheadmulti(im,imref,snapweighting,angleunit,nth,snths,getallwhsn)
+                    [heads(yi,xi),~,cwhsn] = ridfheadmulti(fr,snaps,'wta',[],360,[],getallwhsn);
+                    allwhsn(yi,xi,:) = shiftdim(cwhsn,-2);
                 end
                 
                 if progbar
@@ -87,8 +92,14 @@ else
     
     valids = ~isnan(heads);
     heads = heads(valids);
-    if ~isempty(whsn)
-        whsn = whsn(valids);
+    if ~isempty(allwhsn)
+        newallwhsn = NaN(sum(valids(:)),size(allwhsn,3));
+        for i = 1:size(allwhsn,3)
+            callwhsn = allwhsn(:,:,i);
+            newallwhsn(:,i) = callwhsn(valids);
+        end
+        allwhsn = newallwhsn;
+        whsn = allwhsn(:,1);
     end
     
     [imyi,imxi] = ind2sub(size(valids),find(valids));
@@ -96,7 +107,7 @@ else
     if ~exist(imdb_route_figdatdir,'dir')
         mkdir(imdb_route_figdatdir);
     end
-    save(figdatfn,'imxi','imyi','heads','whsn','snx','sny','snth','p','weight_update_count','zht');
+    save(figdatfn,'imxi','imyi','heads','allwhsn','whsn','snx','sny','snth','p','weight_update_count','zht');
 end
 
 snxi = 1+snx(:) * 1000/(p.imsep*20);
