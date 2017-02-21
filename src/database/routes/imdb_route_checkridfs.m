@@ -57,28 +57,31 @@ while true
     end
     
     figure(2);clf
-    subplot(4,1,4)
+    alsubplot(4,2,4,[1 2])
     hold on
     callwhsn = allwhsn(imyi==y & imxi==x, :);
     bm = callwhsn(1:3);
     near = nearim(y,x);
     title(sprintf('(%g, %g), s(%g, %g) [nearest: %d (r%d)]', p.xs(x), p.ys(y), p.imsep*(snxi(near)-1), p.imsep*(snyi(near)-1), near, find(callwhsn==near)))
-    toplot = [bm, near];
-    plot(0:359, shiftdim(maxval \ ridfs(y,x,:,toplot)));
-    legend(num2str(toplot(:)))
+    ridfind = [bm, near];
+    cridfs = shiftdim(maxval \ ridfs(y,x,:,ridfind));
+    plot(0:359, cridfs);
+    legend(num2str(ridfind(:)))
     xlim([0 359])
 %     ylim([0 1])
 
-    subplot(4,1,1)
-    im = imdb_getim3d(whd,x,y,z,crop);
-    imshow(imresize(im,imsz))
+    [~,minima] = min(cridfs(:,[1 end]));
+
+    alsubplot(1,[1 2])
+    im = imdb_getim3d(whd,x,y,z);
+    imshow(im)
     title('image')
     
-    subplot(4,1,2)
-    imshow(snaps(:,:,near));
+    alsubplot(2,1)
+    imshow(circshift(snaps(:,:,near),minima(1),2));
     title('nearest')
     
-    subplot(4,1,3)
-    imshow(snaps(:,:,bm(1)));
+    alsubplot(3,1)
+    imshow(circshift(snaps(:,:,bm(1)),minima(2),2));
     title('best matching')
 end

@@ -2,7 +2,7 @@ function fr=imdb_getim3d(whd,x,y,z,crop)
 try
     if isempty(z)
         load(fullfile(whd,sprintf('im_%03d_%03d.mat',y,x)))
-        if nargin >= 4
+        if nargin >= 4 && ~isempty(crop)
             fr = fr(crop.y1:crop.y2,:);
         end
     else
