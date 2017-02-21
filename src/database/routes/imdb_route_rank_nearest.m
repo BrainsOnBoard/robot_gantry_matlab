@@ -19,6 +19,4 @@ for czht = zht
     end
     plot(ranks)
     xlim([1 length(nearest)])
-    
-    return
 end
