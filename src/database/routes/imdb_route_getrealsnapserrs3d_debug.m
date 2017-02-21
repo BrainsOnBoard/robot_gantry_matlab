@@ -1,4 +1,4 @@
-function [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew,allwhsn]=imdb_route_getrealsnapserrs3d_debug(shortwhd,arenafn,routenum,res,zht,useinfomax,forcegen)
+function [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,fileexists,allwhsn,ridfs]=imdb_route_getrealsnapserrs3d_debug(shortwhd,arenafn,routenum,res,zht,useinfomax,forcegen)
 if nargin < 5
     forcegen = false;
 end
@@ -19,11 +19,11 @@ end
 figdatfn = fullfile(imdb_route_figdatdir,sprintf('imdb3d_route_geterrs_%s_%s_%03d_res%03d_z%d%s.mat',shortwhd,matfileremext(arenafn),routenum,res,zht,infomaxstr));
 
 fprintf('target file: %s\n',figdatfn);
-isnew = ~exist(figdatfn,'file');
-if ~isnew && ~forcegen
+fileexists = varsinmatfile(figdatfn,'ridfs');
+if fileexists && ~forcegen
     load(figdatfn);
 else
-    if forcegen && ~isnew
+    if forcegen && fileexists
         warning('generating fig data even though it already exists')
     end
     
@@ -74,13 +74,15 @@ else
         %         snth = atan2(diff(sny),diff(snx));
         %         snth(end+1) = snth(end);
         
+        ridfs = NaN(length(p.ys),length(p.xs),360,size(snaps,3));
         for yi = 1:length(p.ys)
             for xi = 1:length(p.xs)
                 fr = loadim(xi,yi,zi);
                 if ~isempty(fr)
                     % function [head,minval,whsn,diffs] = ridfheadmulti(im,imref,snapweighting,angleunit,nth,snths,getallwhsn)
-                    [heads(yi,xi),~,cwhsn] = ridfheadmulti(fr,snaps,'wta',[],360,[],getallwhsn);
+                    [heads(yi,xi),~,cwhsn,cridfs] = ridfheadmulti(fr,snaps,'wta',[],360,[],getallwhsn);
                     allwhsn(yi,xi,:) = shiftdim(cwhsn,-2);
+                    ridfs(yi,xi,:,:) = shiftdim(cridfs,-2);
                 end
                 
                 if progbar
@@ -107,7 +109,7 @@ else
     if ~exist(imdb_route_figdatdir,'dir')
         mkdir(imdb_route_figdatdir);
     end
-    save(figdatfn,'imxi','imyi','heads','allwhsn','whsn','snx','sny','snth','p','weight_update_count','zht');
+    save(figdatfn,'imxi','imyi','heads','allwhsn','whsn','snx','sny','snth','p','ridfs','weight_update_count','zht');
 end
 
 snxi = 1+snx(:) * 1000/(p.imsep*20);

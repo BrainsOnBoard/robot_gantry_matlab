@@ -1,7 +1,5 @@
-% function imdb_route_checkaliasing(dosave)
-% if ~nargin
-%     dosave = false;
-% end
+
+clear
 
 forcegen = false;
 
@@ -20,9 +18,3 @@ imagesc(p.xs,p.ys,whsnim)
 axis equal
 colormap hot
 colorbar
-
-return
-
-if dosave
-    gantry_savefig('pm_inf_height',[20 10]);
-end

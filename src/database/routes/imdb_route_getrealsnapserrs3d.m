@@ -20,6 +20,7 @@ figdatfn = fullfile(imdb_route_figdatdir,sprintf('imdb3d_route_geterrs_%s_%s_%03
 
 fprintf('target file: %s\n',figdatfn);
 isnew = ~exist(figdatfn,'file');
+ridfs = []; % kludge to stop matlab complaining about static workspace
 if ~isnew && ~forcegen
     load(figdatfn);
 else
@@ -32,6 +33,10 @@ else
     %     function [snaps,whclick,clx,cly,clth,p,ptr]=imdb_route_getrealsnaps3d(arenafn,routenum)
     [snaps,clickis,snx,sny,snth]=imdb_route_getrealsnaps3d(arenafn,routenum,res);
     load(fullfile(whd,'im_params.mat'),'p')
+    if ~any(zht == p.zs)
+        error('invalid height: %f',zht);
+    end
+    
     crop = load('gantry_cropparams.mat');
     zi = find(p.zs==zht);
     
