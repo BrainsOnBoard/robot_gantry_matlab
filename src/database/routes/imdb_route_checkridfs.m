@@ -70,18 +70,32 @@ while true
     xlim([0 359])
 %     ylim([0 1])
 
-    [~,minima] = min(cridfs(:,[1 end]));
+    [minvals,minima] = min(cridfs(:,[1 end]));
 
     alsubplot(1,[1 2])
-    im = imdb_getim3d(whd,x,y,z);
+    im = imresize(imdb_getim3d(whd,x,y,z),imsz);
     imshow(im)
     title('image')
     
     alsubplot(2,1)
-    imshow(circshift(snaps(:,:,near),minima(1),2));
+    rsnap_near = circshift(snaps(:,:,near),minima(1),2);
+    imshow(rsnap_near);
     title('nearest')
     
+    alsubplot(2,2)
+    imagesc(im - rsnap_near)
+    axis off
+    title(sprintf('diff: %g',minvals(1)));
+    
     alsubplot(3,1)
-    imshow(circshift(snaps(:,:,bm(1)),minima(2),2));
+    rsnap_bm = circshift(snaps(:,:,bm(1)),minima(2),2);
+    imshow(rsnap_bm);
     title('best matching')
+    
+    alsubplot(3,2)
+    imagesc(im - rsnap_bm)
+    axis off
+    title(sprintf('diff: %g',minvals(2)));
+    
+    colormap hot
 end
