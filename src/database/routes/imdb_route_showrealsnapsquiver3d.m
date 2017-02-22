@@ -1,4 +1,4 @@
-function imdb_route_showrealsnapsquiver3d(douseinfomax)
+function imdb_route_showrealsnapsquiver3d(douseinfomax,dohisteq)
 
 close all
 
@@ -15,7 +15,10 @@ res = [90 180 360];
 zht = 0:100:500;
 routenums = 3;
 
-if ~nargin
+if nargin < 2
+    dohisteq = true;
+end
+if nargin < 1
     douseinfomax = [false true];
 end
 
@@ -24,7 +27,7 @@ for useinfomax = douseinfomax
         for i = 1:length(shortwhd)
             for routenum = routenums
                 for czht = zht
-                    [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew] = imdb_route_getrealsnapserrs3d(shortwhd{i},'arena2_pile',routenum,cres,czht,useinfomax,forcegen);
+                    [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew] = imdb_route_getrealsnapserrs3d(shortwhd{i},'arena2_pile',routenum,cres,czht,useinfomax,dohisteq,forcegen);
                     
                     if ~showfigs || (newonly && ~isnew)
                         continue
@@ -57,12 +60,17 @@ for useinfomax = douseinfomax
                     gantry_setfigfont
                     
                     if dosave
-                        if useinfomax
-                            infomaxstr = 'infomax';
+                        if dohisteq
+                            histeqstr = 'histeq_';
                         else
-                            infomaxstr = 'pm';
+                            histeqstr = '';
                         end
-                        gantry_savefig(sprintf('%s_%s_route%d_res%03d_z%d_ridf_quiver%s',infomaxstr,flabel,routenum,cres,czht),[10 10]);
+                        if useinfomax
+                            algorithmstr = 'infomax';
+                        else
+                            algorithmstr = 'pm';
+                        end
+                        gantry_savefig(sprintf('%s%s_route%d_res%03d_z%d_ridf_quiver%s',histeqstr,algorithmstr,flabel,routenum,cres,czht),[10 10]);
                     else
                         try
                             ginput(1);

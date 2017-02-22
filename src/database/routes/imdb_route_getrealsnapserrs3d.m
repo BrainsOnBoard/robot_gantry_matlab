@@ -1,6 +1,9 @@
-function [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew,allwhsn]=imdb_route_getrealsnapserrs3d(shortwhd,arenafn,routenum,res,zht,useinfomax,forcegen)
-if nargin < 5
+function [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew,allwhsn]=imdb_route_getrealsnapserrs3d(shortwhd,arenafn,routenum,res,zht,useinfomax,dohisteq,forcegen)
+if nargin < 6
     forcegen = false;
+end
+if nargin < 5
+    dohisteq = false;
 end
 
 getallwhsn = true;
@@ -9,6 +12,12 @@ cd(fullfile(mfiledir,'..','..','..'))
 
 trainheight = 200;
 
+if dohisteq
+    histeqstr = 'histeq_';
+    shortwhd = [histeqstr, shortwhd];
+else
+    histeqstr = '';
+end
 whd = fullfile(imdbdir,shortwhd);
 
 if useinfomax
@@ -31,13 +40,12 @@ else
     weight_update_count = 30;
     
     %     function [snaps,whclick,clx,cly,clth,p,ptr]=imdb_route_getrealsnaps3d(arenafn,routenum)
-    [snaps,clickis,snx,sny,snth]=imdb_route_getrealsnaps3d(arenafn,routenum,res);
+    [snaps,clickis,snx,sny,snth]=imdb_route_getrealsnaps3d(arenafn,routenum,res,dohisteq);
     load(fullfile(whd,'im_params.mat'),'p')
     if ~any(zht == p.zs)
         error('invalid height: %f',zht);
     end
     
-    crop = load('gantry_cropparams.mat');
     zi = find(p.zs==zht);
     
     heads = NaN(length(p.ys),length(p.xs));
@@ -136,7 +144,7 @@ mindist = min(hypot(dx,dy));
 errsel = mindist <= err_corridor;
 
     function loadedim=loadim(x,y,z)
-        loadedim = imdb_getim3d(whd,x,y,z,crop);
+        loadedim = imdb_getim3d(whd,x,y,z,[]);
         if ~isempty(loadedim)
             loadedim = imresize(loadedim,newsz,'bilinear');
         end
