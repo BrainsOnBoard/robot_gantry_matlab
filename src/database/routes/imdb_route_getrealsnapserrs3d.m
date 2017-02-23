@@ -144,7 +144,7 @@ mindist = min(hypot(dx,dy));
 errsel = mindist <= err_corridor;
 
     function loadedim=loadim(x,y,z)
-        loadedim = imdb_getim3d(whd,x,y,z,[]);
+        loadedim = im2double(imdb_getim3d(whd,x,y,z,[]));
         if ~isempty(loadedim)
             loadedim = imresize(loadedim,newsz,'bilinear');
         end
