@@ -1,9 +1,16 @@
-function imdb_route_showrealsnapsquiver3d(douseinfomax,dohisteq)
+function imdb_route_showrealsnapsquiver3d(dosave,douseinfomax,dohisteq)
+if nargin < 1
+    dosave = false;
+end
+if nargin < 2
+    douseinfomax = [false true];
+end
+if nargin < 3
+    dohisteq = true;
+end
 
 close all
 
-dosave = false;
-showfigs = true;
 newonly = false;
 forcegen = false;
 
@@ -15,13 +22,6 @@ res = [90 180 360];
 zht = 0:100:500;
 routenums = 3;
 
-if nargin < 2
-    dohisteq = true;
-end
-if nargin < 1
-    douseinfomax = [false true];
-end
-
 for useinfomax = douseinfomax
     for cres = res
         for i = 1:length(shortwhd)
@@ -29,7 +29,7 @@ for useinfomax = douseinfomax
                 for czht = zht
                     [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew] = imdb_route_getrealsnapserrs3d(shortwhd{i},'arena2_pile',routenum,cres,czht,useinfomax,dohisteq,forcegen);
                     
-                    if ~showfigs || (newonly && ~isnew)
+                    if newonly && ~isnew
                         continue
                     end
                     
@@ -70,7 +70,7 @@ for useinfomax = douseinfomax
                         else
                             algorithmstr = 'pm';
                         end
-                        gantry_savefig(sprintf('%s%s_route%d_res%03d_z%d_ridf_quiver%s',histeqstr,algorithmstr,flabel,routenum,cres,czht),[10 10]);
+                        gantry_savefig(sprintf('%s%s_%s_route%d_res%03d_z%d_ridf_quiver%s',histeqstr,algorithmstr,flabel,routenum,cres,czht),[10 10]);
                     else
                         try
                             ginput(1);
