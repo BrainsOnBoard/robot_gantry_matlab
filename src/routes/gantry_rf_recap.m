@@ -13,13 +13,19 @@ pr.dummy = false;
 pr.fov = 360;
 pr.res = 90;
 pr.turnmax = 90;
+pr.dohisteq = true;
 
 turnmaxrad = pr.turnmax*pi/180;
 
 pr.maxlen = 2; % times the length of the route
 
 routefn = sprintf('route_%s_%03d',matfileremext(arenafn),routenum);
-snfn = sprintf('snaps_%s_fov%03d_imw%03d',routefn,pr.fov,pr.res);
+if pr.dohisteq
+    histeqstr = 'histeq_';
+else
+    histeqstr = '';
+end
+snfn = sprintf('%ssnaps_%s_fov%03d_imw%03d',histeqstr,routefn,pr.fov,pr.res);
 load(fullfile(routes_routedir,routefn),'p','clx','cly','cli','rclx','rcly','ptr');
 pr.routedat_p = p;
 
@@ -151,7 +157,11 @@ for i = sttrial:pr.ntrialsperroute
         for k = 1:pr.maxnsteps(j)
             fprintf('\nstep %d (%d max) (offset %d/%d) (height %g)\n',k,pr.maxnsteps(j),j,noffs,d.curz)
             
-            d.curfr = im2double(gantry_processim(g.getRawFrame,pr.unwrapparams,pr.crop));
+            fr = gantry_processim(g.getRawFrame,pr.unwrapparams,pr.crop);
+            if pr.dohisteq
+                fr = histeq(fr);
+            end
+            d.curfr = im2double(fr);
             if isinfomax
                 [d.head,d.minval,d.ridfs] = infomax_gethead(d.curfr,imsz,W,[],pr.nth,pr.fov);
                 d.whsn = [];
