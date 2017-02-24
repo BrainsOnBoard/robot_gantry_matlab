@@ -2,9 +2,9 @@ clear
 
 fov = 360;
 arenafn = 'arena2_pile';
-routenum = 1;
+routenum = 3;
 
-imw = [90, 180, 360, 720];
+imw = [90, 180, 360];
 
 snaps = cell(1,length(imw));
 for i = 1:length(imw)
