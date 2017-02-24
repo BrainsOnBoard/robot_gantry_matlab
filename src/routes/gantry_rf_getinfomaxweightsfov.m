@@ -1,6 +1,6 @@
 function gantry_rf_getinfomaxweightsfov(imw,dohisteq)
 if nargin < 2
-    dohisteq = false;
+    dohisteq = true;
 end
 if nargin < 1
     imw = 90;

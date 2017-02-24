@@ -44,8 +44,12 @@ while true
         W = infomax_learn2(W',D,[],mu);
         break;
     catch ex
-        keyboard
-        mu = mu*0.99;
+        if strcmp(ex.identifier,'LearningRule:WeightBlowUpError')
+            mu = mu*0.99;
+            warning('weights blew up; reducing learning rate to %g',mu)
+        else
+            rethrow(ex);
+        end
     end
 end
 clear D
@@ -88,7 +92,8 @@ for i=1:P
     if any(any(isnan(weights)))
         str='Weights blew up';
         id='LearningRule:WeightBlowUpError';
-        %         fd_error(str, id);
+%         fd_error(str, id);
+        error(id, str);
     end
 end
 %
