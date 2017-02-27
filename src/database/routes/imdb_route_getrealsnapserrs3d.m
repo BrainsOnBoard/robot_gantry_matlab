@@ -1,9 +1,13 @@
-function [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew,allwhsn]=imdb_route_getrealsnapserrs3d(shortwhd,arenafn,routenum,res,zht,useinfomax,dohisteq,forcegen)
+function [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew,allwhsn]=imdb_route_getrealsnapserrs3d(shortwhd,arenafn,routenum,res,zht,useinfomax,improc,forcegen)
 if nargin < 6
     forcegen = false;
 end
 if nargin < 5
-    dohisteq = false;
+    improc = 'histeq';
+end
+
+if length(improc) > 1
+    shortwhd = [improc, '_', shortwhd];
 end
 
 getallwhsn = true;
@@ -12,12 +16,6 @@ cd(fullfile(mfiledir,'..','..','..'))
 
 trainheight = 200;
 
-if dohisteq
-    histeqstr = 'histeq_';
-    shortwhd = [histeqstr, shortwhd];
-else
-    histeqstr = '';
-end
 whd = fullfile(imdbdir,shortwhd);
 
 if useinfomax
@@ -40,7 +38,7 @@ else
     weight_update_count = 30;
     
     %     function [snaps,whclick,clx,cly,clth,p,ptr]=imdb_route_getrealsnaps3d(arenafn,routenum)
-    [snaps,clickis,snx,sny,snth]=imdb_route_getrealsnaps3d(arenafn,routenum,res,dohisteq);
+    [snaps,clickis,snx,sny,snth]=imdb_route_getrealsnaps3d(arenafn,routenum,res,improc);
     load(fullfile(whd,'im_params.mat'),'p')
     if ~any(zht == p.zs)
         error('invalid height: %f',zht);
@@ -63,10 +61,6 @@ else
                 fr = loadim(xi,yi,zi);
                 if ~isempty(fr)
                     heads(yi,xi) = infomax_gethead(fr,[],infomax_wts);
-                    
-                    %                     if(isnan(heads(xi,yi)))
-                    %                         keyboard
-                    %                     end
                 end
                 
                 if progbar
@@ -79,13 +73,6 @@ else
         allwhsn = [];
     else
         allwhsn = NaN([size(heads),size(snaps,3)]);
-        
-        % select only the points on the route which were clicked on
-        %         snaps = snaps(:,:,clickis);
-        %         snx = snx(clickis);
-        %         sny = sny(clickis);
-        %         snth = atan2(diff(sny),diff(snx));
-        %         snth(end+1) = snth(end);
         
         for yi = 1:length(p.ys)
             for xi = 1:length(p.xs)

@@ -1,4 +1,4 @@
-function imdb_route_showrealsnapsquiver3d(dosave,douseinfomax,dohisteq)
+function imdb_route_showrealsnapsquiver3d(dosave,douseinfomax,improc)
 if nargin < 1
     dosave = false;
 end
@@ -6,13 +6,13 @@ if nargin < 2
     douseinfomax = [false true];
 end
 if nargin < 3
-    dohisteq = true;
+    improc = 'histeq';
 end
 
 close all
 
 newonly = false;
-forcegen = false;
+forcegen = true;
 
 shortwhd={
     'unwrap_imdb3d_2017-02-09_001'      % open, new boxes
@@ -27,7 +27,7 @@ for useinfomax = douseinfomax
         for i = 1:length(shortwhd)
             for routenum = routenums
                 for czht = zht
-                    [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew] = imdb_route_getrealsnapserrs3d(shortwhd{i},'arena2_pile',routenum,cres,czht,useinfomax,dohisteq,forcegen);
+                    [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew] = imdb_route_getrealsnapserrs3d(shortwhd{i},'arena2_pile',routenum,cres,czht,useinfomax,improc,forcegen);
                     
                     if newonly && ~isnew
                         continue
