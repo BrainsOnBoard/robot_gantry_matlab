@@ -6,10 +6,6 @@ if nargin < 5
     improc = 'histeq';
 end
 
-if length(improc) > 1
-    shortwhd = [improc, '_', shortwhd];
-end
-
 getallwhsn = true;
 
 cd(fullfile(mfiledir,'..','..','..'))
@@ -34,11 +30,13 @@ else
     if forcegen && ~isnew
         warning('generating fig data even though it already exists')
     end
+   
+    imfun = gantry_getimfun(improc);
     
     weight_update_count = 30;
     
     %     function [snaps,whclick,clx,cly,clth,p,ptr]=imdb_route_getrealsnaps3d(arenafn,routenum)
-    [snaps,clickis,snx,sny,snth]=imdb_route_getrealsnaps3d(arenafn,routenum,res,improc);
+    [snaps,clickis,snx,sny,snth]=imdb_route_getrealsnaps3d(arenafn,routenum,res,imfun);
     load(fullfile(whd,'im_params.mat'),'p')
     if ~any(zht == p.zs)
         error('invalid height: %f',zht);
@@ -131,9 +129,9 @@ mindist = min(hypot(dx,dy));
 errsel = mindist <= err_corridor;
 
     function loadedim=loadim(x,y,z)
-        loadedim = im2double(imdb_getim3d(whd,x,y,z,[]));
+        loadedim = imdb_getim3d(whd,x,y,z,[]);
         if ~isempty(loadedim)
-            loadedim = imresize(loadedim,newsz,'bilinear');
+            loadedim = im2double(imfun(imresize(loadedim,newsz,'bilinear')));
         end
     end
 end
