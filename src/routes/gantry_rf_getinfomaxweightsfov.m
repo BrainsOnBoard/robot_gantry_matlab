@@ -42,11 +42,11 @@ for cimw = imw(:)'
             
             disp('Training network...')
             tic
-            W=infomax_train(size(D,1),D);
+            [W,learning_rate]=infomax_train(size(D,1),D);
             traint=toc;
             fprintf('%gs taken to train network\n',traint)
             
-            savemeta(outfn,'W','imsz','traint');
+            savemeta(outfn,'W','learning_rate','imsz','traint');
         end
     end
 end

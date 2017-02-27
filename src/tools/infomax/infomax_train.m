@@ -1,4 +1,4 @@
-function [W]=infomax_train(nhid,D,W)
+function [W,mu]=infomax_train(nhid,D,W)
 % function [W]=infomax_train(nhid,D,W)
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
