@@ -1,10 +1,12 @@
-function imdb_route_perfrealsnapsbarcharts3d(dosave)
-if ~nargin
+function imdb_route_perfrealsnapsbarcharts3d(dosave,improc)
+if nargin < 2
+    improc = '';
+end
+if nargin < 1
     dosave = false;
 end
 
 useinfomax = [false true];
-dohisteq = true;
 res = [90 180 360];
 shortwhd={
     'unwrap_imdb3d_2017-02-09_001'      % open, new boxes
@@ -21,7 +23,7 @@ for i = 1:length(useinfomax)
             for l = 1:length(routenums)
                 for m = 1:length(zht)
 %                     imdb_route_getrealsnapserrs3d(shortwhd{i},'arena2_pile',routenum,cres,czht,useinfomax,false);
-                    [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew] = imdb_route_getrealsnapserrs3d(shortwhd{k},'arena2_pile',routenums(l),res(j),zht(m),useinfomax(i),dohisteq,false);
+                    [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew] = imdb_route_getrealsnapserrs3d(shortwhd{k},'arena2_pile',routenums(l),res(j),zht(m),useinfomax(i),improc,false);
                     
                     means(i,j,k,l,m) = mean(err(errsel));
                     stderrs(i,j,k,l,m) = stderr(err(errsel));
@@ -57,10 +59,10 @@ for i = 1:length(zht)
 end
 
 cattitles = {'Both','Perfect memory','Infomax'};
-if dohisteq
-    histeqstr = 'histeq_';
+if isempty(improc)
+    improcstr = '';
 else
-    histeqstr = '';
+    improcstr = [improc,'_'];
 end
 
 showstats(1)
@@ -123,7 +125,7 @@ showstats(5,inf_means,inf_stds,3)
         gantry_setfigfont
         
         if dosave
-            gantry_savefig(sprintf('%s%s_%s',histeqstr,cattitles{whcat},titles{dim}),[20 10]);
+            gantry_savefig(sprintf('%s%s_%s',improcstr,cattitles{whcat},titles{dim}),[20 10]);
         end
     end
 end
