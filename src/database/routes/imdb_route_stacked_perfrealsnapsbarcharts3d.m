@@ -1,5 +1,8 @@
-function imdb_route_stacked_perfrealsnapsbarcharts3d(dosave)
-if ~nargin
+function imdb_route_stacked_perfrealsnapsbarcharts3d(dosave,improc)
+if nargin < 2
+    improc = '';
+end
+if nargin < 1
     dosave = false;
 end
 
@@ -20,7 +23,7 @@ for i = 1:length(useinfomax)
             for l = 1:length(routenums)
                 for m = 1:length(zht)
 %                     imdb_route_getrealsnapserrs3d(shortwhd{i},'arena2_pile',routenum,cres,czht,useinfomax,false);
-                    [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew] = imdb_route_getrealsnapserrs3d(shortwhd{k},'arena2_pile',routenums(l),res(j),zht(m),useinfomax(i),false);
+                    [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew] = imdb_route_getrealsnapserrs3d(shortwhd{k},'arena2_pile',routenums(l),res(j),zht(m),useinfomax(i),improc,false);
                     
                     means(i,j,k,l,m) = mean(err(errsel));
                     stderrs(i,j,k,l,m) = stderr(err(errsel));
@@ -41,5 +44,8 @@ ylabel('Error (deg)')
 gantry_setfigfont
 
 if dosave
-    gantry_savefig('pm_inf_height',[20 10]);
+    if ~empty(improc)
+        improc(end+1) = '_';
+    end
+    gantry_savefig([improc,'pm_inf_height'],[20 10]);
 end
