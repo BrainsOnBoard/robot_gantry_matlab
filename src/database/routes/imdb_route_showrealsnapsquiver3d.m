@@ -9,8 +9,6 @@ if nargin < 3
     improc = '';
 end
 
-close all
-
 newonly = false;
 forcegen = false;
 
