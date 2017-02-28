@@ -6,7 +6,7 @@ if nargin < 2
     douseinfomax = [false true];
 end
 if nargin < 3
-    improc = 'histeq';
+    improc = '';
 end
 
 close all
@@ -60,17 +60,17 @@ for useinfomax = douseinfomax
                     gantry_setfigfont
                     
                     if dosave
-                        if dohisteq
-                            histeqstr = 'histeq_';
+                        if isempty(improc)
+                            improcstr = '';
                         else
-                            histeqstr = '';
+                            improcstr = [improc,'_'];
                         end
                         if useinfomax
                             algorithmstr = 'infomax';
                         else
                             algorithmstr = 'pm';
                         end
-                        gantry_savefig(sprintf('%s%s_%s_route%d_res%03d_z%d_ridf_quiver%s',histeqstr,algorithmstr,flabel,routenum,cres,czht),[10 10]);
+                        gantry_savefig(sprintf('%s%s_%s_route%d_res%03d_z%d_ridf_quiver%s',improcstr,algorithmstr,flabel,routenum,cres,czht),[10 10]);
                     else
                         try
                             ginput(1);
