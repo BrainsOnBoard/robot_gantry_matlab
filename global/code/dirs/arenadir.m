@@ -1,2 +1,2 @@
 function d=arenadir
-d='arenas';
+d='gantry_arenas';
