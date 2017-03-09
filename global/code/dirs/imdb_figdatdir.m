@@ -1,2 +1,2 @@
 function d=imdb_figdatdir
-d=fullfile(datadir,'figdat');
+d=fullfile(g_dir_data,'figdat');

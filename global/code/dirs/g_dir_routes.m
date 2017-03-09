@@ -1,2 +1,2 @@
 function d=g_dir_routes
-d=fullfile(datadir,'routes');
+d=fullfile(g_dir_data,'routes');
