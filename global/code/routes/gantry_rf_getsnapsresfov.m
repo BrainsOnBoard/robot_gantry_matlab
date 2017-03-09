@@ -6,14 +6,14 @@ if nargin < 1
     imw = 90;
 end
 
-d = dir(fullfile(routes_routedir,'route_*.mat'));
-snapdir = routes_fovsnapdir;
+d = dir(fullfile(g_dir_routes,'route_*.mat'));
+snapdir = g_dir_routes_fovsnaps;
 if ~exist(snapdir,'dir')
     mkdir(snapdir);
 end
 
 for i = 1:length(d)
-    cfn = fullfile(routes_routedir,d(i).name);
+    cfn = fullfile(g_dir_routes,d(i).name);
     if ~varsinmatfile(cfn,'snaps')
         warning('snaps not found in %s. skipping.',cfn)
         continue

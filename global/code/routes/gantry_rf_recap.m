@@ -20,7 +20,7 @@ pr.maxlen = 2; % times the length of the route
 
 routefn = sprintf('route_%s_%03d',matfileremext(arenafn),routenum);
 snfn = sprintf('snaps_%s_fov%03d_imw%03d',routefn,pr.fov,pr.res);
-load(fullfile(routes_routedir,routefn),'p','clx','cly','cli','rclx','rcly','ptr');
+load(fullfile(g_dir_routes,routefn),'p','clx','cly','cli','rclx','rcly','ptr');
 pr.routedat_p = p;
 
 pr.stepsize = 2*p.snapsep*1000/p.arenascale;
@@ -35,10 +35,10 @@ pr.nth = 360;
 
 if strcmp(pr.snapweighting,'infomax')
     snwt = parseweightstr(pr.snapweighting);
-    load(fullfile(routes_infomaxweightsdir,sprintf('infomax_%s.mat',snfn)),'imsz','W')
+    load(fullfile(g_dir_routes_infomaxweights,sprintf('infomax_%s.mat',snfn)),'imsz','W')
     isinfomax = true;
 else
-    load(fullfile(routes_fovsnapdir,snfn),'fovsnaps');
+    load(fullfile(g_dir_routes_fovsnaps,snfn),'fovsnaps');
     isinfomax = false;
     imsz = [size(fovsnaps,1),size(fovsnaps,2)];
 end
@@ -86,14 +86,14 @@ pr.maxnsteps = ceil(pr.maxlen*sum(hypot(diff(rclx),diff(rcly)),1)/pr.stepsize);
 
 if nargin
     disp('LOADING DATA')
-    cdatadir = fullfile(routes_datadir,sprintf('%s_%03d',routefn,fnind));
+    cdatadir = fullfile(g_dir_routes_data,sprintf('%s_%03d',routefn,fnind));
     load(fullfile(cdatadir,'params.mat'),'pr');
     
     %     load(fullfile(cdatadir,sprintf('trial%04d_offs%04d_step%04d.mat',
 else
     fnind = 1;
     while true
-        cdatadir = fullfile(routes_datadir,sprintf('%s_%03d',routefn,fnind));
+        cdatadir = fullfile(g_dir_routes_data,sprintf('%s_%03d',routefn,fnind));
         if ~exist(cdatadir,'dir')
             mkdir(cdatadir)
             break

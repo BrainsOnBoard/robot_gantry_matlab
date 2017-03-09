@@ -12,14 +12,14 @@ if ~isempty(improc)
 end
 
 for cimw = imw(:)'
-    flist = dir(fullfile(routes_fovsnapdir,sprintf('snaps_*_imw%03d.mat',cimw)));
+    flist = dir(fullfile(g_dir_routes_fovsnaps,sprintf('snaps_*_imw%03d.mat',cimw)));
     for i = 1:length(flist)
         cfn = flist(i).name;
         
         fprintf('Loading %s...\n',cfn)
         
-        datafn = fullfile(routes_fovsnapdir,cfn);
-        outfn = fullfile(routes_infomaxweightsdir,sprintf('infomax_%s%s.mat',improc,matfileremext(cfn)));
+        datafn = fullfile(g_dir_routes_fovsnaps,cfn);
+        outfn = fullfile(g_dir_routes_infomaxweights,sprintf('infomax_%s%s.mat',improc,matfileremext(cfn)));
         
         if exist(outfn,'file')
             warning('%s exists. skipping.',outfn)

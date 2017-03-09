@@ -11,7 +11,7 @@ g = alexGantry(false,true,false,acuity,ptr.maxV,ptr.maxA);
 
 for curroute=routenum
     datafn = sprintf('route_%s_%03d',arenafn,curroute);
-    dataffn = fullfile(routes_routedir,datafn);
+    dataffn = fullfile(g_dir_routes,datafn);
     load(dataffn,'p','clx','cly','cli','whclick','rclx','rcly')
     
     if isempty(arenafn)
@@ -23,7 +23,7 @@ for curroute=routenum
     g.moveToPoint([0;0;minht]);
     
     load('gantry_centrad','unwrapparams')
-    snapdir = fullfile(routes_snapdir,['snaps_' datafn]);
+    snapdir = fullfile(g_dir_routes_snapshots,['snaps_' datafn]);
     if exist(snapdir,'dir')
         error('snap dir already exists')
     end

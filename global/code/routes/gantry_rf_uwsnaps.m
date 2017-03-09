@@ -1,7 +1,7 @@
 function gantry_rf_uwsnaps(arenafn,whroute)
 
 rfn = sprintf('route_%s_%03d',matfileremext(arenafn),whroute);
-snapdir = fullfile(routes_snapdir,['snaps_' rfn]);
+snapdir = fullfile(g_dir_routes_snapshots,['snaps_' rfn]);
 
 load('gantry_centrad','unwrapparams')
 crop = load('gantry_cropparams.mat');
@@ -15,4 +15,4 @@ for i = 1:nfile
     snaps(:,:,i) = gantry_processim(rgb2gray(fr),unwrapparams,crop);
 end
 
-save(fullfile(routes_routedir,rfn),'-append','snaps')
+save(fullfile(g_dir_routes,rfn),'-append','snaps')

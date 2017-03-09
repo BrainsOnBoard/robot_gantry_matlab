@@ -25,7 +25,7 @@ p.snapsep = 0.50; % m
 p.stepsize = p.snapsep;
 p.routeinterpdist = 0.01; % m
 p.recapstartoffs = -p.stepsize; % how far along route to start recap (so as not to start at the same pos as first snap)
-p.datadir = routes_routedir;
+p.datadir = g_dir_routes;
 
 p.startoffs = -2:2;
 

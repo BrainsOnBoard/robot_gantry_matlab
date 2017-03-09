@@ -9,7 +9,7 @@ thresh = [0.2 0.4 0.5 0.6 0.8];
 
 snaps = cell(1,length(imw));
 for i = 1:length(imw)
-    load(fullfile(routes_fovsnapdir, sprintf('snaps_route_%s_%03d_fov%d_imw%03d.mat', arenafn, routenum, fov, imw(i))),'fovsnaps');
+    load(fullfile(g_dir_routes_fovsnaps, sprintf('snaps_route_%s_%03d_fov%d_imw%03d.mat', arenafn, routenum, fov, imw(i))),'fovsnaps');
     snaps{i} = fovsnaps;
 end
 

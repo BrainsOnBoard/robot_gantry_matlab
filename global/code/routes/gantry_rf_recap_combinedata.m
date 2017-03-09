@@ -11,19 +11,19 @@ clear
 fields = {'curx','cury','curth','goalx','goaly','isbad','head','headnoise','whsn','curz'};
 fscale = [true true false true true false false false false false false];
 
-dlist = dir(fullfile(routes_datadir,'route_*'));
+dlist = dir(fullfile(g_dir_routes_data,'route_*'));
 for i = 1:length(dlist)
     if dlist(i).isdir
         cdname = dlist(i).name;
-        cdatadir = fullfile(routes_datadir,cdname);
+        cdatadir = fullfile(g_dir_routes_data,cdname);
         datafn = fullfile(cdatadir,'params.mat');
         % sprintf('route_%s_%03d_trial_%04d_offs_%04d.mat',arenafn,whroute,whtrial,whoffs));
         load(datafn)
         p = pr.routedat_p;
         
-        rd = load(fullfile(routes_routedir,cdname(1:end-4)),'clx','cly','rclx','rcly','cli','whclick');
+        rd = load(fullfile(g_dir_routes,cdname(1:end-4)),'clx','cly','rclx','rcly','cli','whclick');
         
-        outfn = fullfile(routes_datadir,['comb_' cdname '.mat']);
+        outfn = fullfile(g_dir_routes_data,['comb_' cdname '.mat']);
         if exist(outfn,'file')
             warning('file %s already exists. skipping.',outfn)
             continue
