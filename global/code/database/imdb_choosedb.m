@@ -5,7 +5,7 @@ if ~nargin
     is3d = false;
 end
 
-ddir = imdbdir;
+ddir = g_dir_imdb;
 if is3d
     d = dir(fullfile(ddir,'unwrap_imdb3d_*'));
 else

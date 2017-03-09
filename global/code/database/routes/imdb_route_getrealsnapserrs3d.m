@@ -12,7 +12,7 @@ cd(fullfile(mfiledir,'..','..','..'))
 
 trainheight = 200;
 
-whd = fullfile(imdbdir,shortwhd);
+whd = fullfile(g_dir_imdb,shortwhd);
 
 if useinfomax
     infomaxstr = '_infomax';
@@ -24,7 +24,7 @@ if isempty(improc)
 else
     improcstr = [improc,'_'];
 end
-figdatfn = fullfile(imdb_route_figdatdir,sprintf('imdb3d_route_geterrs_%s%s_%s_%03d_res%03d_z%d%s.mat',improcstr,shortwhd,matfileremext(arenafn),routenum,res,zht,infomaxstr));
+figdatfn = fullfile(g_dir_imdb_routes_figdata,sprintf('imdb3d_route_geterrs_%s%s_%s_%03d_res%03d_z%d%s.mat',improcstr,shortwhd,matfileremext(arenafn),routenum,res,zht,infomaxstr));
 
 fprintf('target file: %s\n',figdatfn);
 isnew = ~exist(figdatfn,'file');
@@ -107,8 +107,8 @@ else
     
     [imyi,imxi] = ind2sub(size(valids),find(valids));
     
-    if ~exist(imdb_route_figdatdir,'dir')
-        mkdir(imdb_route_figdatdir);
+    if ~exist(g_dir_imdb_routes_figdata,'dir')
+        mkdir(g_dir_imdb_routes_figdata);
     end
     save(figdatfn,'imxi','imyi','heads','allwhsn','whsn','snx','sny','snth','p','weight_update_count','zht');
 end

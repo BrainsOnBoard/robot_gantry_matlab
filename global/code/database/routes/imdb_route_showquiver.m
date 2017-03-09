@@ -27,7 +27,7 @@ for useinfomax = [false true]
                     continue
                 end
                 
-                whd = fullfile(imdbdir,shortwhd{i});
+                whd = fullfile(g_dir_imdb,shortwhd{i});
                 flabel = imdb_getlabel(whd);
                 
                 figure(1);clf

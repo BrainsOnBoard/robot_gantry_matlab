@@ -14,7 +14,7 @@ p.arenafn = 'arena1_boxes.mat';
 fex = false(length(p.ys),length(p.xs));
 for xi = 1:length(p.xs)
     for yi = 1:length(p.ys)
-        fex(yi,xi) = exist(fullfile(imdbdir,'unwrap_imdb_2016-02-05_001',sprintf('im_%03d_%03d.mat',yi,xi)),'file');
+        fex(yi,xi) = exist(fullfile(g_dir_imdb,'unwrap_imdb_2016-02-05_001',sprintf('im_%03d_%03d.mat',yi,xi)),'file');
     end
 end
 
@@ -64,13 +64,13 @@ snth(end+1) = snth(end);
 snth = mod(snth,2*pi);
 
 if dosave
-    if ~exist(imdb_routedir,'dir')
-        mkdir(imdb_routedir);
+    if ~exist(g_dir_imdb_routes,'dir')
+        mkdir(g_dir_imdb_routes);
     end
     
     filei = 1;
     while true
-        datafn = fullfile(imdb_routedir,sprintf('route_%03d.mat',filei));
+        datafn = fullfile(g_dir_imdb_routes,sprintf('route_%03d.mat',filei));
         if ~exist(datafn,'file')
             break;
         end

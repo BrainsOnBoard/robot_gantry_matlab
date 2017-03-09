@@ -1,7 +1,7 @@
 clear
 
 shortwhd = 'unwrap_imdb3d_2017-02-09_001';
-whd = fullfile(imdbdir,shortwhd);
+whd = fullfile(g_dir_imdb,shortwhd);
 imsz = [29 360];
 res = 90; % different from imsz because we want the images at a high enough res to see
 zht = 200;

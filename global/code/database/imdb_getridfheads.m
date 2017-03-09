@@ -6,7 +6,7 @@ if nargin < 1 || isempty(whdshort)
     [~,whdshort] = imdb_choosedb;
 end
 
-whd = fullfile(imdbdir,whdshort);
+whd = fullfile(g_dir_imdb,whdshort);
 
 load(fullfile(whd,'im_params.mat'));
 load('gantry_cropparams.mat');

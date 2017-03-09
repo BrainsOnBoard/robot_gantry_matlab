@@ -7,7 +7,7 @@ forcegen = false;
 
 res = 360;
 shortwhd='unwrap_imdb3d_2017-02-09_001';      % open, new boxes
-whd = fullfile(imdbdir,shortwhd);
+whd = fullfile(g_dir_imdb,shortwhd);
 zht = 200; %:100:500; % +50mm
 routenum = 3;
 

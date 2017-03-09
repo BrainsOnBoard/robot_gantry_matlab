@@ -48,7 +48,7 @@ end
 
 labels{3} = cell(size(shortwhd));
 for i = 1:length(labels{3})
-    labels{3}{i} = imdb_getlabel(fullfile(imdbdir, shortwhd{i}));
+    labels{3}{i} = imdb_getlabel(fullfile(g_dir_imdb, shortwhd{i}));
 end
 
 labels{4} = {'route label'};

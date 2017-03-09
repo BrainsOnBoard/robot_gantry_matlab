@@ -3,14 +3,14 @@ if nargin < 5
     forcegen = false;
 end
 
-whd = fullfile(imdbdir,shortwhd);
+whd = fullfile(g_dir_imdb,shortwhd);
 
 if useinfomax
     infomaxstr = '_infomax';
 else
     infomaxstr = '';
 end
-figdatfn = fullfile(imdb_route_figdatdir,sprintf('imdb_route_geterrs_%s_%03d_res%03d%s.mat',shortwhd,routenum,res,infomaxstr));
+figdatfn = fullfile(g_dir_imdb_routes_figdata,sprintf('imdb_route_geterrs_%s_%03d_res%03d%s.mat',shortwhd,routenum,res,infomaxstr));
 
 if exist(figdatfn,'file') && ~forcegen
     load(figdatfn);
@@ -112,8 +112,8 @@ else
     mindist = min(hypot(bsxfun(@minus, imxi(:)', pxsnx), bsxfun(@minus, imyi(:)', pxsny)));
     errsel = mindist <= err_corridor;
     
-    if ~exist(imdb_route_figdatdir,'dir')
-        mkdir(imdb_route_figdatdir);
+    if ~exist(g_dir_imdb_routes_figdata,'dir')
+        mkdir(g_dir_imdb_routes_figdata);
     end
     save(figdatfn,'imxi','imyi','heads','whsn','err','nearest','dist','snx','sny','snth','pxsnx','pxsny','pxsnth','err_corridor','errsel','p','weight_update_count');
 end
