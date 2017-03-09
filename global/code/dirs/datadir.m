@@ -1,2 +1,2 @@
 function d=datadir
-d = 'data';
+d = 'gantry_data';
