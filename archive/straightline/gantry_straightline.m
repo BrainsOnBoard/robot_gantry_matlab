@@ -37,13 +37,13 @@ save(datafn,'p');
 p.maxV = [240;240;151];
 p.maxA = [20;20;20];
 acuity = 1;
-% Gantry(debug, homeGantry, disableZ, acuity, maxV, maxA, showvidpreview)
-g = alexGantry(false,true,false,acuity,p.maxV,p.maxA,false,false);
+% Gantry(debug, home_gantry, disableZ, acuity, maxV, maxA, showvidpreview)
+g = g_control_object(false,true,false,acuity,p.maxV,p.maxA,false,false);
 
 try
     curx = 0; cury = 0;
     
-    g.moveToPoint([p.startpos;p.zht]);
+    g.move([p.startpos;p.zht]);
     snap = getview;
     
     d.nextx = p.startpos(1)+p.stepsize;
@@ -90,7 +90,7 @@ end
         succeed = ~any(endtf(:) & objtf(:));
         if succeed
             try
-                g.moveToPoint([movex;movey;p.zht]);
+                g.move([movex;movey;p.zht]);
                 curx = movex;
                 cury = movey;
             catch moveex

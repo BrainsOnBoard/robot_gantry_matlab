@@ -22,8 +22,8 @@ oys = p.objgridac*(0:size(objtf,1));
 p.maxV = [240;240;151];
 p.maxA = [20;20;20];
 acuity = 1;
-% Gantry(debug, homeGantry, disableZ, acuity, maxV, maxA)
-g = alexGantry(false,false,false,acuity,p.maxV,p.maxA);
+% Gantry(debug, home_gantry, disableZ, acuity, maxV, maxA)
+g = g_control_object(false,false,false,acuity,p.maxV,p.maxA);
 
 p.imsep = 100; % mm
 p.xs = 0:p.imsep:p.lim(1);
@@ -51,7 +51,7 @@ fprintf('getting image database\n%dx%d (=%d) ims\nx: [%g %g]\ny: [%g %g]\n\n', .
 save(fullfile(p.imdir,'im_params.mat'),'p')
 isretracted = false;
 
-g.homeGantry(false);
+g.home_gantry(false);
 lastx = 0;
 lasty = 0;
 try
@@ -138,7 +138,7 @@ try
     ttot = toc;
     fprintf('Time: %gs (%gs per image)\n',ttot,ttot/nim)
     
-    g.homeGantry(false);
+    g.home_gantry(false);
     
     delete(g)
 catch ex
@@ -149,7 +149,7 @@ end
     function movetopoint(x,y,z)
 %         fprintf('Moving to (%g,%g,%g)\n',x,y,z)
         %     pause(0.25)
-        g.moveToPoint([x;y;z]);
+        g.move([x;y;z]);
     end
 
 end

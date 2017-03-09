@@ -1,4 +1,4 @@
-classdef alexGantry < handle
+classdef g_control_object < handle
     %%GANTRY A class to handle various aspects of interaction with the gantry
     %robot.
     % This primary reason for this class is so that we have a safe and
@@ -73,7 +73,7 @@ classdef alexGantry < handle
         % FOR EXAMPLE, SUBJECT TO SOME SAFE MAXIMUMS I SET I CAN ALLOW THE
         % USER TO SET THEIR OWN MAXIMUM VELOCITIES AND SO ON?
         
-        function g = alexGantry(debug, homeGantry, disableZ, acuity, maxV, maxA, showvidpreview, simulate)
+        function g = g_control_object(debug, do_home_gantry, disableZ, acuity, maxV, maxA, showvidpreview, simulate)
             
             if nargin < 8
                 g.simulate = false;
@@ -88,8 +88,8 @@ classdef alexGantry < handle
             disp(' ');disp('Preparing robot');disp(' ')
             if ~g.simulate
                 g.openGantry();
-                if homeGantry
-                    g.homeGantry(disableZ);
+                if do_home_gantry
+                    g.home_gantry(disableZ);
                 end
             end
             g.disableZ = disableZ;
@@ -422,7 +422,7 @@ classdef alexGantry < handle
             
         end
         
-        function moveToPoint(g,pos)
+        function move(g,pos)
             pos = pos(:);
             
             if any(pos < 0 | pos > g.limitmm)
@@ -514,7 +514,7 @@ classdef alexGantry < handle
             
         end
         
-        function homeGantry(g, disableZ)
+        function home_gantry(g, disableZ)
             if g.simulate
                 disp('SIMULATE: HOMING GANTRY')
             else

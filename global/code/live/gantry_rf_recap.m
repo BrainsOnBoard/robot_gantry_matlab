@@ -109,8 +109,8 @@ else
     d.cury = 0;
 end
 
-% alexGantry(debug, homeGantry, disableZ, acuity, maxV, maxA, showvidpreview, simulate)
-g = alexGantry(false,true,false,1,pr.maxV,pr.maxA,false,pr.dummy);
+% g_control_object(debug, home_gantry, disableZ, acuity, maxV, maxA, showvidpreview, simulate)
+g = g_control_object(false,true,false,1,pr.maxV,pr.maxA,false,pr.dummy);
 
 noffs = length(p.startoffs);
 ntrialtot = noffs*pr.ntrialsperroute;
@@ -134,13 +134,13 @@ for i = sttrial:pr.ntrialsperroute
         fprintf('starting trial %d/%d at offset %g (%d/%d) [%d/%d total]\n', ...
             i,pr.ntrialsperroute,p.startoffs(j),j,length(p.startoffs),(i-1)*noffs+j,ntrialtot);
         
-        g.moveToPoint([d.curx d.cury pr.objzht]) % raise gantry head
+        g.move([d.curx d.cury pr.objzht]) % raise gantry head
         % move to start position
         d.curx = rclx(1,j);
         d.cury = rcly(1,j);
         d.curz = newzht(pr,lim);
-        g.moveToPoint([d.curx d.cury pr.objzht])
-        g.moveToPoint([d.curx d.cury d.curz])
+        g.move([d.curx d.cury pr.objzht])
+        g.move([d.curx d.cury d.curz])
         
         d.curth = atan2(diff(rcly(1:2,j)),diff(rclx(1:2,j)));
         
@@ -235,7 +235,7 @@ for i = sttrial:pr.ntrialsperroute
             end
             
             d.curz = newzht(pr,lim);
-            g.moveToPoint([d.curx d.cury d.curz]);
+            g.move([d.curx d.cury d.curz]);
         end
         if k==pr.maxnsteps(j)
             fprintf('REACHED MAX NUM STEPS (%d)\n',pr.maxnsteps(j))
@@ -248,7 +248,7 @@ tsec = toc(tott)-pauset;
 tmin = floor(tsec/60);
 fprintf('Job completed in %02d:%02d.\n',tmin,mod(round(tsec),60));
 
-g.homeGantry(false)
+g.home_gantry(false)
 delete(g)
 
 % routeth = atan2(cly(2)-cly(1),clx(2)-clx(1));

@@ -44,11 +44,11 @@ else
     end
 end
 
-% Gantry(debug, homeGantry, disableZ, acuity, maxV, maxA)
+% Gantry(debug, home_gantry, disableZ, acuity, maxV, maxA)
 if p.dummy
     disp('RUNNING IN DUMMY MODE - not moving gantry')
 else
-    g = alexGantry(false,false,false,1,p.maxV,p.maxA);
+    g = g_control_object(false,false,false,1,p.maxV,p.maxA);
 end
 
 headcleari = ceil(p.headclear/p.objgridac);
@@ -66,7 +66,7 @@ fprintf('getting image database\n%dx%dx%d (=%d) ims\nx: [%g %g]\ny: [%g %g]\nz: 
     length(p.ys),length(p.xs),length(p.zs),nim,p.xs(1),p.xs(end),p.ys(1),p.ys(end),p.zs(1),p.zs(2))
 
 if ~p.dummy    
-    g.homeGantry(false);
+    g.home_gantry(false);
 end
 
 if nargin
@@ -219,7 +219,7 @@ try
     fprintf('Time: %gs (%gs per image)\n',ttot,ttot/nim)
     
     if ~p.dummy
-        g.homeGantry(false);
+        g.home_gantry(false);
         delete(g)
     end
 catch ex
@@ -236,7 +236,7 @@ end
                 %     pause(0.25)
             else
                 tmove = tic;
-                g.moveToPoint([x;y;z]);
+                g.move([x;y;z]);
                 if toc(tmove) < 0.1
                     error('gantry:stopped','gantry appears to be stopped')
                 end

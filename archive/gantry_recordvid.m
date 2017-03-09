@@ -3,8 +3,8 @@ clear
 load('arenadim.mat')
 
 g = gantry_default;
-g.homeGantry(false);
-g.moveToPoint([0;lim(2)/2;500])
+g.home_gantry(false);
+g.move([0;lim(2)/2;500])
 
 v = VideoWriter('outfile.avi');
 v.open;
