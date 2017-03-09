@@ -42,8 +42,7 @@ if length(d) > 1
 else
     mfd = '.';
 end
-curdir = pwd;
-dname = fullfile(curdir,'figures',mfd);
+dname = fullfile(g_dir_figures,mfd);
 if ~exist(dname,'dir')
     mkdir(dname);
 end
