@@ -46,7 +46,7 @@ end
 if isempty(arenafn)
     pr.objzht = pr.zht_mean;
 else
-    load(fullfile(arenadir,arenafn),'objhts')
+    load(fullfile(g_dir_arenas,arenafn),'objhts')
     pr.objzht = max(objhts);
 end
 

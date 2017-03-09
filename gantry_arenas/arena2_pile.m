@@ -4,7 +4,7 @@ objverts = {[1090 370 1090 1210 2020 1180 2020 380]};
 
 objhts = 680;
 
-fn = fullfile(arenadir,'arena2_pile.mat');
+fn = fullfile(g_dir_arenas,'arena2_pile.mat');
 
 if exist(fn,'file')
     error('file already exists')

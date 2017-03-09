@@ -45,7 +45,7 @@ end
 figure(1);clf
 hold on
 if ~isempty(p.arenafn)
-    load(fullfile(arenadir,p.arenafn));
+    load(fullfile(g_dir_arenas,p.arenafn));
     drawobjverts(objverts,[],'k')
 end
 anglequiver(p.xs,p.ys,heads);

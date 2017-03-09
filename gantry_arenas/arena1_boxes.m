@@ -7,7 +7,7 @@ objverts = {[540 50 295 515 445 590 680 125], ...
 
 objhts = [392 98 604 420 502];
 
-fn = fullfile(arenadir,'arena1_boxes.mat');
+fn = fullfile(g_dir_arenas,'arena1_boxes.mat');
 
 if exist(fn,'file')
     error('file already exists')
