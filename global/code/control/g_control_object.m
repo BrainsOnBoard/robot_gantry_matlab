@@ -122,7 +122,7 @@ classdef g_control_object < handle
             % AS WELL AS SETTING LIMITS FOR VELOCITIES AND ACCELERATIONS,
             % WHAT ABOUT ALSO SETTING THE LIMITS OF THE WORKSPACE?
             
-            if nargin == 6
+            if nargin >= 6
                 
                 maxV = g.mm2pulses(maxV,'XYZ');
                 maxA = g.mm2pulses(maxA,'XYZ');
