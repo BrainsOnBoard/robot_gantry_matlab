@@ -2,7 +2,7 @@
 <!--To view this file, download free mind mapping software Freeplane from http://freeplane.sourceforge.net -->
 <node TEXT="gantry &quot;program&quot; organisation" FOLDED="false" ID="ID_684440859" CREATED="1489073854888" MODIFIED="1489074062984" STYLE="oval">
 <font SIZE="18"/>
-<hook NAME="MapStyle" zoom="0.683">
+<hook NAME="MapStyle" zoom="0.684">
     <properties fit_to_viewport="false;"/>
 
 <map_styles>
@@ -81,7 +81,7 @@
 </stylenode>
 </map_styles>
 </hook>
-<hook NAME="AutomaticEdgeColor" COUNTER="13" RULE="ON_BRANCH_CREATION"/>
+<hook NAME="AutomaticEdgeColor" COUNTER="14" RULE="ON_BRANCH_CREATION"/>
 <hook NAME="accessories/plugins/AutomaticLayout.properties" VALUE="ALL"/>
 <node TEXT="modules" POSITION="right" ID="ID_555094537" CREATED="1489074386665" MODIFIED="1489074398153">
 <edge COLOR="#007c00"/>
@@ -140,6 +140,11 @@
 </node>
 <node TEXT="sensible defaults" POSITION="left" ID="ID_1135341731" CREATED="1489074928898" MODIFIED="1489074934691">
 <edge COLOR="#7c7c00"/>
+</node>
+<node TEXT="tidy gantry &quot;object&quot; code" POSITION="left" ID="ID_1046114603" CREATED="1489586937199" MODIFIED="1489586964568">
+<edge COLOR="#00ff00"/>
+<node TEXT="include .ini in git tree" ID="ID_1841251190" CREATED="1489586967079" MODIFIED="1489586974481"/>
+<node TEXT="set sensible default parameters" ID="ID_265001455" CREATED="1489586975120" MODIFIED="1489587035937"/>
 </node>
 <node TEXT="delete or archive unneeded functions" POSITION="right" ID="ID_205550712" CREATED="1489075330089" MODIFIED="1489076121064">
 <edge COLOR="#ff0000"/>
