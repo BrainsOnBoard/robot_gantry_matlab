@@ -75,10 +75,31 @@ classdef g_control_object < handle
         
         function g = g_control_object(debug, do_home_gantry, disableZ, acuity, maxV, maxA, showvidpreview, simulate)
             
-            if nargin < 8
+            if nargin < 8 || isempty(simulate)
                 g.simulate = false;
             else
                 g.simulate = simulate;
+            end
+            if nargin < 7 || isempty(showvidpreview)
+                showvidpreview = false;
+            end
+            if nargin < 6 || isempty(maxA)
+                maxA = [20;20;20];
+            end
+            if nargin < 5 || isempty(maxV)
+                maxV = [240;240;151];
+            end
+            if nargin < 4 || isempty(acuity)
+                acuity = 1;
+            end
+            if nargin < 3 || isempty(disableZ)
+                disableZ = false;
+            end
+            if nargin < 2 || isempty(do_home_gantry)
+                do_home_gantry = true;
+            end
+            if nargin < 1 || isempty(debug)
+                debug = false;
             end
             
             if g.simulate
@@ -122,38 +143,35 @@ classdef g_control_object < handle
             % AS WELL AS SETTING LIMITS FOR VELOCITIES AND ACCELERATIONS,
             % WHAT ABOUT ALSO SETTING THE LIMITS OF THE WORKSPACE?
             
-            if nargin >= 6
+            maxV = g.mm2pulses(maxV,'XYZ');
+            maxA = g.mm2pulses(maxA,'XYZ');
+            tempV = zeros(3,1);
+            tempA = zeros(3,1);
+            for t = 1:3
+                % CHECK DIMENSIONS OF ARGUMENTS ARE BOTH CORRECT FIRST!
                 
-                maxV = g.mm2pulses(maxV,'XYZ');
-                maxA = g.mm2pulses(maxA,'XYZ');
-                tempV = zeros(3,1);
-                tempA = zeros(3,1);
-                for t = 1:3
-                    % CHECK DIMENSIONS OF ARGUMENTS ARE BOTH CORRECT FIRST!
-                    
-                    % ALSO CONVERT FROM MM 2 PULSES - THE (AVERAGE) USER IS NOT
-                    % SUPPOSED TO HAVE TO WORRY ABOUT PULSES AT ALL
-                    
-                    if maxV(t) <= g.maxVel(t)
-                        tempV(t) = maxV(t);
-                    else
-                        disp(' '); disp('   Upper limits for velocities are:'); disp(' ')
-                        disp([['     ';'     ';'     '] num2str(g.pulses2mm(g.maxVel,'XYZ'))]);
-                        error('You may not set maximum velocities to over the above values')
-                    end
-                    
-                    if maxA(t) <= g.maxAccel(t)
-                        tempA(t) = maxA(t);
-                    else
-                        disp(' '); disp('   Upper limits for accelerations are:'); disp(' ')
-                        disp([['     ';'     ';'     '] num2str(g.pulses2mm(g.maxAccel,'XYZ'))]);
-                        error('You may not set maximum accelerations to over the above values')
-                    end
+                % ALSO CONVERT FROM MM 2 PULSES - THE (AVERAGE) USER IS NOT
+                % SUPPOSED TO HAVE TO WORRY ABOUT PULSES AT ALL
+                
+                if maxV(t) <= g.maxVel(t)
+                    tempV(t) = maxV(t);
+                else
+                    disp(' '); disp('   Upper limits for velocities are:'); disp(' ')
+                    disp([['     ';'     ';'     '] num2str(g.pulses2mm(g.maxVel,'XYZ'))]);
+                    error('You may not set maximum velocities to over the above values')
                 end
-                g.maxVel = tempV;
-                g.maxAccel = tempA;
                 
+                if maxA(t) <= g.maxAccel(t)
+                    tempA(t) = maxA(t);
+                else
+                    disp(' '); disp('   Upper limits for accelerations are:'); disp(' ')
+                    disp([['     ';'     ';'     '] num2str(g.pulses2mm(g.maxAccel,'XYZ'))]);
+                    error('You may not set maximum accelerations to over the above values')
+                end
             end
+            g.maxVel = tempV;
+            g.maxAccel = tempA;
+            
             
             g.origin_safe = [g.zone2
                 g.zone2
