@@ -2,7 +2,7 @@ clear
 
 clear
 
-whd = imdb_choosedb_unwrap;
+whd = imdb_choosedb;
 
 load(fullfile(whd,'im_params.mat'));
 load('gantry_cropparams.mat');

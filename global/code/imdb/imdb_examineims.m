@@ -1,7 +1,7 @@
 
 clear
 
-whd = imdb_choosedb_unwrap;
+whd = imdb_choosedb;
 load(fullfile(whd,'im_params.mat'))
 
 [x,y] = meshgrid(p.xs,p.ys);
