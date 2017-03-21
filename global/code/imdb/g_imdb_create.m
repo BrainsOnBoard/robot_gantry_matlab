@@ -1,4 +1,4 @@
-function gantry_getdb_3d(olddate,oldind)
+function g_imdb_create(olddate,oldind)
 if nargin
     if isempty(olddate)
         olddate = datestr(now,'yyyy-mm-dd');
