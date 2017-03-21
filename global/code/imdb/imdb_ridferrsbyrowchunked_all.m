@@ -22,7 +22,7 @@ for whdi = 1:length(d)
     mehc(:,whdi) = nanmean(ehc,2);
     mehc_overall(whdi) = nanmean(1-cos(min(pi/2,abs(pi2pi(fd.heads(:))))));
     sehc(:,whdi) = nanstd(ehc,[],2);
-    labels{whdi} = imdb_getlabel(whd);
+    labels{whdi} = g_imdb_getlabel(whd);
 end
 
 % mehc = bsxfun(@rdivide,mehc,sum(mehc));

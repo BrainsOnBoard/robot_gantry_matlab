@@ -1,4 +1,4 @@
-function label = imdb_getlabel(whd)
+function label = g_imdb_getlabel(whd)
 fn = fullfile(whd,'im_params.mat');
 if isempty(whos('label','-file',fn))
     label = '';

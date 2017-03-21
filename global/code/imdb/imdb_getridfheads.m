@@ -34,7 +34,7 @@ for yi = 1:size(idf,1)
 end
 
 %%
-flabel = imdb_getlabel(whd);
+flabel = g_imdb_getlabel(whd);
 
 figure(2);clf
 surf(p.xs,p.ys,idf)

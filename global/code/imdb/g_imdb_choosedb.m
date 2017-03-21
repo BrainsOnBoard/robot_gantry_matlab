@@ -9,7 +9,7 @@ labels = {};
 for i = 1:length(d)
     if d(i).isdir
         ds{end+1} = d(i).name;
-        labels{end+1} = imdb_getlabel(fullfile(ddir,d(i).name));
+        labels{end+1} = g_imdb_getlabel(fullfile(ddir,d(i).name));
     end
 end
 

@@ -8,7 +8,7 @@ if ~iscell(whd)
 end
 
 for i = 1:length(whd)
-    label = imdb_getlabel(whd{i});
+    label = g_imdb_getlabel(whd{i});
     label=input(sprintf('Enter label for %s [%s]: ',shortdn{i},label),'s');
     if ~isempty(label)
         disp('Writing to file.')
