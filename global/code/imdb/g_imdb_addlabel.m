@@ -1,4 +1,4 @@
-function imdb_addlabel
+function g_imdb_addlabel
 % clear
 
 [whd,shortdn] = imdb_choosedb3d;
