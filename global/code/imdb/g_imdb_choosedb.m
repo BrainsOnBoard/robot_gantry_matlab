@@ -2,7 +2,7 @@ function [whd,whdshort,label]=g_imdb_choosedb
 %function [whd,whdshort,label]=g_imdb_choosedb
 
 ddir = g_dir_imdb;
-d = dir(fullfile(ddir,'unwrap_imdb3d_*'));
+d = dir(fullfile(ddir,'imdb_*'));
 
 ds = {};
 labels = {};

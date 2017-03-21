@@ -3,8 +3,8 @@ function imdb_route_perfbarcharts3d
 useinfomax = [false true];
 res = [90 180 360];
 shortwhd={
-    'unwrap_imdb3d_2017-02-09_001'      % open, new boxes
-    'unwrap_imdb3d_2016-03-23_001', ... % open, empty
+    'imdb_2017-02-09_001'      % open, new boxes
+    'imdb_2016-03-23_001', ... % open, empty
     };
 zht = 0:100:500;
 [stderrs,means] = deal(NaN(length(useinfomax),length(res),length(shortwhd),2,length(zht)));

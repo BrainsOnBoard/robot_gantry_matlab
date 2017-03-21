@@ -5,7 +5,7 @@
 clear
 
 res = 90;
-shortwhd='unwrap_imdb3d_2017-02-09_001';      % open, new boxes
+shortwhd='imdb_2017-02-09_001';      % open, new boxes
 zht = 400; % +50mm
 routenum = 3;
 

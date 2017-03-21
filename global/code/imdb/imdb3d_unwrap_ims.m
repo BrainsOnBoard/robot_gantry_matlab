@@ -4,7 +4,7 @@ function imdb3d_unwrap_ims
 load('gantry_centrad.mat','unwrapparams')
 crop = load('gantry_cropparams.mat');
 
-d = dir(fullfile(g_dir_imdb,'imdb3d_*'));
+d = dir(fullfile(g_dir_imdb,'wrapped_imdb_*'));
 ds = {};
 for i = 1:length(d)
     if d(i).isdir

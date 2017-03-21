@@ -7,8 +7,8 @@ showfigs = true;
 newonly = false;
 
 shortwhd={
-    'unwrap_imdb3d_2016-03-23_001', ... % open, empty
-    'unwrap_imdb3d_2016-03-29_001'      % open, boxes
+    'imdb_2016-03-23_001', ... % open, empty
+    'imdb_2016-03-29_001'      % open, boxes
     };
 res = [360 180 90];
 zht = 0:100:500;

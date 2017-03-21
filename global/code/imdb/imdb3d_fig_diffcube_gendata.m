@@ -4,7 +4,7 @@ imdir = fullfile(mfiledir,imdirshort);
 
 load(fullfile(imdir,'im_params.mat'))
 
-figdir = fullfile(mfiledir,'figdat','imdb3d_fig_difcube',imdirshort);
+figdir = fullfile(mfiledir,'figdat','wrapped_imdb_fig_difcube',imdirshort);
 if ~exist(figdir,'dir')
     mkdir(figdir)
 end

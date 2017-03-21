@@ -3,7 +3,7 @@ if nargin
     if isempty(olddate)
         olddate = datestr(now,'yyyy-mm-dd');
     end
-    imdirrt = fullfile(g_dir_imdb,sprintf('imdb3d_%s_%03d',olddate,oldind));
+    imdirrt = fullfile(g_dir_imdb,sprintf('wrapped_imdb_%s_%03d',olddate,oldind));
     load(fullfile(imdirrt,'im_params.mat'));
 else
     p = load('arenadim.mat');
@@ -25,7 +25,7 @@ else
     p.zs = 0:p.imsep:500; %p.lim(3); % +p.zoffs mm
     p.imsz = [576,720,3];
     
-    imdirrt = fullfile(g_dir_imdb,['imdb3d_' datestr(now,'yyyy-mm-dd') '_']);
+    imdirrt = fullfile(g_dir_imdb,['wrapped_imdb_' datestr(now,'yyyy-mm-dd') '_']);
     dind = 1;
     while true
         p.imdir = sprintf('%s%03d',imdirrt,dind);

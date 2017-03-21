@@ -12,7 +12,7 @@ if useinfomax
 else
     infomaxstr = '';
 end
-figdatfn = fullfile(g_dir_imdb_routes_figdata,sprintf('imdb3d_route_geterrs_%s_%03d_res%03d_z%d%s.mat',shortwhd,routenum,res,zht,infomaxstr));
+figdatfn = fullfile(g_dir_imdb_routes_figdata,sprintf('wrapped_imdb_route_geterrs_%s_%03d_res%03d_z%d%s.mat',shortwhd,routenum,res,zht,infomaxstr));
 
 isnew = ~exist(figdatfn,'file');
 if ~isnew && ~forcegen
