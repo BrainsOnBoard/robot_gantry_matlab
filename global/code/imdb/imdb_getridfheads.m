@@ -3,7 +3,7 @@ if nargin < 2
     dosave = false;
 end
 if nargin < 1 || isempty(whdshort)
-    [~,whdshort] = imdb_choosedb;
+    [~,whdshort] = g_imdb_choosedb;
 end
 
 whd = fullfile(g_dir_imdb,whdshort);

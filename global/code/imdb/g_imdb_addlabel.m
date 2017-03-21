@@ -1,7 +1,7 @@
 function g_imdb_addlabel
 % clear
 
-[whd,shortdn] = imdb_choosedb3d;
+[whd,shortdn] = g_imdb_choosedb;
 if ~iscell(whd)
     whd = {whd};
     shortdn = {shortdn};

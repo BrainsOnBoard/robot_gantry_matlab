@@ -1,16 +1,8 @@
-function [whd,whdshort,label]=imdb_choosedb(is3d)
-%function [whd,whdshort,label]=imdb_choosedb(is3d)
-
-if ~nargin
-    is3d = false;
-end
+function [whd,whdshort,label]=g_imdb_choosedb
+%function [whd,whdshort,label]=g_imdb_choosedb
 
 ddir = g_dir_imdb;
-if is3d
-    d = dir(fullfile(ddir,'unwrap_imdb3d_*'));
-else
-    d = dir(fullfile(ddir,'unwrap_imdb_*'));
-end
+d = dir(fullfile(ddir,'unwrap_imdb3d_*'));
 
 ds = {};
 labels = {};

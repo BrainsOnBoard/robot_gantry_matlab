@@ -5,7 +5,7 @@ function gantry_configurecirc
 % fn = '100_0007.MP4';
 % dat = mmread(fullfile(pwd,fn),1);
 % im = rgb2gray(dat.frames.cdata);
-whd = imdb_choosedb;
+whd = g_imdb_choosedb;
 d = dir(fullfile(whd,'im_*_*.mat'));
 load(fullfile(whd,d(1).name));
 % fr = rgb2gray(fr);

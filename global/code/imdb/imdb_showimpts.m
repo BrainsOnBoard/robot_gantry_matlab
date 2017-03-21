@@ -1,6 +1,6 @@
 clear
 
-whd = imdb_choosedb3d;
+whd = g_imdb_choosedb;
 load(fullfile(whd,'im_params.mat'))
 
 figure(10);clf

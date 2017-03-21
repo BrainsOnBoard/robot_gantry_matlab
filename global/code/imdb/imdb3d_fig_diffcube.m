@@ -1,6 +1,6 @@
 clear
 
-[imdir,imdirshort] = imdb_choosedb3d;
+[imdir,imdirshort] = g_imdb_choosedb;
 
 dosave = true;
 
