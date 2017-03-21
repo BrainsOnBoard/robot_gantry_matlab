@@ -714,7 +714,7 @@ classdef g_control_object < handle
             keys = {'soft_limits', '', 'zone1';
                 'soft_limits', '', 'zone1_max_accel';
                 'soft_limits', '', 'zone2'};
-            [readsett,result] = inifile('Gantry.ini','read',keys);
+            [readsett,result] = inifile('gantry_settings.ini','read',keys);
             zone_vals = g.getVals(readsett);
             g.zone1 = zone_vals(1);
             g.zone1_max_accel = zone_vals(2);
@@ -726,7 +726,7 @@ classdef g_control_object < handle
             keys = {section, subsection, 'x';
                 section, subsection, 'y';
                 section, subsection, 'z'};
-            [readsett,result] = inifile('Gantry.ini','read',keys);
+            [readsett,result] = inifile('gantry_settings.ini','read',keys);
         end
         
         function vals = getVals(g,readsett)
