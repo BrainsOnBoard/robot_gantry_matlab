@@ -13,13 +13,19 @@ pr.dummy = false;
 pr.fov = 360;
 pr.res = 90;
 pr.turnmax = 90;
+pr.dohisteq = true;
 
 turnmaxrad = pr.turnmax*pi/180;
 
 pr.maxlen = 2; % times the length of the route
 
 routefn = sprintf('route_%s_%03d',matfileremext(arenafn),routenum);
-snfn = sprintf('snaps_%s_fov%03d_imw%03d',routefn,pr.fov,pr.res);
+if pr.dohisteq
+    histeqstr = 'histeq_';
+else
+    histeqstr = '';
+end
+snfn = sprintf('%ssnaps_%s_fov%03d_imw%03d',histeqstr,routefn,pr.fov,pr.res);
 load(fullfile(g_dir_routes,routefn),'p','clx','cly','cli','rclx','rcly','ptr');
 pr.routedat_p = p;
 
@@ -39,8 +45,12 @@ if strcmp(pr.snapweighting,'infomax')
     isinfomax = true;
 else
     load(fullfile(g_dir_routes_fovsnaps,snfn),'fovsnaps');
+    snaps = NaN(size(fovsnaps));
+    for i = 1:size(snaps,3)
+        snaps(:,:,i) = im2double(fovsnaps(:,:,i));
+    end
     isinfomax = false;
-    imsz = [size(fovsnaps,1),size(fovsnaps,2)];
+    imsz = [size(snaps,1),size(snaps,2)];
 end
 
 if isempty(arenafn)
@@ -147,12 +157,16 @@ for i = sttrial:pr.ntrialsperroute
         for k = 1:pr.maxnsteps(j)
             fprintf('\nstep %d (%d max) (offset %d/%d) (height %g)\n',k,pr.maxnsteps(j),j,noffs,d.curz)
             
-            d.curfr = gantry_processim(rgb2gray(g.getRawFrame),pr.unwrapparams,pr.crop);
+            fr = gantry_processim(g.getRawFrame,pr.unwrapparams,pr.crop);
+            if pr.dohisteq
+                fr = histeq(fr);
+            end
+            d.curfr = im2double(fr);
             if isinfomax
                 [d.head,d.minval,d.ridfs] = infomax_gethead(d.curfr,imsz,W,[],pr.nth,pr.fov);
                 d.whsn = [];
             else
-                [d.head,d.minval,d.whsn,d.ridfs] = ridfheadmulti(imresize(d.curfr,imsz,'bilinear'),fovsnaps,pr.snapweighting,[],pr.nth);
+                [d.head,d.minval,d.whsn,d.ridfs] = ridfheadmulti(imresize(d.curfr,imsz,'bilinear'),snaps,pr.snapweighting,[],pr.nth);
             end
             
             d.headnoise = capminmax(randn*pr.head_noise_std*pi/180,-pi,pi);
@@ -218,9 +232,7 @@ for i = sttrial:pr.ntrialsperroute
             plot(xs,ys,'g+',badxs,badys,'r+');
             drawnow;
             
-            if any(findall(0,'Type','Figure')==1)
-                disp('FIGURE EXISTS')
-            else
+            if ~any(findall(0,'Type','Figure')==1)
                 pausetic = tic;
                 input('Press enter to continue. REMEMBER TO UNDO STOP BUTTON.')
                 pausefig(oxs,oys,objim,rclx,rcly,clx,cly,p);
