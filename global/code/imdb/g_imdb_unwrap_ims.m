@@ -1,4 +1,4 @@
-clear
+function g_imdb_unwrap_ims
 
 load('gantry_centrad.mat','unwrapparams')
 crop = load('gantry_cropparams.mat');
