@@ -17,7 +17,7 @@ if nargin < 1
     arenafn = [];
 end
 
-[objim,badzone,oxs,oys,goxs,goys] = gantry_getbadzoneim(arenafn,objgridac,headclear);
+[objim,badzone,oxs,oys,goxs,goys] = g_arena_getbadzone(arenafn,objgridac,headclear);
 
 goxs = goxs(:);
 goys = goys(:);

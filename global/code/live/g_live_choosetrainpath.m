@@ -38,7 +38,7 @@ end
 % load(p.arenafn,'objverts')
 % objxy = cellfun(@(a)reshape(a,2,length(a)/2)',objverts,'UniformOutput',false);
 
-[objim,badzone,oxs,oys,goxs,goys] = gantry_getbadzoneim(p.arenafn,p.objgridac,p.headclear);
+[objim,badzone,oxs,oys,goxs,goys] = g_arena_getbadzone(p.arenafn,p.objgridac,p.headclear);
 
 oxs = p.arenascale*oxs/1000;
 oys = p.arenascale*oys/1000;

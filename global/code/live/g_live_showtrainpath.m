@@ -7,7 +7,7 @@ arenascale = 10;
 
 d = dir(fullfile(datadir,['route_' matfileremext(arenafn) '_*.mat']));
 
-[objim,~,oxs,oys] = gantry_getbadzoneim(arenafn,10,150);
+[objim,~,oxs,oys] = g_arena_getbadzone(arenafn,10,150);
 oxs = arenascale*oxs/1000;
 oys = arenascale*oys/1000;
 

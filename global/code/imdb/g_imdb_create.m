@@ -55,7 +55,7 @@ end
 
 headcleari = ceil(p.headclear/p.objgridac);
 
-objmap = gantry_getobjmatrix_3d(p.arenafn,p.objgridac);
+objmap = g_arena_getobjverts(p.arenafn,p.objgridac);
 % figure(1);clf
 % imshow(flipud(objtf))
 % return

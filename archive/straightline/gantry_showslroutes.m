@@ -4,7 +4,7 @@ arenafn = 'arena1_boxes.mat';
 objgridac = 10;
 headclear = 150;
 
-[objim,~,oxs,oys] = gantry_getbadzoneim(arenafn,objgridac,headclear);
+[objim,~,oxs,oys] = g_arena_getbadzone(arenafn,objgridac,headclear);
 
 figure(2);clf
 image(oxs,oys,objim)

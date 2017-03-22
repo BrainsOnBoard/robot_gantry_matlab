@@ -1,4 +1,4 @@
-function [objmap,oxs,oys] = gantry_getobjmatrix_3d(arenafn,objgridac)
+function [objmap,oxs,oys] = g_arena_getobjverts(arenafn,objgridac)
 load('arenadim.mat')
 if isempty(arenafn)
     objmap = zeros(ceil(lim([2 1])'/objgridac));

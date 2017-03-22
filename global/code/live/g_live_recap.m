@@ -63,7 +63,7 @@ end
 pr.maxV = [240;240;151];
 pr.maxA = [20;20;20];
 
-[objim,badzone,oxs,oys,goxs,goys] = gantry_getbadzoneim(arenafn,p.objgridac,p.headclear,eps(0));
+[objim,badzone,oxs,oys,goxs,goys] = g_arena_getbadzone(arenafn,p.objgridac,p.headclear,eps(0));
 oxs = p.arenascale*oxs/1000;
 oys = p.arenascale*oys/1000;
 
@@ -268,7 +268,7 @@ delete(g)
 % pr.stx = xoff+mean(clx(1:2));
 % pr.sty = yoff+mean(cly(1:2));
 
-% [objim,~,oxs,oys] = gantry_getbadzoneim(arenafn,p.objgridac,p.headclear,p.zht);
+% [objim,~,oxs,oys] = g_arena_getbadzone(arenafn,p.objgridac,p.headclear,p.zht);
 % oxs = p.arenascale*oxs/1000;
 % oys = p.arenascale*oys/1000;
 %

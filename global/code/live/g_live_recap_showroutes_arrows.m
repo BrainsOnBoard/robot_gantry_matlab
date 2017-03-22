@@ -12,7 +12,7 @@ th = cell2mat(th);
 isbad = cell2mat(isbad);
 p = pr.routedat_p;
 
-[objim,~,oxs,oys] = gantry_getbadzoneim(wharena,p.objgridac,p.headclear);
+[objim,~,oxs,oys] = g_arena_getbadzone(wharena,p.objgridac,p.headclear);
 oxs = oxs*p.arenascale/1000;
 oys = oys*p.arenascale/1000;
 

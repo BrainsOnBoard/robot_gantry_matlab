@@ -1,8 +1,8 @@
-function [objim,badzone,oxs,oys,goxs,goys]=gantry_getbadzoneim(arenafn,objgridac,headclear,zht)
+function [objim,badzone,oxs,oys,goxs,goys]=g_arena_getbadzone(arenafn,objgridac,headclear,zht)
 if nargin < 4
     zht = 0;
 end
-objmap = gantry_getobjmatrix_3d(arenafn,objgridac);
+objmap = g_arena_getobjverts(arenafn,objgridac);
 pts = objmap>0 & objmap >= zht;
 goodzone = conv2(single(pts),ones(ceil(headclear/objgridac),'single'),'same')==0;
 objim = repmat(~pts,1,1,3);
