@@ -22,7 +22,7 @@ figure(1)
 for i = 1:length(diffsi)
     clf
     
-    im = imresize(imdb_getim3d(whd,imxi(diffsi(i)),imyi(diffsi(i)),zi,[]),imsz,'bilinear');
+    im = imresize(g_imdb_getim(whd,imxi(diffsi(i)),imyi(diffsi(i)),zi,[]),imsz,'bilinear');
     imhisteq = histeq(im);
     
     alsubplot(3,1,1,1)

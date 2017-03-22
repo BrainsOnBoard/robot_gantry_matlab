@@ -73,7 +73,7 @@ while true
     [minvals,minima] = min(cridfs(:,[1 end]));
 
     alsubplot(1,[1 2])
-    im = imresize(imdb_getim3d(whd,x,y,z),imsz);
+    im = imresize(g_imdb_getim(whd,x,y,z),imsz);
     imshow(im)
     title('image')
     

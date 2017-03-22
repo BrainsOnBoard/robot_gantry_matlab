@@ -1,4 +1,4 @@
-function fr=imdb_getim3d(whd,x,y,z,crop)
+function fr=g_imdb_getim(whd,x,y,z,crop)
 try
     if isempty(z)
         load(fullfile(whd,sprintf('im_%03d_%03d.mat',y,x)))

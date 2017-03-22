@@ -127,7 +127,7 @@ else
 end
 
     function loadedim=loadim(x,y,z)
-        loadedim = imdb_getim3d(whd,x,y,z,crop);
+        loadedim = g_imdb_getim(whd,x,y,z,crop);
         if ~isempty(loadedim)
             loadedim = imresize(loadedim,newsz,'bilinear');
         end
