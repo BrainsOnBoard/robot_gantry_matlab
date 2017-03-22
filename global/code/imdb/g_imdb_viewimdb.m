@@ -23,8 +23,10 @@ while true
     if fex(curx,cury,curz)
         load(fullfile(whd,sprintf('im_%03d_%03d_%03d.mat',curx,cury,curz)));
         imagesc(fr)
+        colormap gray
         axis equal tight
         grid on
+        title('press "w" to increase height and "s" to decrease')
     end
     
     subplot(2,1,1)
