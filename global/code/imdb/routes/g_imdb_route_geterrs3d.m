@@ -1,4 +1,4 @@
-function [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,pxsnx,pxsny,pxsnth,isnew]=imdb_route_geterrs3d(shortwhd,routenum,res,zht,useinfomax,forcegen)
+function [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,pxsnx,pxsny,pxsnth,isnew]=g_imdb_route_geterrs3d(shortwhd,routenum,res,zht,useinfomax,forcegen)
 if nargin < 5
     forcegen = false;
 end
@@ -12,7 +12,7 @@ if useinfomax
 else
     infomaxstr = '';
 end
-figdatfn = fullfile(g_dir_imdb_routes_figdata,sprintf('wrapped_imdb_route_geterrs_%s_%03d_res%03d_z%d%s.mat',shortwhd,routenum,res,zht,infomaxstr));
+figdatfn = fullfile(g_dir_imdb_routes_figdata,sprintf('wrapped_g_imdb_route_geterrs_%s_%03d_res%03d_z%d%s.mat',shortwhd,routenum,res,zht,infomaxstr));
 
 isnew = ~exist(figdatfn,'file');
 if ~isnew && ~forcegen
@@ -24,7 +24,7 @@ else
     
     weight_update_count = 30;
     
-    [snaps,clickis,snx,sny,snth,pxsnx,pxsny,pxsnth,crop,p]=imdb_route_getsnaps3d(shortwhd,routenum,trainheight,res);
+    [snaps,clickis,snx,sny,snth,pxsnx,pxsny,pxsnth,crop,p]=g_imdb_route_getsnaps3d(shortwhd,routenum,trainheight,res);
     zi = find(p.zs==zht);
     
     heads = NaN(length(p.ys),length(p.xs));

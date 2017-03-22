@@ -1,6 +1,9 @@
-function [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,fileexists,allwhsn,ridfs]=imdb_route_getrealsnapserrs3d_debug(shortwhd,arenafn,routenum,res,zht,useinfomax,forcegen)
-if nargin < 5
+function [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew,allwhsn]=g_imdb_route_getrealsnapserrs3d(shortwhd,arenafn,routenum,res,zht,useinfomax,improc,forcegen)
+if nargin < 6
     forcegen = false;
+end
+if nargin < 5
+    improc = 'histeq';
 end
 
 getallwhsn = true;
@@ -16,23 +19,34 @@ if useinfomax
 else
     infomaxstr = '';
 end
-figdatfn = fullfile(g_dir_imdb_routes_figdata,sprintf('wrapped_imdb_route_geterrs_%s_%s_%03d_res%03d_z%d%s.mat',shortwhd,matfileremext(arenafn),routenum,res,zht,infomaxstr));
+if isempty(improc)
+    improcstr = '';
+else
+    improcstr = [improc,'_'];
+end
+figdatfn = fullfile(g_dir_imdb_routes_figdata,sprintf('wrapped_g_imdb_route_geterrs_%s%s_%s_%03d_res%03d_z%d%s.mat',improcstr,shortwhd,matfileremext(arenafn),routenum,res,zht,infomaxstr));
 
 fprintf('target file: %s\n',figdatfn);
-fileexists = varsinmatfile(figdatfn,'ridfs');
-if fileexists && ~forcegen
+isnew = ~exist(figdatfn,'file');
+ridfs = []; % kludge to stop matlab complaining about static workspace
+if ~isnew && ~forcegen
     load(figdatfn);
 else
-    if forcegen && fileexists
+    if forcegen && ~isnew
         warning('generating fig data even though it already exists')
     end
+   
+    imfun = gantry_getimfun(improc);
     
     weight_update_count = 30;
     
-    %     function [snaps,whclick,clx,cly,clth,p,ptr]=imdb_route_getrealsnaps3d(arenafn,routenum)
-    [snaps,clickis,snx,sny,snth]=imdb_route_getrealsnaps3d(arenafn,routenum,res);
+    %     function [snaps,whclick,clx,cly,clth,p,ptr]=g_imdb_route_getrealsnaps3d(arenafn,routenum)
+    [snaps,clickis,snx,sny,snth]=g_imdb_route_getrealsnaps3d(arenafn,routenum,res,imfun);
     load(fullfile(whd,'im_params.mat'),'p')
-    crop = load('gantry_cropparams.mat');
+    if ~any(zht == p.zs)
+        error('invalid height: %f',zht);
+    end
+    
     zi = find(p.zs==zht);
     
     heads = NaN(length(p.ys),length(p.xs));
@@ -50,10 +64,6 @@ else
                 fr = loadim(xi,yi,zi);
                 if ~isempty(fr)
                     heads(yi,xi) = infomax_gethead(fr,[],infomax_wts);
-                    
-                    %                     if(isnan(heads(xi,yi)))
-                    %                         keyboard
-                    %                     end
                 end
                 
                 if progbar
@@ -67,22 +77,13 @@ else
     else
         allwhsn = NaN([size(heads),size(snaps,3)]);
         
-        % select only the points on the route which were clicked on
-        %         snaps = snaps(:,:,clickis);
-        %         snx = snx(clickis);
-        %         sny = sny(clickis);
-        %         snth = atan2(diff(sny),diff(snx));
-        %         snth(end+1) = snth(end);
-        
-        ridfs = NaN(length(p.ys),length(p.xs),360,size(snaps,3));
         for yi = 1:length(p.ys)
             for xi = 1:length(p.xs)
                 fr = loadim(xi,yi,zi);
                 if ~isempty(fr)
                     % function [head,minval,whsn,diffs] = ridfheadmulti(im,imref,snapweighting,angleunit,nth,snths,getallwhsn)
-                    [heads(yi,xi),~,cwhsn,cridfs] = ridfheadmulti(fr,snaps,'wta',[],360,[],getallwhsn);
+                    [heads(yi,xi),~,cwhsn] = ridfheadmulti(fr,snaps,'wta',[],360,[],getallwhsn);
                     allwhsn(yi,xi,:) = shiftdim(cwhsn,-2);
-                    ridfs(yi,xi,:,:) = shiftdim(cridfs,-2);
                 end
                 
                 if progbar
@@ -109,7 +110,7 @@ else
     if ~exist(g_dir_imdb_routes_figdata,'dir')
         mkdir(g_dir_imdb_routes_figdata);
     end
-    save(figdatfn,'imxi','imyi','heads','allwhsn','whsn','snx','sny','snth','p','ridfs','weight_update_count','zht');
+    save(figdatfn,'imxi','imyi','heads','allwhsn','whsn','snx','sny','snth','p','weight_update_count','zht');
 end
 
 snxi = 1+snx(:) * 1000/(p.imsep*20);
@@ -135,7 +136,7 @@ errsel = mindist <= err_corridor;
     function loadedim=loadim(x,y,z)
         loadedim = g_imdb_getim(whd,x,y,z);
         if ~isempty(loadedim)
-            loadedim = imresize(loadedim,newsz,'bilinear');
+            loadedim = im2double(imfun(imresize(loadedim,newsz,'bilinear')));
         end
     end
 end

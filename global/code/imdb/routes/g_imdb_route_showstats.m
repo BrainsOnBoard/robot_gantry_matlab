@@ -1,4 +1,4 @@
-function imdb_route_showstats
+function g_imdb_route_showstats
 
 useinfomax = [false true];
 res = [360 180 90];
@@ -14,7 +14,7 @@ for i = 1:length(useinfomax)
     for j = 1:length(res)
         for k = 1:length(shortwhd)
             for routenum = 1:2
-                [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p] = imdb_route_geterrs(shortwhd{k},routenum,res(j),useinfomax(i),false);                
+                [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p] = g_imdb_route_geterrs(shortwhd{k},routenum,res(j),useinfomax(i),false);                
                 
                 means(i,j,k) = mean(err(errsel));
                 stds(i,j,k) = std(err(errsel));

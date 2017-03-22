@@ -11,8 +11,8 @@ forcegen = false;
 showfig = false;
 
 for i = 1:length(zht)
-    [imxi,imyi,heads,whsn,err1,nearest,dist,snx,sny,snth,errsel,p,isnew,allwhsn] = imdb_route_getrealsnapserrs3d(shortwhd{1},'arena2_pile',routenum,res,zht(i),false,'',forcegen);
-    [imxi,imyi,heads,whsn,err2,nearest,dist,snx,sny,snth,errsel,p,isnew,allwhsn] = imdb_route_getrealsnapserrs3d(shortwhd{1},'arena2_pile',routenum,res,zht(i),false,'histeq',forcegen);
+    [imxi,imyi,heads,whsn,err1,nearest,dist,snx,sny,snth,errsel,p,isnew,allwhsn] = g_imdb_route_getrealsnapserrs3d(shortwhd{1},'arena2_pile',routenum,res,zht(i),false,'',forcegen);
+    [imxi,imyi,heads,whsn,err2,nearest,dist,snx,sny,snth,errsel,p,isnew,allwhsn] = g_imdb_route_getrealsnapserrs3d(shortwhd{1},'arena2_pile',routenum,res,zht(i),false,'histeq',forcegen);
     
     if showfig
         figure

@@ -18,7 +18,7 @@ for useinfomax = [false true]
         for i = 1:length(shortwhd)
             for routenum = 1:2
                 for czht = zht
-                    [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,pxsnx,pxsny,pxsnth,isnew] = imdb_route_geterrs3d(shortwhd{i},routenum,cres,czht,useinfomax,false);
+                    [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,pxsnx,pxsny,pxsnth,isnew] = g_imdb_route_geterrs3d(shortwhd{i},routenum,cres,czht,useinfomax,false);
                     
                     if ~showfigs || (newonly && ~isnew)
                         continue

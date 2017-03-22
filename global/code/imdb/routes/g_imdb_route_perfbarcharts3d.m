@@ -1,4 +1,4 @@
-function imdb_route_perfbarcharts3d
+function g_imdb_route_perfbarcharts3d
 
 useinfomax = [false true];
 res = [90 180 360];
@@ -14,7 +14,7 @@ for i = 1:length(useinfomax)
         for k = 1:length(shortwhd)
             for routenum = 1:2
                 for l = 1:length(zht)
-                    [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p] = imdb_route_geterrs3d(shortwhd{k},routenum,res(j),zht(l),useinfomax(i),false);
+                    [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p] = g_imdb_route_geterrs3d(shortwhd{k},routenum,res(j),zht(l),useinfomax(i),false);
                     
                     means(i,j,k,routenum,l) = mean(err(errsel));
                     stderrs(i,j,k,routenum,l) = stderr(err(errsel));

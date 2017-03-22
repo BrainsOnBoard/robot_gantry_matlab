@@ -1,4 +1,4 @@
-function imdb_route_improc_compare(dosave)
+function g_imdb_route_improc_compare(dosave)
 if nargin < 1
     dosave = false;
 end
@@ -23,8 +23,8 @@ for i = 1:length(useinfomax)
             for l = 1:length(routenums)
                 for m = 1:length(zht)
                     for n = 1:length(improc)
-                        %                     imdb_route_getrealsnapserrs3d(shortwhd{i},'arena2_pile',routenum,cres,czht,useinfomax,false);
-                        [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew] = imdb_route_getrealsnapserrs3d(shortwhd{k},'arena2_pile',routenums(l),res(j),zht(m),useinfomax(i),improc{n},false);
+                        %                     g_imdb_route_getrealsnapserrs3d(shortwhd{i},'arena2_pile',routenum,cres,czht,useinfomax,false);
+                        [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew] = g_imdb_route_getrealsnapserrs3d(shortwhd{k},'arena2_pile',routenums(l),res(j),zht(m),useinfomax(i),improc{n},false);
                         
                         means(i,j,k,l,m,n) = mean(err(errsel));
                         stderrs(i,j,k,l,m,n) = stderr(err(errsel));

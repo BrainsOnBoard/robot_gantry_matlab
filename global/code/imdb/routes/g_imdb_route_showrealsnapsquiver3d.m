@@ -1,4 +1,4 @@
-function imdb_route_showrealsnapsquiver3d(dosave,douseinfomax,improc)
+function g_imdb_route_showrealsnapsquiver3d(dosave,douseinfomax,improc)
 if nargin < 1
     dosave = false;
 end
@@ -25,7 +25,7 @@ for useinfomax = douseinfomax
         for i = 1:length(shortwhd)
             for routenum = routenums
                 for czht = zht
-                    [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew] = imdb_route_getrealsnapserrs3d(shortwhd{i},'arena2_pile',routenum,cres,czht,useinfomax,improc,forcegen);
+                    [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew] = g_imdb_route_getrealsnapserrs3d(shortwhd{i},'arena2_pile',routenum,cres,czht,useinfomax,improc,forcegen);
                     
                     if newonly && ~isnew
                         continue
