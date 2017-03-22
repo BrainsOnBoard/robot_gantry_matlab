@@ -1,4 +1,4 @@
-function imdb3d_unwrap_ims
+function g_imdb_unwrapims
 % clear
 
 load('gantry_centrad.mat','unwrapparams')
