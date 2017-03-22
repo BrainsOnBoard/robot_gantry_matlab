@@ -1,26 +1,42 @@
 function g_imdb_create(varargin)
-% tells the gantry to start capturing a new image database
+%G_IMDB_CREATE   Tells the gantry to start capturing a new image database.
+%
+%   Can optionally be supplied with a number of parameters:
+%
+%     % set the image separation (in mm)
+%     G_IMDB_CREATE('imsep',100);
+%
+%     % specify which arena to use (i.e. where boxes are)
+%     G_IMDB_CREATE('arena','myarenaname.mat')
+%
+%     % resume a previous capture session that crashed (for example)
+%     G_IMDB_CREATE('resume',2); % use second image database created today
+%     G_IMDB_CREATE('resume',{'2017-03-22', 2}); % use database from past
 
+% read parameters
 ip = inputParser;
-ip.addOptional('resume',[]);
+ip.addOptional('dummy',false); % dummy mode for debugging - does everything but capture ims and move gantry
+ip.addOptional('imsep',100);   % separation between images in x,y,z dimensions (in mm)
+ip.addOptional('arena',[]);    % which arena to use
+ip.addOptional('resume',[]);   % resume previous imdb capture session
 ip.parse(varargin{:});
 params = ip.Results;
 
 if isempty(params.resume) % then we're not resuming a previous imdb capture
     p = load('arenadim.mat');
     
-    p.dummy = false;
+    p.dummy = params.dummy;
     
     p.zclear = 50;
     p.zoffs = 50;
     p.objgridac = 10; % mm
     p.headclear = 100; % clearance for head (camera) in mm
-    p.arenafn = 'arena2_pile.mat';
+    p.arenafn = matfileaddext(params.arena);
     
     p.maxV = [240;240;151];
     p.maxA = [20;20;20];
     
-    p.imsep = 100; % mm
+    p.imsep = params.imsep; % mm
     p.xs = 0:p.imsep:p.lim(1);
     p.ys = 0:p.imsep:p.lim(2);
     p.zs = 0:p.imsep:500; %p.lim(3); % +p.zoffs mm
