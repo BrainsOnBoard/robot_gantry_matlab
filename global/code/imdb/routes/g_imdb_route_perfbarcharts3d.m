@@ -107,6 +107,6 @@ showstats(5,inf_means,inf_stds,inf_title)
             title(ctitle)
         end
         
-        gantry_setfigfont
+        g_fig_setfont
     end
 end

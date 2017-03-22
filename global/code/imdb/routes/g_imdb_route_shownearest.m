@@ -34,7 +34,7 @@ for useinfomax = douseinfomax
                     hold on
                     if ~isempty(p.arenafn)
                         load(fullfile(g_dir_arenas,p.arenafn));
-                        drawobjverts(objverts,[],'k')
+                        g_fig_drawobjverts(objverts,[],'k')
                     end
                     
                     anglequiver(p.xs(imxi),p.ys(imyi),snth(nearest));
@@ -48,7 +48,7 @@ for useinfomax = douseinfomax
                         methodstr = 'ridf';
                     end
                     title(sprintf('%s (route %d, res %d, ht %d, %s)', flabel, routenum, cres, czht, methodstr))
-                    gantry_setfigfont
+                    g_fig_setfont
                     
                     figure(2);clf
                     nearim = NaN(length(p.ys),length(p.xs));

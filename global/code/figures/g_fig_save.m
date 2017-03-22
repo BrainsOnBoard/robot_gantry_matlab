@@ -1,5 +1,5 @@
-function cnt=gantry_savefig(ofname,sz,ext,type,r)
-%function cnt=gantry_savefig(ofname,sz,ext,type,r)
+function cnt=g_fig_save(ofname,sz,ext,type,r)
+%function cnt=g_fig_save(ofname,sz,ext,type,r)
 
 global LASTFIGS
 % function savefig(fname,sz,ext,type)

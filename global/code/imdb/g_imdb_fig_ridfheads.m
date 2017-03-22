@@ -43,14 +43,14 @@ flabel = g_imdb_getlabel(whd);
 figure(2);clf
 surf(p.xs,p.ys,idf)
 if dosave
-    gantry_savefig([flabel '_idf'], [16 10]);
+    g_fig_save([flabel '_idf'], [16 10]);
 end
 
 figure(1);clf
 hold on
 if ~isempty(p.arenafn)
     load(fullfile(g_dir_arenas,p.arenafn));
-    drawobjverts(objverts,[],'k')
+    g_fig_drawobjverts(objverts,[],'k')
 end
 anglequiver(p.xs,p.ys,heads);
 plot(p.xs(refxi),p.ys(refyi),'ro','LineWidth',4,'MarkerSize',10)
@@ -58,5 +58,5 @@ axis equal tight
 xlabel('x (mm)')
 ylabel('y (mm)')
 if dosave
-    gantry_savefig([flabel '_ridf_quiver'], [10 10]);
+    g_fig_save([flabel '_ridf_quiver'], [10 10]);
 end

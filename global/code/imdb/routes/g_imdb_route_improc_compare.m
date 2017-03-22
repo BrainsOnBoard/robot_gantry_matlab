@@ -54,9 +54,9 @@ for i = 1:length(useinfomax)
     xlabel('Test height (mm)')
     ylabel('Error (deg)')
     title(alglabels{i})
-    gantry_setfigfont
+    g_fig_setfont
     
     if dosave
-        gantry_savefig(sprintf('%s_%s',mfilename,alglabels{i}),[20 10]);
+        g_fig_save(sprintf('%s_%s',mfilename,alglabels{i}),[20 10]);
     end
 end

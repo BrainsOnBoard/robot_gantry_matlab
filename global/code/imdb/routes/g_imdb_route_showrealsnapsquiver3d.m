@@ -38,7 +38,7 @@ for useinfomax = douseinfomax
                     hold on
                     if ~isempty(p.arenafn)
                         load(fullfile(g_dir_arenas,p.arenafn));
-                        drawobjverts(objverts,[],'k')
+                        g_fig_drawobjverts(objverts,[],'k')
                     end
 
 %                     plot(p.xs(imxi(~errsel)),p.ys(imyi(~errsel)),'b+')
@@ -55,7 +55,7 @@ for useinfomax = douseinfomax
                         methodstr = 'ridf';
                     end
                     title(sprintf('%s (route %d, res %d, ht %d, %s)', flabel, routenum, cres, czht, methodstr))
-                    gantry_setfigfont
+                    g_fig_setfont
                     
                     if dosave
                         if isempty(improc)
@@ -68,7 +68,7 @@ for useinfomax = douseinfomax
                         else
                             algorithmstr = 'pm';
                         end
-                        gantry_savefig(sprintf('%s%s_%s_route%d_res%03d_z%d_ridf_quiver%s',improcstr,algorithmstr,flabel,routenum,cres,czht),[10 10]);
+                        g_fig_save(sprintf('%s%s_%s_route%d_res%03d_z%d_ridf_quiver%s',improcstr,algorithmstr,flabel,routenum,cres,czht),[10 10]);
                     else
                         try
                             ginput(1);

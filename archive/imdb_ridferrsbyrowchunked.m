@@ -47,7 +47,7 @@ figure(2*whfig);clf
 hold on
 if ~isempty(p.arenafn)
     load(p.arenafn);
-    drawobjverts(objverts,'k')
+    g_fig_drawobjverts(objverts,'k')
 end
 anglequiver(p.xs,p.ys,fd.heads);
 plot(p.xs(refxi),p.ys(refyi),'ro','LineWidth',4,'MarkerSize',10)

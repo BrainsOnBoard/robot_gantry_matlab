@@ -47,5 +47,5 @@ end
 title(sprintf('arena: %s; route: %d; weight: %s',wharena,whroute,pr.snapweighting),'interpreter','none')
 
 if dosave
-    savefig(sprintf('showroute_%s_%03d',wharena,whroute),[20 20])
+    g_fig_save(sprintf('showroute_%s_%03d',wharena,whroute),[20 20])
 end

@@ -1,4 +1,4 @@
-function drawobjverts(objverts,arenascale,linestyle)
+function g_fig_drawobjverts(objverts,arenascale,linestyle)
 if nargin < 3
     linestyle = 'b';
 end

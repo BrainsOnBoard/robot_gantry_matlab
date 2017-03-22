@@ -57,5 +57,5 @@ xlabel('x (m)')
 ylabel('y (m)')
 zlabel('r.m.s. image difference')
 if dosave
-    gantry_savefig(sprintf('%s_idf_z%03',flabel,whz),[10 10]);
+    g_fig_save(sprintf('%s_idf_z%03',flabel,whz),[10 10]);
 end

@@ -33,7 +33,7 @@ plot(gx,gy,'r.',imx,imy,'g.','MarkerSize',10)
 title('Click where you want snapshots and press return to finish');
 
 load(fullfile(g_dir_arenas,p.arenafn),'objverts');
-drawobjverts(objverts,[],'k');
+g_fig_drawobjverts(objverts,[],'k');
 
 snx = [];
 sny = [];

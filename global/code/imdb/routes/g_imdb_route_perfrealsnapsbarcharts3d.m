@@ -122,10 +122,10 @@ showstats(5,inf_means,inf_stds,3)
         
         title(cattitles{whcat})
         
-        gantry_setfigfont
+        g_fig_setfont
         
         if dosave
-            gantry_savefig(sprintf('%s%s_%s',improcstr,cattitles{whcat},titles{dim}),[20 10]);
+            g_fig_save(sprintf('%s%s_%s',improcstr,cattitles{whcat},titles{dim}),[20 10]);
         end
     end
 end

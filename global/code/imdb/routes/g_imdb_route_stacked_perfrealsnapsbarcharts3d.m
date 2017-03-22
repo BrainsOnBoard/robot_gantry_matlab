@@ -41,11 +41,11 @@ h(2).FaceColor = 'k';
 legend({'Perfect memory','Infomax'},'Location','northwest')
 xlabel('Test height (mm)')
 ylabel('Error (deg)')
-gantry_setfigfont
+g_fig_setfont
 
 if dosave
     if ~empty(improc)
         improc(end+1) = '_';
     end
-    gantry_savefig([improc,'pm_inf_height'],[20 10]);
+    g_fig_save([improc,'pm_inf_height'],[20 10]);
 end

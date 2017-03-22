@@ -31,7 +31,7 @@ for i = 1:length(whroute)
                 [oxs,oys] = ndgrid(p.xs*rd.p.arenascale/1000,p.ys*rd.p.arenascale/1000);
                 
                 subplot(fignrow,ceil(length(p.zs)/fignrow),zi);
-                drawobjverts(p.arenafn,rd.p.arenascale,'g')
+                g_fig_drawobjverts(p.arenafn,rd.p.arenascale,'g')
                 hold on
                 anglequiver(oxs,oys,heads);
                 plot(rd.clx,rd.cly,'r+')
