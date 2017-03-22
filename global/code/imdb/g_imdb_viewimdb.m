@@ -1,5 +1,4 @@
-
-clear
+function g_imdb_viewimdb
 
 whd = g_imdb_choosedb;
 load(fullfile(whd,'im_params.mat'))
