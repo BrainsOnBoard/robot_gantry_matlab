@@ -4,6 +4,10 @@ function [whd,whdshort,label]=g_imdb_choosedb
 ddir = g_dir_imdb;
 d = dir(fullfile(ddir,'imdb_*'));
 
+if isempty(d)
+    error('no image databases found');
+end
+
 ds = {};
 labels = {};
 for i = 1:length(d)
