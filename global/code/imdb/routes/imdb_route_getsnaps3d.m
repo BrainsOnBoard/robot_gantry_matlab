@@ -29,7 +29,7 @@ snaps = zeros([newimsz,length(pxsnx)],'uint8');
 
 %     figure(1);clf
 for i = 1:length(pxsnx)
-    csnap = g_imdb_getim(whd,pxsnx(i),pxsny(i),zi,crop);
+    csnap = g_imdb_getim(whd,pxsnx(i),pxsny(i),zi);
     snaps(:,:,i) = imresize(circshift(csnap,round(pxsnth(i) * imw / (2*pi)),2),newimsz,'bilinear');
     
     %         ind = 2*(i-1)+1;
