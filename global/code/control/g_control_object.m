@@ -107,7 +107,7 @@ classdef g_control_object < handle
                 disp('RUNNING IN SIMULATION MODE')
             end
             
-            disp(' ');disp('Preparing robot');disp(' ')
+            fprintf('\nInitialising gantry robot...\n');
             if ~g.simulate
                 g.openGantry();
                 if do_home_gantry
@@ -132,7 +132,7 @@ classdef g_control_object < handle
                     end
                     R = double(get(p,'Value'));
                 else
-                    error('You may not create a Gantry object without first loading the ADS1240 PCI library')
+                    error('You may not create a g_control_object without first loading the ADS1240 PCI library')
                 end
                 g.speedRatio = 8000000 / R;
             end
@@ -210,6 +210,7 @@ classdef g_control_object < handle
             g.rundata.inner_radius = 111.6857;
             g.rundata.outer_radius = 180;
             
+            fprintf('Initialisation complete!\n\n')
         end
         
         function delete(g)
@@ -492,6 +493,7 @@ classdef g_control_object < handle
             if g.simulate
                 disp('SIMULATE: HOMING GANTRY')
             else
+                disp('Homing gantry...')
                 % this will be the place to set up the gantry object, with conversion
                 % methods etc.
                 % safe speeds, axis limits, accelerations and so on also belong to that
@@ -507,7 +509,6 @@ classdef g_control_object < handle
                 
                 %% move z-axis up to safe position
                 if ~disableZ
-                    disp('   Driving z-axis to upper limit switch')
                     e = calllib('ADS1240', 'P1240MotChgDV', 0, 4, 1000); % set z-axis speed
                     if e
                         g.gantryErrors(e, 'setting z-axis motor speed')
@@ -521,7 +522,6 @@ classdef g_control_object < handle
                     while calllib('ADS1240', 'P1240MotAxisBusy', 0, 7) % DOES '7' COVER ALL THREE AXES?
                     end
                 else
-                    disp(' ')
                     reply = input('Z-axis disabled mode. You are about to home in X and Y without first retracting in Z. Is robot''s path clear? y/n [y]:','s');
                     if isempty(reply)
                         reply = 'n';
@@ -536,12 +536,11 @@ classdef g_control_object < handle
                 % IS IT POSSIBLE TO CHECK WHETHER THE AXIS IS ON THE LIMIT SWITCH?????
                 
                 %% home in XY plane
-                disp('   Homing x-axis')
                 e = calllib('ADS1240', 'P1240MotHome', 0, 1); % home x axis - position seems to be automatically
                 if e
                     g.gantryErrors(e, 'homing x-axis')
                 end
-                disp('   Homing y-axis')
+
                 e = calllib('ADS1240', 'P1240MotHome', 0, 2); % home y
                 if e
                     g.gantryErrors(e, 'homing y-axis')
@@ -567,11 +566,9 @@ classdef g_control_object < handle
                     %                 ystatus = get(p,'Value');
                     %                 disp(['Y status ' num2str(ystatus)])
                 end
-                disp('     x and y-axes are home')
                 
                 %% home Z axis
                 if ~disableZ
-                    disp('   Homing z-axis')
                     e = calllib('ADS1240', 'P1240MotHome', 0, 4); % home z
                     if e
                         g.gantryErrors(e, 'homing z-axis')
@@ -583,11 +580,10 @@ classdef g_control_object < handle
                         %                 disp(['Z status ' num2str(zstatus)])
                     end
                 end
-                disp('     z-axis is home')
                 
                 % confirm positions are all 0? this guarantees nothing!!!!!!!
                 
-                disp(' '); disp('Robot is ready')
+                disp('Gantry homed successfully.')
             end
         end
         
@@ -863,8 +859,6 @@ classdef g_control_object < handle
                 e = calllib('ADS1240', 'P1240MotDevClose', 0);
                 if e
                     g.gantryErrors(e, 'closing PCI device')
-                else
-                    disp(' '); disp('   PCI device is now closed')
                 end
                 
                 unloadlibrary 'ADS1240'
@@ -874,8 +868,7 @@ classdef g_control_object < handle
             else
                 disp(' '); disp('PCI device was already closed')
             end
-            disp('   Library is now unloaded');disp(' ')
-            disp('Robot is disconnected');disp(' ')
+            fprintf('Disconnected from robot gantry.\n\n');
         end
         
         function openGantry(g)
@@ -897,9 +890,7 @@ classdef g_control_object < handle
             
             % open the library
             [notfound,warnings] = loadlibrary('C:\Windows\System32\ADS1240.dll', 'ADS1240_1.h');
-            if libisloaded('ADS1240')
-                disp('   Library is now loaded')
-            else
+            if ~libisloaded('ADS1240')
                 error('The library was not successfully loaded')
             end
             
@@ -907,8 +898,6 @@ classdef g_control_object < handle
             e = calllib('ADS1240', 'P1240MotDevOpen', 0);
             if e
                 g.gantryErrors(e, 'opening PCI device')
-            else
-                disp('   PCI device is now open')
             end
             
         end
