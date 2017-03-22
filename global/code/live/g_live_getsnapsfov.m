@@ -1,4 +1,4 @@
-function gantry_rf_getsnapsfov(fov)
+function g_live_getsnapsfov(fov)
 if ~nargin
     fov = 90:90:360;
 end

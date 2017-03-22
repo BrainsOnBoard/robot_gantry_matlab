@@ -27,7 +27,7 @@ for i = 1:length(whroute)
             figure(1)
             clf
             for zi = 1:length(p.zs)
-                [heads,minval,whsn,rd] = gantry_rf_compareimdb_getdata(p.arenafn,whroute(i),imdirshort,zi,snapweighting{j},nth,fov(k));
+                [heads,minval,whsn,rd] = g_live_compareimdb_getdata(p.arenafn,whroute(i),imdirshort,zi,snapweighting{j},nth,fov(k));
                 [oxs,oys] = ndgrid(p.xs*rd.p.arenascale/1000,p.ys*rd.p.arenascale/1000);
                 
                 subplot(fignrow,ceil(length(p.zs)/fignrow),zi);

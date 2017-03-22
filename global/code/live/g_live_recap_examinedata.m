@@ -1,4 +1,4 @@
-function gantry_rf_recap_examinedata
+function g_live_recap_examinedata
 % clear
 
 wharena = 'arena1_boxes';

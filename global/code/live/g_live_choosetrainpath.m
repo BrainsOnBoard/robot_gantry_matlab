@@ -1,4 +1,4 @@
-function gantry_rf_choosetrainpath(arenafn,objgridac,headclear)
+function g_live_choosetrainpath(arenafn,objgridac,headclear)
 % clear
 % arenafn = 'arena1_boxes.mat';
 % objgridac = 10; % mm

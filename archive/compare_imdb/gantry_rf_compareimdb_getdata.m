@@ -1,4 +1,4 @@
-function [heads,minval,whsn,rd]=gantry_rf_compareimdb_getdata(arenafn,whroute,imdirshort,zi,snwstr,nth,fov,p)
+function [heads,minval,whsn,rd]=g_live_compareimdb_getdata(arenafn,whroute,imdirshort,zi,snwstr,nth,fov,p)
 imdir = fullfile(mfiledir,imdirshort);
 if nargin < 8
     load(fullfile(imdir,'im_params.mat'));

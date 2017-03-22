@@ -1,4 +1,4 @@
-function gantry_rf_train(arenafn,routenum)
+function g_live_train(arenafn,routenum)
 
 cd(fullfile(mfiledir,'../..'));
 
@@ -52,5 +52,5 @@ delete(g)
 
 disp('Unwrapping images...')
 for curroute=routenum
-    gantry_rf_uwsnaps(arenafn,curroute)
+    g_live_uwsnaps(arenafn,curroute)
 end

@@ -1,4 +1,4 @@
-function gantry_rf_compareimdb_snapmap
+function g_live_compareimdb_snapmap
 % clear
 
 % p.arenafn = [];
@@ -18,5 +18,5 @@ load(fullfile(imdir,'im_params.mat'));
 
 whroute = input('Enter which route num: ');
 
-[heads,minval,whsn,rd]=gantry_rf_compareimdb_getdata(p.arenafn,whroute,imdirshort,zi,snapweighting,nth,fov);
+[heads,minval,whsn,rd]=g_live_compareimdb_getdata(p.arenafn,whroute,imdirshort,zi,snapweighting,nth,fov);
 

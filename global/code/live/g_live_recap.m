@@ -1,4 +1,4 @@
-function gantry_rf_recap(fnind,sttrial,stoffs)
+function g_live_recap(fnind,sttrial,stoffs)
 % clear
 if ~nargin
     sttrial = 1;

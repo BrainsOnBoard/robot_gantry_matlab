@@ -1,4 +1,4 @@
-% function gantry_rf_showtrainpath
+% function g_live_showtrainpath
 clear
 
 arenafn = []; %'arena1_boxes';

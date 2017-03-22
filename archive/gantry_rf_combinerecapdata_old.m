@@ -1,4 +1,4 @@
-function gantry_rf_combinerecapdata
+function g_live_combinerecapdata
 
 arenafn = [];
 whroute = 5;
