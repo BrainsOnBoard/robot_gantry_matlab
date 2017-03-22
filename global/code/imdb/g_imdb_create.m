@@ -99,7 +99,7 @@ if ~p.dummy
     g.home_gantry(false);
 end
 
-if nargin
+if ~isempty(params.resume)
     nimtoget = nim-length(dir(fullfile(imdirrt,'im_*_*_*.mat')));
 else
     nimtoget = nim;
