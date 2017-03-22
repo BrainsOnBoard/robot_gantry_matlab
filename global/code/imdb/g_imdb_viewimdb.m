@@ -1,4 +1,6 @@
 function g_imdb_viewimdb
+% Allows the user to view an image database interactively. Views can be
+% cycled through with keypresses.
 
 whd = g_imdb_choosedb;
 load(fullfile(whd,'im_params.mat'))

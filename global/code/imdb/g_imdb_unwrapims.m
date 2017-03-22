@@ -1,5 +1,6 @@
 function g_imdb_unwrapims
-% clear
+% Unwraps all the images for stored image databases. The user shouldn't
+% need to call this function.
 
 load('gantry_centrad.mat','unwrapparams')
 crop = load('gantry_cropparams.mat');

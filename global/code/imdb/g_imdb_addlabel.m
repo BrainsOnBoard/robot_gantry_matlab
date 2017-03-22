@@ -1,5 +1,6 @@
 function g_imdb_addlabel
-% clear
+% adds a label to describe an image database (e.g. what was in the arena,
+% etc.)
 
 [whd,shortdn] = g_imdb_choosedb;
 if ~iscell(whd)

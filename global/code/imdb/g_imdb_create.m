@@ -1,4 +1,6 @@
 function g_imdb_create(olddate,oldind)
+% tells the gantry to start capturing a new image database
+
 if nargin
     if isempty(olddate)
         olddate = datestr(now,'yyyy-mm-dd');

@@ -1,4 +1,8 @@
 function g_imdb_fig_idf(whdshort,whz,dosave)
+% function g_imdb_fig_idf(whdshort,whz,dosave)
+%
+% Show IDF for a given image database. All parameters optional.
+
 if nargin < 3
     dosave = false;
 end

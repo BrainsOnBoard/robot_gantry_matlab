@@ -1,5 +1,8 @@
 function [whd,whdshort,label]=g_imdb_choosedb
-%function [whd,whdshort,label]=g_imdb_choosedb
+% function [whd,whdshort,label]=g_imdb_choosedb
+%
+% gets the directory name (and label) for an image database chosen by the
+% user
 
 ddir = g_dir_imdb;
 d = dir(fullfile(ddir,'imdb_*'));

@@ -1,4 +1,8 @@
 function g_imdb_fig_ridfheads(whdshort,whz,dosave)
+% function g_imdb_fig_ridfheads(whdshort,whz,dosave)
+%
+% Show RIDF headings for a given image database. All parameters optional.
+
 if nargin < 3
     dosave = false;
 end
