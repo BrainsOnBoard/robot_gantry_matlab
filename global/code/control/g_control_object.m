@@ -1,15 +1,21 @@
 classdef g_control_object < handle
-    %%GANTRY A class to handle various aspects of interaction with the gantry
-    %robot.
-    % This primary reason for this class is so that we have a safe and
-    % consistent procedure for the storage, access and use of states and
-    % conversion factors pertaining to the gantry robot...
+    %G_CONTROL_OBJECT   A class for interfacing with the gantry robot.
     %
-    % For example...
-    %   Lots of boring detail on the public methods...
+    %  Example:
+    %     % initialise gantry object and connect to robot
+    %     g = G_CONTROL_OBJECT;
     %
-    % Note: I had to extend handle here in order for the destructor (delete
-    % method) to be called.
+    %     % moves gantry to the specified x,y,z location (in mm)
+    %     g.move(0,100,200);
+    %
+    %     % get the current view without preprocessing (i.e. no unwrapping)
+    %     im = g.get_frame;
+    %
+    %     % optionally move gantry to its home position
+    %     g.home_gantry;
+    %
+    %     % delete gantry object when finished, to close connection
+    %     delete(g);
     
     properties (GetAccess=public, SetAccess=private)
         alex_offset = [98 96 0]';
@@ -68,11 +74,6 @@ classdef g_control_object < handle
     methods(Access = public)
         
         % constructor
-        
-        % PERHAPS I WILL ALLOW THE PASSING OF SOME ARGUMENTS
-        % FOR EXAMPLE, SUBJECT TO SOME SAFE MAXIMUMS I SET I CAN ALLOW THE
-        % USER TO SET THEIR OWN MAXIMUM VELOCITIES AND SO ON?
-        
         function g = g_control_object(debug, do_home_gantry, disableZ, acuity, maxV, maxA, showvidpreview, simulate)
             
             if nargin < 8 || isempty(simulate)
@@ -243,11 +244,7 @@ classdef g_control_object < handle
             end
             
         end
-        
-        %         function vel = getVelocity(g)
-        % THIS FUNCTION SEEMED A GOOD IDEA, BUT GIVEN THAT THE MACHINE (OR THE PCI CARD) LIES ABOUT ITS POSITION AS WELL AS ITS SPEED, THIS MAY BE A WASTE OF TIME
-        %         end
-        
+
         function speed = getSpeed(g, sel)
             % what about errors from the function calls below??
             % SHOULD THEY BE REPORTED?
@@ -272,13 +269,7 @@ classdef g_control_object < handle
             end
         end
         
-        function frame = getFrame(g)
-            x = 0;y = 0;z = 0;
-            theta = 0;
-            frame = getview(getsnapshot(g.vid),x,y,z,theta,g.rundata);
-        end
-        
-        function frame = getRawFrame(g)
+        function frame = get_frame(g)
             if g.simulate
                 frame = randi(255,576,720,3,'uint8');
             else
@@ -288,41 +279,6 @@ classdef g_control_object < handle
         
         function time = getTime(g)
             time = toc(g.ticID);
-        end
-        
-        function [pos,vel,time,frame] = getData(g,sel,saveData,saveFrame)
-            % NEED TO DEAL WITH SAVING...
-            
-            time = g.getTime();
-            pos = g.getPosition(1);
-            frame = g.getFrame();
-            
-            sel = 0; % getVelocity() IS NOT READY, AND MAY NEVER BE...
-            if sel
-                vel = g.getVelocity(1);
-            else
-                vel = g.getSpeed(1);
-            end
-            
-            if saveData || saveFrame
-                if g.saveDir == ' '
-                    warning('Data cannot be saved. You should use ''startSimulation()'' to set up timer and directory.')
-                else
-                    if saveData
-                        filepath = [g.saveDir '\pos_vel_time.dat'];
-                        fileID = fopen(filepath,'a');
-                        formatSpec = '%6.1f %6.1f %6.1f %6.1f %6.1f %6.1f %9.4f \n';
-                        data = [pos(1) pos(2) pos(3) vel(1) vel(2) vel(3) time];
-                        fprintf(fileID,formatSpec,data);
-                        fclose(fileID);
-                    end
-                    if saveFrame
-                        filepath = [g.saveDir '\' num2str(g.frameCounter) '.bmp'];
-                        imwrite(frame, filepath);
-                        g.frameCounter = g.frameCounter + 1;
-                    end
-                end
-            end
         end
         
         function [pos, realVel, time] = contMove(g, vel)

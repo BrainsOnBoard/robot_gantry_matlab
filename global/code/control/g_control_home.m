@@ -1,4 +1,6 @@
 function g_control_home
+%G_CONTROL_HOME   Returns the gantry to its home position.
+% The gantry is raised before homing.
 
 p.maxV = [240;240;151];
 p.maxA = [20;20;20];

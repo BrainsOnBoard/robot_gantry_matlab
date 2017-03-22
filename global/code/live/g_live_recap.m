@@ -157,7 +157,7 @@ for i = sttrial:pr.ntrialsperroute
         for k = 1:pr.maxnsteps(j)
             fprintf('\nstep %d (%d max) (offset %d/%d) (height %g)\n',k,pr.maxnsteps(j),j,noffs,d.curz)
             
-            fr = gantry_processim(g.getRawFrame,pr.unwrapparams,pr.crop);
+            fr = gantry_processim(g.get_frame,pr.unwrapparams,pr.crop);
             if pr.dohisteq
                 fr = histeq(fr);
             end

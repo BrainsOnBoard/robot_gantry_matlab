@@ -35,7 +35,7 @@ for curroute=routenum
     startprogbar(1,length(clx),[],true);
     for i = 1:length(clx)
         g.move([clx(i);cly(i);ptr.zht])
-        fr = g.getRawFrame;
+        fr = g.get_frame;
         save(fullfile(snapdir,sprintf('%05d_%s.mat',i,datafn)),'fr')
         if progbar
             delete(g)

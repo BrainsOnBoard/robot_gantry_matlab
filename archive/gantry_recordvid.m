@@ -12,7 +12,7 @@ figure(1);clf
 t=[];
 while ishandle(1)
     tic
-    v.writeVideo(g.getRawFrame);
+    v.writeVideo(g.get_frame);
     t=[t,toc];
 end
 v.close;

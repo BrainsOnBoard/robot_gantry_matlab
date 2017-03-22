@@ -73,7 +73,7 @@ catch ex
 end
 
     function view=getview
-        view = gantry_processim(g.getRawFrame,p.uw,p.crop);
+        view = gantry_processim(g.get_frame,p.uw,p.crop);
     end
 
     function succeed=trytomove(movex,movey)

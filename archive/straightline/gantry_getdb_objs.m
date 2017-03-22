@@ -122,7 +122,7 @@ try
                 end
                 movetopoint(curx,cury,p.zht);
                 
-                fr = g.getRawFrame;
+                fr = g.get_frame;
                 save(fullfile(p.imdir,sprintf('im_%03d_%03d.mat',yi,xi)),'fr')
                 
                 lastx = curx;

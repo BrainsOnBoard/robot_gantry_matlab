@@ -222,7 +222,7 @@ try
                 if p.dummy
                     disp('(would be getting frame now...)')
                 else
-                    fr = g.getRawFrame;
+                    fr = g.get_frame;
                     timestamp = now;
                     
                     %                     figure(10);clf
