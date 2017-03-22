@@ -1,13 +1,12 @@
-function g_imdb_create(olddate,oldind)
+function g_imdb_create(varargin)
 % tells the gantry to start capturing a new image database
 
-if nargin
-    if isempty(olddate)
-        olddate = datestr(now,'yyyy-mm-dd');
-    end
-    imdirrt = fullfile(g_dir_imdb,sprintf('wrapped_imdb_%s_%03d',olddate,oldind));
-    load(fullfile(imdirrt,'im_params.mat'));
-else
+ip = inputParser;
+ip.addOptional('resume',[]);
+ip.parse(varargin{:});
+params = ip.Results;
+
+if isempty(params.resume) % then we're not resuming a previous imdb capture
     p = load('arenadim.mat');
     
     p.dummy = false;
@@ -44,9 +43,22 @@ else
         
         save(fullfile(p.imdir,'im_params.mat'),'p')
     end
+else % we're resuming a previous imdb capture
+    if iscell(ip.Results.resume) % input can either be a cell: {'yyyy-mm-dd',index} ...
+        olddate = params.resume{1};
+        oldind = params.resume{2};
+    else % ... or a single number representing the index (and the date is assumed to be today)
+        oldind = params.resume;
+        olddate = datestr(now,'yyyy-mm-dd');
+    end
+    
+    whdshort = sprintf('wrapped_imdb_%s_%03d',olddate,oldind);
+    fprintf('resuming previous session: %s\n', whdshort)
+    
+    imdirrt = fullfile(g_dir_imdb,whdshort);
+    load(fullfile(imdirrt,'im_params.mat')); % load parameters from previous capture
 end
 
-% Gantry(debug, home_gantry, disableZ, acuity, maxV, maxA)
 if p.dummy
     disp('RUNNING IN DUMMY MODE - not moving gantry')
 else
