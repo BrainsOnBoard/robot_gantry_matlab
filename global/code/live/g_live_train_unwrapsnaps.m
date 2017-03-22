@@ -1,4 +1,4 @@
-function g_live_uwsnaps(arenafn,whroute)
+function g_live_train_unwrapsnaps(arenafn,whroute)
 
 rfn = sprintf('route_%s_%03d',matfileremext(arenafn),whroute);
 snapdir = fullfile(g_dir_routes_snapshots,['snaps_' rfn]);

@@ -1,4 +1,4 @@
-function g_live_train(arenafn,routenum)
+function g_live_train_capturesnaps(arenafn,routenum)
 
 cd(fullfile(mfiledir,'../..'));
 
@@ -52,5 +52,5 @@ delete(g)
 
 disp('Unwrapping images...')
 for curroute=routenum
-    g_live_uwsnaps(arenafn,curroute)
+    g_live_train_unwrapsnaps(arenafn,curroute)
 end
