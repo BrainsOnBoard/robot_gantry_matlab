@@ -1,17 +1,17 @@
-function g_imdb_create(varargin)
-%G_IMDB_CREATE   Tells the gantry to start capturing a new image database.
+function g_imdb_capture(varargin)
+%G_IMDB_CAPTURE   Tells the gantry to start capturing a new image database.
 %
 %   Can optionally be supplied with a number of parameters:
 %
 %     % set the image separation (in mm)
-%     G_IMDB_CREATE('imsep',100);
+%     G_IMDB_CAPTURE('imsep',100);
 %
 %     % specify which arena to use (i.e. where boxes are)
-%     G_IMDB_CREATE('arena','myarenaname.mat')
+%     G_IMDB_CAPTURE('arena','myarenaname.mat')
 %
 %     % resume a previous capture session that crashed (for example)
-%     G_IMDB_CREATE('resume',2); % use second image database created today
-%     G_IMDB_CREATE('resume',{'2017-03-22', 2}); % use database from past
+%     G_IMDB_CAPTURE('resume',2); % use second image database created today
+%     G_IMDB_CAPTURE('resume',{'2017-03-22', 2}); % use database from past
 
 % read parameters
 ip = inputParser;
