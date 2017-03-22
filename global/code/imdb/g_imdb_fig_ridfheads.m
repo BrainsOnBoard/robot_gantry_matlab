@@ -1,30 +1,30 @@
-function imdb_getridfheads(whdshort, dosave)
-if nargin < 2
+function g_imdb_fig_ridfheads(whdshort,whz,dosave)
+if nargin < 3
     dosave = false;
 end
+if nargin < 2
+    whz = 1;
+end
 if nargin < 1 || isempty(whdshort)
-    [~,whdshort] = g_imdb_choosedb;
+    [whd,whdshort] = g_imdb_choosedb;
+else
+    whd = fullfile(g_dir_imdb,whdshort);
 end
 
-whd = fullfile(g_dir_imdb,whdshort);
-
 load(fullfile(whd,'im_params.mat'));
-load('gantry_cropparams.mat');
 
 refxi = round(1+(length(p.xs)-1)/2);
 refyi = round(1+(length(p.ys)-1)/2);
 
-load(fullfile(whd,sprintf('im_%03d_%03d.mat',refyi,refxi)),'fr');
-reffr = im2gray(fr(y1:y2,:));
+reffr = im2double(g_imdb_getim(whd,refxi,refyi,whz));
 
 [heads,idf] = deal(NaN(length(p.ys),length(p.xs)));
 startprogbar(10,numel(idf))
 for yi = 1:size(idf,1)
     for xi = 1:size(idf,2)
-        fname = fullfile(whd,sprintf('im_%03d_%03d.mat',yi,xi));
-        if exist(fname,'file')
-            load(fname,'fr');
-            [heads(yi,xi),idf(yi,xi)] = ridfhead(fr(y1:y2,:),reffr);
+        fr = g_imdb_getim(whd,refxi,refyi,whz);
+        if ~isempty(fr)
+            [heads(yi,xi),idf(yi,xi)] = ridfhead(im2double(g_imdb_getim(whd,xi,yi,whz)),reffr);
         end
         
         if progbar
