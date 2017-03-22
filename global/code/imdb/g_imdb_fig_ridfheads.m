@@ -6,7 +6,7 @@ if nargin < 2
     whz = 1;
 end
 if nargin < 1 || isempty(whdshort)
-    [whd,whdshort] = g_imdb_choosedb;
+    whd = g_imdb_choosedb;
 else
     whd = fullfile(g_dir_imdb,whdshort);
 end
