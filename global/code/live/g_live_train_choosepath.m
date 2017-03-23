@@ -23,16 +23,18 @@ p.snapsep = 0.50; % m
 p.stepsize = p.snapsep;
 p.routeinterpdist = 0.01; % m
 p.recapstartoffs = -p.stepsize; % how far along route to start recap (so as not to start at the same pos as first snap)
-p.datadir = g_dir_routes;
-
-cd(fullfile(mfiledir,'../..'));
+p.datadir = g_dir_routes; % where should we save data?
 
 if ~exist(p.datadir,'dir')
     mkdir(p.datadir)
 end
 
+% get details of where objects are in arena, and the "bad zone" (the area
+% within which the gantry cannot go, which encompasses the area around
+% boxes)
 [objim,badzone,oxs,oys,goxs,goys] = g_arena_getbadzone(p.arenafn,p.objgridac,p.headclear);
 
+% scale the object xs and ys to our scale
 oxs = p.arenascale*oxs/1000;
 oys = p.arenascale*oys/1000;
 goxs = p.arenascale*goxs(:)/1000;
@@ -41,31 +43,35 @@ goys = p.arenascale*goys(:)/1000;
 ipts = 1:numel(badzone);
 [iy,ix] = ind2sub(size(badzone),ipts);
 
-ccnt = 1;
-[clx,cly,cli,whclick] = deal([]);
-
+% xs and ys for drawing circles
 [circx,circy] = pol2cart(linspace(0,2*pi,1000),p.snapsep);
+
+% the physical limits of the arena
 load('arenadim.mat','lim')
-lim = p.arenascale*lim/1000;
+lim = p.arenascale*lim/1000; % convert to our scale
+
+ccnt = 1; % click count (minus bad clicks)
+[clx,cly,cli,whclick] = deal([]);
 [chigher,sgn] = deal(ones(2,1));
 closing = false;
 try
     while true
         figure(1)
-        
-        image(goxs,goys,objim)
+        image(goxs,goys,objim) % show the objects and bad zone
         axis equal
-        set(gca,'YDir','normal')
+        set(gca,'YDir','normal') % y direction is not inverted
         ylim([0 lim(2)])
         xlim([0 lim(1)])
         grid on
         hold on
         
+        % draw circles where snapshots have been taken
         plot(clx,cly,clx,cly,'b+')
         for i = 1:length(cli)
             plot(clx(i)+circx,cly(i)+circy,'b')
         end
         
+        % show in green where user clicked, and parallel routes (startoffs)
         if ccnt >= 3
             plot(rclx,rcly,'g+')
         end
@@ -73,12 +79,13 @@ try
             plot(rclx,rcly,'g')
         end
         
+        % if user has pressed return to finish
         if closing
             break;
         end
         
-        [gx,gy,but] = ginput(1);
-        if ccnt==1
+        [gx,gy,but] = ginput(1); % get user click/keypress
+        if ccnt==1 % first run
             x2 = gx;
             y2 = gy;
         else
@@ -93,10 +100,10 @@ try
                 x1 = clx(lasti1);
                 y1 = cly(lasti1);
                 
-                morig = (y2-y1)/(x2-x1);
-                mperp = -1/morig;
-                corig = y2-morig*x2;
-                cperp = y2-mperp*x2;
+                morig = (y2-y1)/(x2-x1); % gradient of current route line
+                corig = y2-morig*x2; % y intercept
+                mperp = -1/morig; % perpendicular gradient, for parallel routes
+                cperp = y2-mperp*x2; % perpendicular y intercept
                 
                 sgnold = sgn;
                 sgn(2) = sign(dx1);
