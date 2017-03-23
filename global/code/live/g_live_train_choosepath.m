@@ -1,9 +1,14 @@
-function g_live_train_choosepath(arenafn)
+function g_live_train_choosepath(arenafn,startoffs)
 %G_LIVE_TRAIN_CHOOSEPATH   Set the training path for a new experiment.
 %   G_LIVE_TRAIN_CHOOSEPATH('arena1.mat') specifies the arena (where
 %   objects are).
 %   If no arena is specified, the arena is assumed to be empty.
 
+if nargin < 2
+    p.startoffs = 0;
+else
+    p.startoffs = startoffs;
+end
 if nargin < 1
     p.arenafn = [];
 else
@@ -20,16 +25,11 @@ p.routeinterpdist = 0.01; % m
 p.recapstartoffs = -p.stepsize; % how far along route to start recap (so as not to start at the same pos as first snap)
 p.datadir = g_dir_routes;
 
-p.startoffs = -2:2;
-
 cd(fullfile(mfiledir,'../..'));
 
 if ~exist(p.datadir,'dir')
     mkdir(p.datadir)
 end
-
-% load(p.arenafn,'objverts')
-% objxy = cellfun(@(a)reshape(a,2,length(a)/2)',objverts,'UniformOutput',false);
 
 [objim,badzone,oxs,oys,goxs,goys] = g_arena_getbadzone(p.arenafn,p.objgridac,p.headclear);
 
@@ -53,9 +53,6 @@ try
     while true
         figure(1)
         
-        %         subplot(1,2,1)
-        %         hold off
-        
         image(goxs,goys,objim)
         axis equal
         set(gca,'YDir','normal')
@@ -75,10 +72,6 @@ try
         if ccnt >= 4 || (ccnt==3 && closing)
             plot(rclx,rcly,'g')
         end
-        
-        %         subplot(1,2,2)
-        %         imshow(clickim)
-        %         set(gca,'YDir','normal')
         
         if closing
             break;
@@ -144,12 +137,6 @@ try
                 else
                     closing = true;
                 end
-                
-                %                 x = [0;100];
-                %                 yorig = morig*x+corig;
-                %                 yperp = mperp*x+cperp;
-                %                 plot(x,yorig,'r',x,yperp,'r',xint,yint,'k+',x,bsxfun(@plus,morig*x,cpar),'m')
-                %                 keyboard
             end
         elseif but==1 % left click
             curdx = gx-x2;
@@ -205,19 +192,6 @@ try
                 
                 sgn(1) = sgn(2);
                 chigher(1) = chigher(2);
-                
-                %                 h = round(hypot(diff(rcly(end-1:end,:)),diff(rclx(end-1:end,:)))/p.routeinterpdist);
-                %                 [rcurx,rcury] = deal(cell(length(p.startoffs),1));
-                %                 for i = 1:length(p.startoffs)
-                %
-                %                 end
-                %                 rrs = p.routeinterpdist*(0:h);
-                %                 [rxoff,ryoff] = pol2cart(cth,rrs);
-                %                 rcurx = rclx(end-1,:)+rxoff;
-                %                 rcury = rcly(end-1,:)+ryoff;
-                %
-                %                 plot(rcurx,rcury,'r.')
-                %                 keyboard
             end
             
             if ccnt==1
@@ -238,10 +212,6 @@ try
                 ind = [whiist;whiien];
                 clickim = imbwdrawline(false(size(badzone)),ix(ind),iy(ind));
             end
-            
-%             figure(2);clf
-%             imshow(clickim)
-%             keyboard
             
             if any(clickim(:) & badzone(:))
                 rclx = rclx(1:end-1,:);
