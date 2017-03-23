@@ -8,8 +8,6 @@ end
 
 getallwhsn = true;
 
-cd(fullfile(mfiledir,'..','..','..'))
-
 trainheight = 200;
 
 whd = fullfile(g_dir_imdb,shortwhd);
