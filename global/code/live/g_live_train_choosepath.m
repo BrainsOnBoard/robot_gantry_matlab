@@ -1,24 +1,17 @@
-function g_live_train_capturesnaps_choosepath(arenafn,objgridac,headclear)
-% clear
-% arenafn = 'arena1_boxes.mat';
-% objgridac = 10; % mm
-% headclear = 150;
+function g_live_train_choosepath(arenafn)
+%G_LIVE_TRAIN_CHOOSEPATH   Set the training path for a new experiment.
+%   G_LIVE_TRAIN_CHOOSEPATH('arena1.mat') specifies the arena (where
+%   objects are).
+%   If no arena is specified, the arena is assumed to be empty.
 
-if nargin < 3 || isempty(headclear)
-    p.headclear = 150;
-else
-    p.headclear = headclear;
-end
-if nargin < 2 || isempty(objgridac)
-    p.objgridac = 10;
-else
-    p.objgridac = objgridac;
-end
 if nargin < 1
     p.arenafn = [];
 else
     p.arenafn = arenafn;
 end
+
+p.headclear = 150;
+p.objgridac = 10;
 
 p.arenascale = 20; % * true size
 p.snapsep = 0.50; % m

@@ -1,4 +1,9 @@
 function g_live_train_capturesnaps(arenafn,routenum)
+%G_LIVE_TRAIN_CAPTURESNAPS   Use the gantry to get snapshots for specified
+%route.
+%
+%   G_LIVE_TRAIN_CAPTURESNAPS('arena1.mat',1) gets the snapshots for route
+%   1, with objects in arena as specified in arena1.mat
 
 cd(fullfile(mfiledir,'../..'));
 
