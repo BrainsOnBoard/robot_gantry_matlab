@@ -33,10 +33,16 @@ classdef g_control_object < handle
         % MODIFIED BUT A STRUCT obj WILL BE CREATED WITH A MEMBER a WHICH
         % EQUALS 10 - THIS 'GHOST' WILL REPLACE OUR OBJECT! THEREFORE ALL
         % ACCESS TO THIS CLASS WILL BE THROUGH METHODS
+
+        % from constructor parameters
+        simulate;
+        disableZ;
+        debug; % debug mode on or off
+        
+        ticID; % timer ID
+        vid = NaN; % video stream
         
         ratio;
-        
-        simulate;
         
         % ratio from axis measured speed to pulses
         speedRatio;
@@ -54,17 +60,11 @@ classdef g_control_object < handle
         origin_safe;
         limit_safe;
         
-        debug; % debug mode on or off
-        ticID; % timer ID
-        vid = NaN; % video stream
-        
         lastVel = [0;0;0];
         rundata;
         
         saveDir = ' ';
         frameCounter = 1;
-        
-        disableZ = 0;
         
         % private properties end
     end
@@ -74,34 +74,22 @@ classdef g_control_object < handle
     methods(Access = public)
         
         % constructor
-        function g = g_control_object(debug, do_home_gantry, disableZ, acuity, maxV, maxA, showvidpreview, simulate)
+        function g = g_control_object(varargin)
+            ip = inputParser;
+            ip.addOptional('debug',false);
+            ip.addOptional('homeGantry',true);
+            ip.addOptional('disableZ',false);
+            ip.addOptional('acuity',1);
+            ip.addOptional('maxA',[20;20;20]);
+            ip.addOptional('maxV',[240;240;151]);
+            ip.addOptional('vidpreview',false);
+            ip.addOptional('simulate',false);
+            ip.parse(varargin{:});
+            res = ip.Results;
             
-            if nargin < 8 || isempty(simulate)
-                g.simulate = false;
-            else
-                g.simulate = simulate;
-            end
-            if nargin < 7 || isempty(showvidpreview)
-                showvidpreview = false;
-            end
-            if nargin < 6 || isempty(maxA)
-                maxA = [20;20;20];
-            end
-            if nargin < 5 || isempty(maxV)
-                maxV = [240;240;151];
-            end
-            if nargin < 4 || isempty(acuity)
-                acuity = 1;
-            end
-            if nargin < 3 || isempty(disableZ)
-                disableZ = false;
-            end
-            if nargin < 2 || isempty(do_home_gantry)
-                do_home_gantry = true;
-            end
-            if nargin < 1 || isempty(debug)
-                debug = false;
-            end
+            g.debug = res.debug;
+            g.disableZ = res.disableZ;
+            g.simulate = res.simulate;
             
             if g.simulate
                 disp('RUNNING IN SIMULATION MODE')
@@ -110,14 +98,12 @@ classdef g_control_object < handle
             fprintf('\nInitialising gantry robot...\n');
             if ~g.simulate
                 g.openGantry();
-                if do_home_gantry
-                    g.home_gantry(disableZ);
+                if res.homeGantry
+                    g.home_gantry(res.disableZ);
                 end
             end
-            g.disableZ = disableZ;
             
             g.ticID = tic;
-            g.debug = debug;
             % read properties in from some read-only file
             g.readIni();
             
@@ -136,16 +122,12 @@ classdef g_control_object < handle
                 end
                 g.speedRatio = 8000000 / R;
             end
-            
-            %             if (nargin ~= 4) && (nargin ~= 6)
-            %                 error('Number of arguments to Gantry constructor should be either 4 or 6')
-            %             end
-            
+
             % AS WELL AS SETTING LIMITS FOR VELOCITIES AND ACCELERATIONS,
             % WHAT ABOUT ALSO SETTING THE LIMITS OF THE WORKSPACE?
             
-            maxV = g.mm2pulses(maxV,'XYZ');
-            maxA = g.mm2pulses(maxA,'XYZ');
+            maxV = g.mm2pulses(res.maxV,'XYZ');
+            maxA = g.mm2pulses(res.maxA,'XYZ');
             tempV = zeros(3,1);
             tempA = zeros(3,1);
             for t = 1:3
@@ -173,7 +155,6 @@ classdef g_control_object < handle
             g.maxVel = tempV;
             g.maxAccel = tempA;
             
-            
             g.origin_safe = [g.zone2
                 g.zone2
                 g.zone2];
@@ -199,13 +180,13 @@ classdef g_control_object < handle
                 g.vid=videoinput('winvideo',1,'YUY2_720x576');
                 set(g.vid,'ReturnedColorSpace','rgb');
                 % having the preview window open seems to make frame acquisition faster
-                if nargin>=7 && showvidpreview
+                if res.vidpreview
                     preview(g.vid); % line commented out - AD
                 end
                 start(g.vid);
             end
-            %             pause(4) % WILL THIS BE LONG ENOUGH?
-            g.rundata.acuity = acuity;
+            
+            g.rundata.acuity = res.acuity;
             g.rundata.cent = [362.4114 295.4111];
             g.rundata.inner_radius = 111.6857;
             g.rundata.outer_radius = 180;

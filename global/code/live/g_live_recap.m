@@ -60,9 +60,6 @@ else
     pr.objzht = max(objhts);
 end
 
-pr.maxV = [240;240;151];
-pr.maxA = [20;20;20];
-
 [objim,badzone,oxs,oys,goxs,goys] = g_arena_getbadzone(arenafn,p.objgridac,p.headclear,eps(0));
 oxs = p.arenascale*oxs/1000;
 oys = p.arenascale*oys/1000;
@@ -119,8 +116,7 @@ else
     d.cury = 0;
 end
 
-% g_control_object(debug, home_gantry, disableZ, acuity, maxV, maxA, showvidpreview, simulate)
-g = g_control_object(false,true,false,1,pr.maxV,pr.maxA,false,pr.dummy);
+g = g_control_object;
 
 noffs = length(p.startoffs);
 ntrialtot = noffs*pr.ntrialsperroute;

@@ -9,10 +9,7 @@ cd(fullfile(mfiledir,'../..'));
 
 ptr.zht = 200; % mm
 
-ptr.maxV = [240;240;151];
-ptr.maxA = [20;20;20];
-acuity = 1;
-g = g_control_object(false,true,false,acuity,ptr.maxV,ptr.maxA);
+g = g_control_object;
 
 for curroute=routenum
     datafn = sprintf('route_%s_%03d',arenafn,curroute);

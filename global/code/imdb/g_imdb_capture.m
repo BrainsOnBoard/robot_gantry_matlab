@@ -33,9 +33,6 @@ if isempty(params.resume) % then we're not resuming a previous imdb capture
     p.headclear = 100; % clearance for head (camera) in mm
     p.arenafn = matfileaddext(params.arena);
     
-    p.maxV = [240;240;151];
-    p.maxA = [20;20;20];
-    
     p.imsep = params.imsep; % mm
     p.xs = 0:p.imsep:p.lim(1);
     p.ys = 0:p.imsep:p.lim(2);
@@ -78,7 +75,7 @@ end
 if p.dummy
     disp('RUNNING IN DUMMY MODE - not moving gantry')
 else
-    g = g_control_object(false,false,false,1,p.maxV,p.maxA);
+    g = g_control_object('home',false);
 end
 
 headcleari = ceil(p.headclear/p.objgridac);
