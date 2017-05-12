@@ -1,4 +1,4 @@
-function g_live_getsnapsresfov(imw,fov)
+function g_route_getsnaps(imw,fov)
 if nargin < 2
     fov = 360;
 end
