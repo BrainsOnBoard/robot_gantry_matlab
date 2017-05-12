@@ -1,4 +1,4 @@
-function g_live_getinfomaxweightsfov(imw,improc)
+function g_route_getinfomaxweights(imw,improc)
 if nargin < 2
     improc = '';
 end
