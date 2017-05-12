@@ -1,0 +1,5 @@
+- clean up imdb routes code
+- clean up live code
+- use plain text format (.ini?) for settings, arena params etc. (?)
+- comment
+- add basic documentation
