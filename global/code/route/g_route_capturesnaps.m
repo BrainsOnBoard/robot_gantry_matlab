@@ -52,5 +52,5 @@ delete(g)
 
 disp('Unwrapping images...')
 for curroute=routenum
-    g_live_train_unwrapsnaps(arenafn,curroute)
+    g_route_unwrapsnaps(arenafn,curroute)
 end
