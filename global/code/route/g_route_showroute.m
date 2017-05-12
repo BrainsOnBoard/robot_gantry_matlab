@@ -1,5 +1,5 @@
-function g_live_train_showpath
-%G_LIVE_TRAIN_SHOWPATH   Show stored training paths.
+function g_route_showroute
+%G_ROUTE_SHOWROUTE   Show stored training paths.
 
 arenafn = []; %'arena1_boxes';
 datadir = fullfile(mfiledir,'routedat');
