@@ -1,51 +1,41 @@
-function g_route_getsnaps(imw,fov)
-% for working fov version of code (without imw param though) see
-% g_live_getsnapsfov
-
-if nargin < 2
+function snaps = g_route_getsnaps(arenafn,routenum,imw,fov)
+if nargin < 4
     fov = 360;
 end
-if nargin < 1
+if nargin < 3
     imw = 90;
 end
 
-d = dir(fullfile(g_dir_routes,'route_*.mat'));
+arenafn = matfileremext(arenafn);
 snapdir = g_dir_routes_fovsnaps;
-if ~exist(snapdir,'dir')
-    mkdir(snapdir);
-end
+outfn = fullfile(snapdir,sprintf('snaps_%s_fov%03d_imw%03d.mat',arenafn,fov,imw));
 
-for i = 1:length(d)
-    cfn = fullfile(g_dir_routes,d(i).name);
-    if ~varsinmatfile(cfn,'snaps')
-        warning('snaps not found in %s. skipping.',cfn)
-        continue
-    end
-    
-    load(cfn,'snaps','clx','cly');
+if exist(outfn,'file')
+    load(outfn,'snaps');
+else
+    routefn = fullfile(g_dir_routes, sprintf('route_%s_%03d.mat', arenafn, routenum));
+    load(routefn,'snaps','clx','cly');
     snths = atan2(diff(cly),diff(clx));
     sninds = round(snths*size(snaps,2)/(2*pi));
     sninds(end+1) = sninds(end);
-    for cimw = imw
-        for cfov = fov
-            newsz = round(cimw * [size(snaps,1)/size(snaps,2), cfov/360]);
-            outfn = fullfile(snapdir,sprintf('snaps_%s_fov%03d_imw%03d.mat',matfileremext(d(i).name),cfov,cimw));
-            if exist(outfn,'file')
-                warning('file %s already exists, skipping...',outfn)
-                continue
-            end
-            
-            sz = [newsz,size(snaps,3)];
-            fovsnaps = zeros(sz,'uint8');
-            for j = 1:sz(3)
-                % TODO: make this work for other FOVs
-                shiftim = cshiftcut(snaps(:,:,j),size(snaps,2),sninds(j));
-%                 figure(1);clf
-%                 imshow(shiftim)
-                
-                fovsnaps(:,:,j) = imresize(shiftim,newsz,'bilinear');
-            end
-            savemeta(outfn,'fovsnaps');
-        end
+
+    newsz = round(imw * [size(snaps,1)/size(snaps,2), fov/360]);
+
+    sz = [newsz,size(snaps,3)];
+    snaps2 = zeros(sz,'uint8');
+    for j = 1:sz(3)
+        % TODO: make this work for other FOVs
+        shiftim = cshiftcut(snaps(:,:,j),size(snaps,2),sninds(j));
+    %     figure(1);clf
+    %     imshow(shiftim)
+    %     ginput(1);
+
+        snaps2(:,:,j) = imresize(shiftim,newsz,'bilinear');
     end
+    snaps = snaps2;
+    
+    if ~exist(snapdir,'dir')
+        mkdir(snapdir);
+    end
+    save(outfn,'snaps');
 end
