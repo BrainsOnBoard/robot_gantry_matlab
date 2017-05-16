@@ -7,7 +7,7 @@ if nargin < 3
 end
 
 arenafn = matfileremext(arenafn);
-snapdir = g_dir_routes_fovsnaps;
+snapdir = g_dir_routes_snaps;
 outfn = fullfile(snapdir,sprintf('snaps_%s_fov%03d_imw%03d.mat',arenafn,fov,imw));
 
 if exist(outfn,'file')
