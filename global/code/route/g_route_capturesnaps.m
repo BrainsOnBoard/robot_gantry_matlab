@@ -23,7 +23,7 @@ for curroute=routenum
     g.move([0;0;minht]);
     
     load('gantry_centrad','unwrapparams')
-    snapdir = fullfile(g_dir_routes_snaps_tmp,['snaps_' datafn]);
+    snapdir = fullfile(g_dir_routes_snaps_wrapped,['snaps_' datafn]);
     if exist(snapdir,'dir')
         error('snap dir already exists')
     end
