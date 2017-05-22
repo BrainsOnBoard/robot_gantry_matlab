@@ -19,6 +19,10 @@ ip.addOptional('dummy',false); % dummy mode for debugging - does everything but 
 ip.addOptional('imsep',100);   % separation between images in x,y,z dimensions (in mm)
 ip.addOptional('arena',[]);    % which arena to use
 ip.addOptional('resume',[]);   % resume previous imdb capture session
+ip.addOptional('xlo',0);
+ip.addOptional('xhi',inf);
+ip.addOptional('ylo',0);
+ip.addOptional('yhi',inf);
 ip.addOptional('zs',[]);
 ip.parse(varargin{:});
 params = ip.Results;
@@ -35,8 +39,8 @@ if isempty(params.resume) % then we're not resuming a previous imdb capture
     p.arenafn = matfileaddext(params.arena);
     
     p.imsep = params.imsep; % mm
-    p.xs = 0:p.imsep:p.lim(1);
-    p.ys = 0:p.imsep:p.lim(2);
+    p.xs = max(0,params.xlo):p.imsep:min(p.lim(1),params.xhi);
+    p.ys = max(0,params.ylo):p.imsep:min(p.lim(2),params.yhi);
     if isempty(params.zs)
         p.zs = 0:p.imsep:500; %p.lim(3); % +p.zoffs mm
     else
