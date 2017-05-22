@@ -14,7 +14,7 @@ p.arenafn = 'arena1_boxes.mat';
 fex = false(length(p.ys),length(p.xs));
 for xi = 1:length(p.xs)
     for yi = 1:length(p.ys)
-        fex(yi,xi) = exist(fullfile(g_dir_imdb,'unwrap_imdb_2016-02-05_001',sprintf('im_%03d_%03d.mat',yi,xi)),'file');
+        fex(yi,xi) = exist(fullfile(g_dir_imdb,'imdb_2016-02-05_001',sprintf('im_%03d_%03d.mat',yi,xi)),'file');
     end
 end
 

@@ -6,10 +6,10 @@ dosave = true;
 showfigs = true;
 
 shortwhd={
-    'unwrap_imdb_2016-02-04_002', ... % empty, open
-    'unwrap_imdb_2016-02-09_001', ... % boxes, open
-    'unwrap_imdb_2016-02-09_002', ... % empty, closed
-    'unwrap_imdb_2016-02-05_001'      % boxes, closed
+    'imdb_2016-02-04_002', ... % empty, open
+    'imdb_2016-02-09_001', ... % boxes, open
+    'imdb_2016-02-09_002', ... % empty, closed
+    'imdb_2016-02-05_001'      % boxes, closed
     };
 res = [360 180 90];
 
