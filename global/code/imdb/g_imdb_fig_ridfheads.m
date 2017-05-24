@@ -6,7 +6,7 @@ function g_imdb_fig_ridfheads(whdshort,whz,dosave)
 if nargin < 3
     dosave = false;
 end
-if nargin < 2
+if nargin < 2 || isempty(whz)
     whz = 1;
 end
 if nargin < 1 || isempty(whdshort)
@@ -26,9 +26,9 @@ reffr = im2double(g_imdb_getim(whd,refxi,refyi,whz));
 startprogbar(10,numel(idf))
 for yi = 1:size(idf,1)
     for xi = 1:size(idf,2)
-        fr = g_imdb_getim(whd,refxi,refyi,whz);
+        fr = g_imdb_getim(whd,xi,yi,whz);
         if ~isempty(fr)
-            [heads(yi,xi),idf(yi,xi)] = ridfhead(im2double(g_imdb_getim(whd,xi,yi,whz)),reffr);
+            [heads(yi,xi),idf(yi,xi)] = ridfhead(im2double(fr),reffr);
         end
         
         if progbar
