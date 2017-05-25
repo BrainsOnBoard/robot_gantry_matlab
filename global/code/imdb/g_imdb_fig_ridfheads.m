@@ -17,8 +17,9 @@ end
 
 load(fullfile(whd,'im_params.mat'));
 
-refxi = round(1+(length(p.xs)-1)/2);
-refyi = round(1+(length(p.ys)-1)/2);
+load('arenadim.mat','lim');
+[~,refxi] = min(abs(lim(1)/2-p.xs));
+[~,refyi] = min(abs(lim(2)/2-p.ys));
 
 cachedn = fullfile(g_dir_figdata,'ridfheads');
 cachefn = fullfile(cachedn,sprintf('%s_z%d.mat',whdshort,whz));
