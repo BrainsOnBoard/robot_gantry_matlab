@@ -10,7 +10,7 @@ if nargin < 2 || isempty(whz)
     whz = 1;
 end
 if nargin < 1 || isempty(whdshort)
-    whd = g_imdb_choosedb;
+    [whd,whdshort] = g_imdb_choosedb;
 else
     whd = fullfile(g_dir_imdb,whdshort);
 end
@@ -20,21 +20,36 @@ load(fullfile(whd,'im_params.mat'));
 refxi = round(1+(length(p.xs)-1)/2);
 refyi = round(1+(length(p.ys)-1)/2);
 
-reffr = im2double(g_imdb_getim(whd,refxi,refyi,whz));
+cachedn = fullfile(g_dir_figdata,'ridfheads');
+cachefn = fullfile(cachedn,sprintf('%s_z%d.mat',whdshort,whz));
+if exist(cachefn,'file')
+    load(cachefn);
+else
+    if ~exist(cachedn,'dir')
+        mkdir(cachedn);
+    end
+    
+    reffr = im2double(g_imdb_getim(whd,refxi,refyi,whz));
+    if isempty(reffr)
+        error('could not get reference image at %d,%d,%d',refxi,refyi,whz);
+    end
 
-[heads,idf] = deal(NaN(length(p.ys),length(p.xs)));
-startprogbar(10,numel(idf))
-for yi = 1:size(idf,1)
-    for xi = 1:size(idf,2)
-        fr = g_imdb_getim(whd,xi,yi,whz);
-        if ~isempty(fr)
-            [heads(yi,xi),idf(yi,xi)] = ridfhead(im2double(fr),reffr);
-        end
-        
-        if progbar
-            return
+    [heads,idf] = deal(NaN(length(p.ys),length(p.xs)));
+    startprogbar(10,numel(idf))
+    for yi = 1:size(idf,1)
+        for xi = 1:size(idf,2)
+            fr = g_imdb_getim(whd,xi,yi,whz);
+            if ~isempty(fr)
+                [heads(yi,xi),idf(yi,xi)] = ridfhead(im2double(fr),reffr);
+            end
+
+            if progbar
+                return
+            end
         end
     end
+    
+    save(cachefn,'heads','idf');
 end
 
 %%
