@@ -1,10 +1,16 @@
-function g_imdb_fig_ridfheads(whdshort,zi,dosave)
-% function g_imdb_fig_ridfheads(whdshort,zi,dosave)
+function g_imdb_fig_ridfheads(whdshort,zi,improc,res,dosave)
+% function g_imdb_fig_ridfheads(whdshort,zi,improc,res,dosave)
 %
 % Show RIDF headings for a given image database. All parameters optional.
 
-if nargin < 3
+if nargin < 5
     dosave = false;
+end
+if nargin < 4
+    improc = res;
+end
+if nargin < 3
+    improc = 360;
 end
 if nargin < 1 || isempty(whdshort)
     [whd,whdshort] = g_imdb_choosedb;
@@ -30,11 +36,11 @@ if ~exist(cachedn,'dir')
     mkdir(cachedn);
 end
 for czi = zi(:)'
-    cachefn = fullfile(cachedn,sprintf('%s_z%d.mat',whdshort,czi));
+    cachefn = fullfile(cachedn,sprintf('%s_z%d_p%s_r%03d.mat',whdshort,czi,char(improc),res));
     if exist(cachefn,'file')
         load(cachefn);
     else
-        reffr = im2double(g_imdb_getim(whd,refxi,refyi,czi));
+        reffr = g_imdb_getprocim(whd,refxi,refyi,czi,improc,res);
         if isempty(reffr)
             error('could not get reference image at %d,%d,%d',refxi,refyi,czi);
         end
@@ -43,7 +49,7 @@ for czi = zi(:)'
         startprogbar(10,numel(idf))
         for yi = 1:size(idf,1)
             for xi = 1:size(idf,2)
-                fr = g_imdb_getim(whd,xi,yi,czi);
+                fr = g_imdb_getprocim(whd,xi,yi,czi,improc,res);
                 if ~isempty(fr)
                     [heads(yi,xi),idf(yi,xi)] = ridfhead(im2double(fr),reffr);
                 end
@@ -57,11 +63,11 @@ for czi = zi(:)'
         save(cachefn,'heads','idf');
     end
     
-    httitle = sprintf('height = %d mm',p.zs(czi));
+    ptitle = sprintf('improc = %s, res = %d, height = %d mm',char(improc), res, p.zs(czi));
     
     figure(numel(zi)+czi);clf
     surf(p.xs,p.ys,idf)
-    title(httitle)
+    title(ptitle)
     if dosave
         g_fig_save([flabel '_idf'], [16 10]);
     end
@@ -77,7 +83,7 @@ for czi = zi(:)'
     axis equal tight
     xlabel('x (mm)')
     ylabel('y (mm)')
-    title(httitle)
+    title(ptitle)
     if dosave
         g_fig_save([flabel '_ridf_quiver'], [10 10]);
     end
