@@ -1,5 +1,5 @@
-function g_imdb_fig_ridfheads(whdshort,zi,improc,res,dosave)
-% function g_imdb_fig_ridfheads(whdshort,zi,improc,res,dosave)
+function g_imdb_fig_ridfheads(whdshort,whz,improc,res,dosave)
+% function g_imdb_fig_ridfheads(whdshort,whz,improc,res,dosave)
 %
 % Show RIDF headings for a given image database. All parameters optional.
 
@@ -19,8 +19,8 @@ else
 end
 
 load(fullfile(whd,'im_params.mat'));
-if nargin < 2 || isempty(zi)
-    zi = 1:length(p.zs);
+if nargin < 2 || isempty(whz)
+    whz = 1:length(p.zs);
 end
 
 close all
@@ -32,26 +32,24 @@ load('arenadim.mat','lim');
 flabel = g_imdb_getlabel(whd);
 
 cachedn = fullfile(g_dir_figdata,'ridfheads');
-if ~exist(cachedn,'dir')
-    mkdir(cachedn);
-end
-for czi = zi(:)'
-    cachefn = fullfile(cachedn,sprintf('%s_z%d_p%s_r%03d.mat',whdshort,czi,char(improc),res));
-    if exist(cachefn,'file')
-        load(cachefn);
-    else
-        reffr = g_imdb_getprocim(whd,refxi,refyi,czi,improc,res);
+cachefn = fullfile(cachedn,sprintf('%s_p%s_r%03d.mat',whdshort,char(improc),res));
+if exist(cachefn,'file')
+    load(cachefn);
+else
+    [heads,idf] = deal(NaN(length(p.xs),length(p.ys),length(p.zs)));
+    startprogbar(10,numel(idf))
+    
+    for zi = 1:length(p.zs)
+        reffr = g_imdb_getprocim(whd,refxi,refyi,zi,improc,res);
         if isempty(reffr)
-            error('could not get reference image at %d,%d,%d',refxi,refyi,czi);
+            error('could not get reference image at %d,%d,%d',refxi,refyi,zi);
         end
         
-        [heads,idf] = deal(NaN(length(p.ys),length(p.xs)));
-        startprogbar(10,numel(idf))
-        for yi = 1:size(idf,1)
-            for xi = 1:size(idf,2)
-                fr = g_imdb_getprocim(whd,xi,yi,czi,improc,res);
+        for yi = 1:size(idf,2)
+            for xi = 1:size(idf,1)
+                fr = g_imdb_getprocim(whd,xi,yi,zi,improc,res);
                 if ~isempty(fr)
-                    [heads(yi,xi),idf(yi,xi)] = ridfhead(im2double(fr),reffr);
+                    [heads(xi,yi,zi),idf(xi,yi,zi)] = ridfhead(im2double(fr),reffr);
                 end
                 
                 if progbar
@@ -60,13 +58,18 @@ for czi = zi(:)'
             end
         end
         
+        if ~exist(cachedn,'dir')
+            mkdir(cachedn);
+        end
         save(cachefn,'heads','idf');
     end
-    
+end
+
+for czi = whz(:)'
     ptitle = sprintf('improc = %s, res = %d, height = %d mm',char(improc), res, p.zs(czi));
     
-    figure(numel(zi)+czi);clf
-    surf(p.xs,p.ys,idf)
+    figure(numel(whz)+czi);clf
+    surf(p.xs,p.ys,idf(:,:,czi))
     title(ptitle)
     if dosave
         g_fig_save([flabel '_idf'], [16 10]);
@@ -78,7 +81,7 @@ for czi = zi(:)'
         load(fullfile(g_dir_arenas,p.arenafn));
         g_fig_drawobjverts(objverts,[],'k')
     end
-    anglequiver(p.xs,p.ys,heads);
+    anglequiver(p.xs,p.ys,heads(:,:,czi)');
     plot(p.xs(refxi),p.ys(refyi),'ro','LineWidth',4,'MarkerSize',10)
     axis equal tight
     xlabel('x (mm)')
