@@ -7,10 +7,10 @@ if nargin < 5
     dosave = false;
 end
 if nargin < 4
-    improc = res;
+    res = 360;
 end
 if nargin < 3
-    improc = 360;
+    improc = @histeq;
 end
 if nargin < 1 || isempty(whdshort)
     [whd,whdshort] = g_imdb_choosedb;
