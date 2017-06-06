@@ -1,4 +1,4 @@
-function g_imdb_fig_ridfheads(whdshort,whz,improc,res,dosave)
+function g_imdb_fig_ridfheads(whdshort,improc,res,whz,dosave)
 % function g_imdb_fig_ridfheads(whdshort,whz,improc,res,dosave)
 %
 % Show RIDF headings for a given image database. All parameters optional.
@@ -6,10 +6,10 @@ function g_imdb_fig_ridfheads(whdshort,whz,improc,res,dosave)
 if nargin < 5
     dosave = false;
 end
-if nargin < 4
+if nargin < 3 || isempty(res)
     res = 360;
 end
-if nargin < 3
+if nargin < 2 || isempty(improc)
     improc = @histeq;
 end
 if nargin < 1 || isempty(whdshort)
@@ -19,57 +19,20 @@ else
 end
 
 load(fullfile(whd,'im_params.mat'));
-if nargin < 2 || isempty(whz)
+if nargin < 4 || isempty(whz)
     whz = 1:length(p.zs);
 end
 
 close all
-
-load('arenadim.mat','lim');
-[~,refxi] = min(abs(lim(1)/2-p.xs));
-[~,refyi] = min(abs(lim(2)/2-p.ys));
-
 flabel = g_imdb_getlabel(whd);
 
-cachedn = fullfile(g_dir_figdata,'ridfheads');
-cachefn = fullfile(cachedn,sprintf('%s_p%s_r%03d.mat',whdshort,char(improc),res));
-if exist(cachefn,'file')
-    load(cachefn);
-else
-    [heads,idf] = deal(NaN(length(p.xs),length(p.ys),length(p.zs)));
-    startprogbar(10,numel(idf))
-    
-    for zi = 1:length(p.zs)
-        reffr = g_imdb_getprocim(whd,refxi,refyi,zi,improc,res);
-        if isempty(reffr)
-            error('could not get reference image at %d,%d,%d',refxi,refyi,zi);
-        end
-        
-        for yi = 1:size(idf,2)
-            for xi = 1:size(idf,1)
-                fr = g_imdb_getprocim(whd,xi,yi,zi,improc,res);
-                if ~isempty(fr)
-                    [heads(xi,yi,zi),idf(xi,yi,zi)] = ridfhead(im2double(fr),reffr);
-                end
-                
-                if progbar
-                    return
-                end
-            end
-        end
-        
-        if ~exist(cachedn,'dir')
-            mkdir(cachedn);
-        end
-        save(cachefn,'heads','idf');
-    end
-end
+[heads,idfs,p,refxi,refyi] = g_imdb_getridfheads(whdshort,improc,res);
 
 for czi = whz(:)'
     ptitle = sprintf('improc = %s, res = %d, height = %d mm',char(improc), res, p.zs(czi));
     
     figure(numel(whz)+czi);clf
-    surf(p.xs,p.ys,idf(:,:,czi))
+    surf(p.xs,p.ys,idfs(:,:,czi)')
     title(ptitle)
     if dosave
         g_fig_save([flabel '_idf'], [16 10]);
