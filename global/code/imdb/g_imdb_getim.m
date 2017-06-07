@@ -7,9 +7,9 @@ function fr=g_imdb_getim(whd,x,y,z)
 % 100,200,300).
 
 try
-    load(fullfile(whd,sprintf('im_%03d_%03d_%03d.mat',x,y,z)))
+    fr = imread(fullfile(whd,sprintf('im_%03d_%03d_%03d.png',x,y,z)));
 catch ex
-    if strcmp(ex.identifier,'MATLAB:load:couldNotReadFile')
+    if strcmp(ex.identifier,'MATLAB:imagesci:imread:fileDoesNotExist')
         fr = [];
     else
         rethrow(ex)
