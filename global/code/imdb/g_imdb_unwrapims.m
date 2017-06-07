@@ -45,10 +45,10 @@ for i = whd
     copyfile(fullfile(olddir,'im_params.mat'),paramf);
     save(paramf,'unwrapparams','crop','-append')
     
-    fs = dir(fullfile(olddir,'im_*_*_*.mat'));
+    fs = dir(fullfile(olddir,'im_*_*_*.png'));
     for j = 1:length(fs)
-        load(fullfile(olddir,fs(j).name),'fr');
+        fr = imread(fullfile(olddir,fs(j).name));
         fr = gantry_processim(fr,unwrapparams,crop);
-        save(fullfile(uwdir,fs(j).name),'fr')
+        imwrite(fr,fullfile(uwdir,fs(j).name))
     end
 end
