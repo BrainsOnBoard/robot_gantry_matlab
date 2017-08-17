@@ -1,5 +1,5 @@
 
-load('unwrap_imdb_2016-02-05_001/im_001_001.mat')
+load('imdb_2016-02-05_001/im_001_001.mat')
 
 figure(1);clf
 imshow(fr)

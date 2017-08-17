@@ -30,9 +30,10 @@ switch length(ds)
 end
 
 for i = whd
-    disp(ds{i})
+    fprintf('unwrapping %s...\n', ds{i})
+    
     olddir = fullfile(g_dir_imdb,ds{i});
-    uwdir = fullfile(g_dir_imdb,['unwrap_' ds{i}]);
+    uwdir = fullfile(g_dir_imdb,ds{i}(9:end));
     if ~exist(uwdir,'dir')
         mkdir(uwdir)
     end

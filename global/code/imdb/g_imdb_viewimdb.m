@@ -2,19 +2,9 @@ function g_imdb_viewimdb
 % Allows the user to view an image database interactively. Views can be
 % cycled through with keypresses.
 
-whd = g_imdb_choosedb;
-load(fullfile(whd,'im_params.mat'))
+[fex,p,whd] = g_imdb_getimpts;
 
 [x,y] = ndgrid(p.xs,p.ys);
-
-fex = false(length(p.xs),length(p.ys),length(p.zs));
-for xi = 1:length(p.xs)
-    for yi = 1:length(p.ys)
-        for zi = 1:length(p.zs)
-            fex(xi,yi,zi) = exist(fullfile(whd,sprintf('im_%03d_%03d_%03d.mat',xi,yi,zi)),'file');
-        end
-    end
-end
 
 curx = 1;
 cury = 1;

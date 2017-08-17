@@ -1,7 +1,7 @@
 function g_imdb_2dto3d(dbdir)
 % a function to convert the old 2D databases to new-style 3D ones
 
-d = dir(fullfile(dbdir,'unwrap_imdb_*'));
+d = dir(fullfile(dbdir,'imdb_*'));
 
 for i = 1:length(d)
     fprintf('working on %s\n',d(i).name);

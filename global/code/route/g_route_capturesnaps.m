@@ -1,8 +1,8 @@
-function g_live_train_capturesnaps(arenafn,routenum)
-%G_LIVE_TRAIN_CAPTURESNAPS   Use the gantry to get snapshots for specified
+function g_route_capturesnaps(arenafn,routenum)
+%G_ROUTE_CAPTURESNAPS   Use the gantry to get snapshots for specified
 %route.
 %
-%   G_LIVE_TRAIN_CAPTURESNAPS('arena1.mat',1) gets the snapshots for route
+%   G_ROUTE_CAPTURESNAPS('arena1.mat',1) gets the snapshots for route
 %   1, with objects in arena as specified in arena1.mat
 
 ptr.zht = 200; % mm
@@ -23,7 +23,7 @@ for curroute=routenum
     g.move([0;0;minht]);
     
     load('gantry_centrad','unwrapparams')
-    snapdir = fullfile(g_dir_routes_snapshots,['snaps_' datafn]);
+    snapdir = fullfile(g_dir_routes_snaps_wrapped,['snaps_' datafn]);
     if exist(snapdir,'dir')
         error('snap dir already exists')
     end
@@ -52,5 +52,5 @@ delete(g)
 
 disp('Unwrapping images...')
 for curroute=routenum
-    g_live_train_unwrapsnaps(arenafn,curroute)
+    g_route_unwrapsnaps(arenafn,curroute)
 end

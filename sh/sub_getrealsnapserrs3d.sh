@@ -5,7 +5,7 @@ if [ -f $subfn ]; then
 	rm $subfn
 fi
 
-imdb=unwrap_imdb3d_2017-02-09_001
+imdb=imdb_2017-02-09_001
 arenafn=arena2_pile
 routenum=3
 

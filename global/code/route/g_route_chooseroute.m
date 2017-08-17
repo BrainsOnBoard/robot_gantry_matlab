@@ -1,6 +1,6 @@
-function g_live_train_choosepath(arenafn,startoffs)
-%G_LIVE_TRAIN_CHOOSEPATH   Set the training path for a new experiment.
-%   G_LIVE_TRAIN_CHOOSEPATH('arena1.mat') specifies the arena (where
+function g_route_chooseroute(arenafn,startoffs)
+%G_ROUTE_CHOOSEROUTE   Set the training path for a new experiment.
+%   G_ROUTE_CHOOSEROUTE('arena1.mat') specifies the arena (where
 %   objects are).
 %   If no arena is specified, the arena is assumed to be empty.
 

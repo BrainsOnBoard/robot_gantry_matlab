@@ -1,8 +1,8 @@
-function g_live_train_unwrapsnaps(arenafn,whroute)
-%G_LIVE_TRAIN_UNWRAPSNAPS   Unwrap stored training snapshots.
+function g_route_unwrapsnaps(arenafn,whroute)
+%G_ROUTE_UNWRAPSNAPS   Unwrap stored training snapshots.
 
 rfn = sprintf('route_%s_%03d',matfileremext(arenafn),whroute);
-snapdir = fullfile(g_dir_routes_snapshots,['snaps_' rfn]);
+snapdir = fullfile(g_dir_routes_snaps_wrapped,['snaps_' rfn]);
 
 load('gantry_centrad','unwrapparams')
 crop = load('gantry_cropparams.mat');

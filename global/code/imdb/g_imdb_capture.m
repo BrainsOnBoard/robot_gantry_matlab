@@ -19,6 +19,11 @@ ip.addOptional('dummy',false); % dummy mode for debugging - does everything but 
 ip.addOptional('imsep',100);   % separation between images in x,y,z dimensions (in mm)
 ip.addOptional('arena',[]);    % which arena to use
 ip.addOptional('resume',[]);   % resume previous imdb capture session
+ip.addOptional('xlo',0);
+ip.addOptional('xhi',inf);
+ip.addOptional('ylo',0);
+ip.addOptional('yhi',inf);
+ip.addOptional('zs',[]);
 ip.parse(varargin{:});
 params = ip.Results;
 
@@ -34,9 +39,13 @@ if isempty(params.resume) % then we're not resuming a previous imdb capture
     p.arenafn = matfileaddext(params.arena);
     
     p.imsep = params.imsep; % mm
-    p.xs = 0:p.imsep:p.lim(1);
-    p.ys = 0:p.imsep:p.lim(2);
-    p.zs = 0:p.imsep:500; %p.lim(3); % +p.zoffs mm
+    p.xs = max(0,params.xlo):p.imsep:min(p.lim(1),params.xhi);
+    p.ys = max(0,params.ylo):p.imsep:min(p.lim(2),params.yhi);
+    if isempty(params.zs)
+        p.zs = 0:p.imsep:500; %p.lim(3); % +p.zoffs mm
+    else
+        p.zs = params.zs;
+    end
     p.imsz = [576,720,3];
     
     imdirrt = fullfile(g_dir_imdb,['wrapped_imdb_' datestr(now,'yyyy-mm-dd') '_']);
@@ -90,7 +99,7 @@ oys = p.objgridac*(0:size(objmap,1));
 
 nim = length(p.xs)*length(p.ys)*length(p.zs);
 fprintf('getting image database\n%dx%dx%d (=%d) ims\nx: [%g %g]\ny: [%g %g]\nz: [%g %g]\n\n', ...
-    length(p.ys),length(p.xs),length(p.zs),nim,p.xs(1),p.xs(end),p.ys(1),p.ys(end),p.zs(1),p.zs(2))
+    length(p.ys),length(p.xs),length(p.zs),nim,p.xs(1),p.xs(end),p.ys(1),p.ys(end),p.zs(1),p.zs(end))
 
 if ~p.dummy    
     g.home_gantry(false);

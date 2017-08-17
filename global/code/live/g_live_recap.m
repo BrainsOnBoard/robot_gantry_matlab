@@ -44,7 +44,7 @@ if strcmp(pr.snapweighting,'infomax')
     load(fullfile(g_dir_routes_infomaxweights,sprintf('infomax_%s.mat',snfn)),'imsz','W')
     isinfomax = true;
 else
-    load(fullfile(g_dir_routes_fovsnaps,snfn),'fovsnaps');
+    load(fullfile(g_dir_routes_snaps,snfn),'fovsnaps');
     snaps = NaN(size(fovsnaps));
     for i = 1:size(snaps,3)
         snaps(:,:,i) = im2double(fovsnaps(:,:,i));

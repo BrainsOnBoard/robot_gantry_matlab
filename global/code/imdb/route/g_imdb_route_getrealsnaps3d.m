@@ -5,7 +5,7 @@ fov = 360;
 
 routefn = sprintf('route_%s_%03d',matfileremext(arenafn),routenum);
 snfn = sprintf('snaps_%s_fov%03d_imw%03d',routefn,fov,res);
-load(fullfile(g_dir_routes_fovsnaps,snfn),'fovsnaps')
+load(fullfile(g_dir_routes_snaps,snfn),'fovsnaps')
 snaps = NaN(size(fovsnaps));
 for i = 1:size(fovsnaps,3)
     snaps(:,:,i) = im2double(imfun(fovsnaps(:,:,i)));
