@@ -6,11 +6,11 @@ if nargin < 2
     fov = 360;
 end
 if nargin < 1
-    imw = 90;
+    imw = [90 180 360];
 end
 
 d = dir(fullfile(g_dir_routes,'route_*.mat'));
-snapdir = g_dir_routes_fovsnaps;
+snapdir = g_dir_routes_snaps;
 if ~exist(snapdir,'dir')
     mkdir(snapdir);
 end
