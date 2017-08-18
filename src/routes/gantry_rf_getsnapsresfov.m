@@ -3,7 +3,7 @@ if nargin < 2
     fov = 360;
 end
 if nargin < 1
-    imw = 90;
+    imw = [90 180 360];
 end
 
 d = dir(fullfile(routes_routedir,'route_*.mat'));
