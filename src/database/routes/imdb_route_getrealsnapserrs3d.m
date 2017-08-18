@@ -24,7 +24,7 @@ if isempty(improc)
 else
     improcstr = [improc,'_'];
 end
-figdatfn = fullfile(imdb_route_figdatdir,sprintf('imdb3d_route_geterrs_%s%s_%s_%03d_res%03d_z%d%s.mat',improcstr,shortwhd,matfileremext(arenafn),routenum,res,zht,infomaxstr));
+figdatfn = fullfile(imdb_route_figdatdir,sprintf('imdb3d_route_geterrs_%s%s_%s_%03d_res%03d_z%d%s.mat',improcstr,strrep(shortwhd,'imdb_','unwrap_imdb3d_'),matfileremext(arenafn),routenum,res,zht,infomaxstr));
 
 fprintf('target file: %s\n',figdatfn);
 isnew = ~exist(figdatfn,'file');
