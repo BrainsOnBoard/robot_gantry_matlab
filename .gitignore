@@ -3,4 +3,5 @@
 *~
 *.asv
 
+/.gantry_cache/
 /figures/
