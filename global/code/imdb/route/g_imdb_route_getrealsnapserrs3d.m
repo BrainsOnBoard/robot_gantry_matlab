@@ -1,4 +1,7 @@
-function [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew,allwhsn]=g_imdb_route_getrealsnapserrs3d(shortwhd,arenafn,routenum,res,zht,useinfomax,improc,forcegen)
+function [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew,allwhsn]=g_imdb_route_getrealsnapserrs3d(shortwhd,arenafn,routenum,res,zht,useinfomax,improc,forcegen,improcforinfomax)
+if nargin < 7
+    improcforinfomax = false;
+end
 if nargin < 6
     forcegen = false;
 end
@@ -7,7 +10,6 @@ if nargin < 5
 end
 
 getallwhsn = true;
-
 trainheight = 200;
 
 whd = fullfile(g_dir_imdb,shortwhd);
@@ -17,9 +19,9 @@ if useinfomax
 else
     infomaxstr = '';
 end
-if isempty(improc)
-    improcstr = '';
-else
+
+improcstr = '';
+if ~isempty(improc) && (~useinfomax || improcforinfomax)
     improcstr = [improc,'_'];
 end
 figdatfn = fullfile(g_dir_imdb_routes_figdata,sprintf('wrapped_g_imdb_route_geterrs_%s%s_%s_%03d_res%03d_z%d%s.mat',improcstr,shortwhd,matfileremext(arenafn),routenum,res,zht,infomaxstr));
@@ -33,13 +35,19 @@ else
     if forcegen && ~isnew
         warning('generating fig data even though it already exists')
     end
-   
+    
     imfun = gantry_getimfun(improc);
     
     weight_update_count = 30;
     
-    %     function [snaps,whclick,clx,cly,clth,p,ptr]=g_imdb_route_getrealsnaps3d(arenafn,routenum)
-    [snaps,clickis,snx,sny,snth]=g_imdb_route_getrealsnaps3d(arenafn,routenum,res,imfun);
+    [fovsnaps,~,snx,sny,snth]=g_imdb_route_getrealsnaps3d(arenafn,routenum,res);
+    if ~useinfomax || improcforinfomax
+        snaps = NaN(size(fovsnaps));
+        for i = 1:size(fovsnaps,3)
+            snaps(:,:,i) = imfun(fovsnaps(:,:,i));
+        end
+    end
+    
     load(fullfile(whd,'im_params.mat'),'p')
     if ~any(zht == p.zs)
         error('invalid height: %f',zht);
@@ -49,9 +57,13 @@ else
     
     heads = NaN(length(p.ys),length(p.xs));
     
-    newsz = [size(snaps,1),size(snaps,2)];
+    newsz = [size(fovsnaps,1),size(fovsnaps,2)];
     startprogbar(10,numel(heads),'calculating headings',true)
     if useinfomax
+        if ~improcforinfomax
+            snaps = fovsnaps;
+        end
+        
         infomax_wts = [];
         for xi = 1:weight_update_count
             infomax_wts = infomax_train(size(snaps,3), reshape(snaps,[prod(newsz), size(snaps,3)]), infomax_wts);
