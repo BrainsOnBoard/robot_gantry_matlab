@@ -1,11 +1,11 @@
 function [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew,allwhsn]=g_imdb_route_getrealsnapserrs3d(shortwhd,arenafn,routenum,res,zht,useinfomax,improc,forcegen,improcforinfomax)
-if nargin < 7
+if nargin < 9
     improcforinfomax = false;
 end
-if nargin < 6
+if nargin < 8
     forcegen = false;
 end
-if nargin < 5
+if nargin < 7
     improc = 'histeq';
 end
 
