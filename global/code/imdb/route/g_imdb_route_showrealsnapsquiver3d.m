@@ -16,7 +16,7 @@ shortwhd={
     'imdb_2017-02-09_001'      % open, new boxes
     %'imdb_2016-03-23_001', ... % open, empty
     };
-res = [90 180 360];
+res = 90;
 zht = 0:100:500;
 routenums = 3;
 
