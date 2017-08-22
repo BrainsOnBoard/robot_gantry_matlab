@@ -1,8 +1,8 @@
-This is a brief description of the code layout just after first submission of LM paper (after I fixed the performance of PM by histeq'ing imdb images and snapshots).
+This is a brief description of the code layout just after first submission of B&B paper (after I fixed the performance of PM by histeq'ing imdb images and snapshots).
 
-The main folder of interest is src/database/routes, although in order to use "real" snapshots (cf. nearest location on imdb grid) I am also using code (and associated MAT files) from the "open loop" folder, src/routes. To produce quiver plots, imdb_route_showrealsnapsquiver3d.m is used, which now takes an optional parameter for image preprocessing method (but didn't at the time of original submission as there was no preprocessing). Improc methods can be '' (none), 'histeq' or 'bin'. Initially I started storing sets of preprocessed images (fovsnaps and imdbs) in advance but abandoned this in favour of processing images on the fly. The sets of infomax weights are obviously dependent on image preprocessing though. Errors are calculated by taking the average angular error within a corridor around the route, which in our arena (arena2_pile.mat) actually means most points.
+The main folder of interest is global/code/bb_paper, although in order to use "real" snapshots (cf. nearest location on imdb grid) I am also using code (and associated MAT files) from the "open loop" folder, global/code/route. To produce quiver plots, imdb_route_showrealsnapsquiver3d.m is used, which now takes an optional parameter for image preprocessing method (but didn't at the time of original submission as there was no preprocessing). Improc methods can be '' (none), 'histeq' or 'bin'. Initially I started storing sets of preprocessed images (fovsnaps and imdbs) in advance but abandoned this in favour of processing images on the fly. The sets of infomax weights are obviously dependent on image preprocessing though. Errors are calculated by taking the average angular error within a corridor around the route, which in our arena (arena2_pile.mat) actually means most points.
 
-imdb_route_perfrealsnapsbarcharts3d => produces bar charts comparing algorithm type (infomax/PM), height and resolution
-imdb_route_stacked_perfrealsnapsbarcharts3d => compares error over height for two algorithms
-imdb_route_improc_compare => new function comparing improc methods for two algorithms
-
+g_imdb_route_perfrealsnapsbarcharts3d => produces bar charts comparing algorithm type (infomax/PM), height and resolution
+g_imdb_route_stacked_perfrealsnapsbarcharts3d => compares error over height for two algorithms
+g_imdb_route_improc_compare => new function comparing improc methods for two algorithms
+g_imdb_route_showrealsnapsquiver3d => quiver plots comparing "real" snaps with image database
