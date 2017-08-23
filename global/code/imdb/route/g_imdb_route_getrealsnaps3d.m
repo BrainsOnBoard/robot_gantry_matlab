@@ -1,5 +1,5 @@
-function [snaps,whclick,clx,cly,clth,p,ptr]=g_imdb_route_getrealsnaps3d(arenafn,routenum,res)
-% function [snaps,whclick,clx,cly,clth,p,ptr]=g_imdb_route_getrealsnaps3d(arenafn,routenum,res)
+function [snaps,whclick,clx,cly,clth,p,ptr,procsnaps]=g_imdb_route_getrealsnaps3d(arenafn,routenum,res,improc)
+% function [snaps,whclick,clx,cly,clth,p,ptr]=g_imdb_route_getrealsnaps3d(arenafn,routenum,res,improc)
 
 fov = 360;
 
@@ -9,6 +9,15 @@ load(fullfile(g_dir_routes_snaps,snfn),'fovsnaps')
 snaps = NaN(size(fovsnaps));
 for i = 1:size(fovsnaps,3)
     snaps(:,:,i) = im2double(fovsnaps(:,:,i));
+end
+if isempty(improc)
+    procsnaps = snaps;
+else
+    procsnaps = NaN(size(fovsnaps));
+    imfun = gantry_getimfun(improc);
+    for i = 1:size(fovsnaps,3)
+        procsnaps(:,:,i) = im2double(imfun(fovsnaps(:,:,i)));
+    end
 end
 
 load(fullfile(g_dir_routes,sprintf('route_%s_%03d.mat',arenafn,routenum)),'p','clx','cly','whclick','ptr')

@@ -20,8 +20,13 @@ else
     infomaxstr = '';
 end
 
-improcstr = '';
-if ~isempty(improc) && (~useinfomax || improcforinfomax)
+if useinfomax && ~improcforinfomax
+    improc = '';
+end
+
+if isempty(improc)
+    improcstr = '';
+else
     improcstr = [improc,'_'];
 end
 figdatfn = fullfile(g_dir_imdb_routes_figdata,sprintf('wrapped_g_imdb_route_geterrs_%s%s_%s_%03d_res%03d_z%d%s.mat',improcstr,shortwhd,matfileremext(arenafn),routenum,res,zht,infomaxstr));
@@ -40,13 +45,7 @@ else
     
     weight_update_count = 30;
     
-    [fovsnaps,~,snx,sny,snth]=g_imdb_route_getrealsnaps3d(arenafn,routenum,res);
-    if ~useinfomax || improcforinfomax
-        snaps = NaN(size(fovsnaps));
-        for i = 1:size(fovsnaps,3)
-            snaps(:,:,i) = imfun(fovsnaps(:,:,i));
-        end
-    end
+    [snaps,~,snx,sny,snth]=g_imdb_route_getrealsnaps3d(arenafn,routenum,res,improc);
     
     load(fullfile(whd,'im_params.mat'),'p')
     if ~any(zht == p.zs)
@@ -57,13 +56,9 @@ else
     
     heads = NaN(length(p.ys),length(p.xs));
     
-    newsz = [size(fovsnaps,1),size(fovsnaps,2)];
+    newsz = [size(snaps,1),size(snaps,2)];
     startprogbar(10,numel(heads),'calculating headings',true)
     if useinfomax
-        if ~improcforinfomax
-            snaps = fovsnaps;
-        end
-        
         infomax_wts = [];
         for xi = 1:weight_update_count
             infomax_wts = infomax_train(size(snaps,3), reshape(snaps,[prod(newsz), size(snaps,3)]), infomax_wts);
