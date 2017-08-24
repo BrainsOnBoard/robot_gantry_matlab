@@ -15,7 +15,6 @@ routenum = 3;
 arenafn = 'arena2_pile';
 
 crop = load('gantry_cropparams.mat');
-% function [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew,allwhsn,ridfs]=g_imdb_route_getrealsnapserrs3d(shortwhd,arenafn,routenum,res,zht,useinfomax,improc,forcegen,improcforinfomax)
 [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,fileexists,allwhsn,ridfs] = g_imdb_route_getrealsnapserrs3d(shortwhd,arenafn,routenum,res,zht,false,improc,forcegen);
 
 [whsnim,nearim] = deal(NaN(length(p.ys),length(p.xs)));
@@ -60,12 +59,13 @@ while true
     figure(2);clf
     alsubplot(4,2,4,[1 2])
     hold on
-    callwhsn = allwhsn(imyi==y & imxi==x, :);
+    sel = imyi==y & imxi==x;
+    callwhsn = allwhsn(sel, :);
     bm = callwhsn(1:3);
     near = nearim(y,x);
     title(sprintf('(%g, %g), s(%g, %g) [nearest: %d (r%d)]', p.xs(x), p.ys(y), p.imsep*(snxi(near)-1), p.imsep*(snyi(near)-1), near, find(callwhsn==near)))
     ridfind = [bm, near];
-    cridfs = shiftdim(maxval \ ridfs(y,x,:,ridfind));
+    cridfs = shiftdim(maxval \ ridfs(sel,:,ridfind));
     plot(0:359, cridfs);
     legend(num2str(ridfind(:)))
     xlim([0 359])
