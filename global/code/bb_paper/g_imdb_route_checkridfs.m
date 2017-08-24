@@ -3,9 +3,10 @@
 clear
 close all
 
+improc = '';
 forcegen = false;
 
-res = 360;
+res = 90;
 shortwhd='imdb_2017-02-09_001';      % open, new boxes
 whd = fullfile(g_dir_imdb,shortwhd);
 zht = 200; %:100:500; % +50mm
@@ -14,14 +15,14 @@ routenum = 3;
 arenafn = 'arena2_pile';
 
 crop = load('gantry_cropparams.mat');
-
-[imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,fileexists,allwhsn,ridfs] = g_imdb_route_getrealsnapserrs3d_debug(shortwhd,arenafn,routenum,res,zht,false,forcegen);
+% function [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew,allwhsn,ridfs]=g_imdb_route_getrealsnapserrs3d(shortwhd,arenafn,routenum,res,zht,useinfomax,improc,forcegen,improcforinfomax)
+[imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,fileexists,allwhsn,ridfs] = g_imdb_route_getrealsnapserrs3d(shortwhd,arenafn,routenum,res,zht,false,improc,forcegen);
 
 [whsnim,nearim] = deal(NaN(length(p.ys),length(p.xs)));
 whsnim(sub2ind(size(whsnim),imyi,imxi)) = whsn;
 nearim(sub2ind(size(nearim),imyi,imxi)) = nearest;
 
-snaps = g_imdb_route_getrealsnaps3d(arenafn,routenum,res);
+snaps = g_imdb_route_getrealsnaps3d(arenafn,routenum,res,improc);
 imsz = [size(snaps,1), size(snaps,2)];
 maxval = prod(imsz) * 255;
 
@@ -73,7 +74,7 @@ while true
     [minvals,minima] = min(cridfs(:,[1 end]));
 
     alsubplot(1,[1 2])
-    im = imresize(g_imdb_getim(whd,x,y,z),imsz);
+    im = im2double(imresize(g_imdb_getim(whd,x,y,z),imsz));
     imshow(im)
     title('image')
     
@@ -97,5 +98,5 @@ while true
     axis off
     title(sprintf('diff: %g',minvals(2)));
     
-    colormap hot
+    colormap gray
 end
