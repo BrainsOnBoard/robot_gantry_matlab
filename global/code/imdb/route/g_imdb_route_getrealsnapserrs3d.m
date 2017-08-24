@@ -76,7 +76,7 @@ else
         
         ridfs = NaN(nheads,nth);
         for i = 1:nheads
-            fr = loadim(imxi(i),imyi(i),zi);
+            fr = loadim(imxi(i),imyi(i),zi,whd,newsz,imfun);
             [heads(i),~,cridf] = infomax_gethead(fr,[],infomax_wts);
             ridfs(i,:) = cridf';
             
@@ -92,7 +92,7 @@ else
         
         ridfs = NaN(nheads,nth,size(snaps,3));
         for i = 1:nheads
-            fr = loadim(imxi(i),imyi(i),zi);
+            fr = loadim(imxi(i),imyi(i),zi,whd,newsz,imfun);
             [heads(i),~,cwhsn,cridfs] = ridfheadmulti(fr,snaps,'wta',[],nth,[],getallwhsn);
             allwhsn(i,:) = cwhsn';
             ridfs(i,:,:) = shiftdim(cridfs,-1);
@@ -138,7 +138,5 @@ err_corridor = 2;
 mindist = min(hypot(dx,dy));
 errsel = mindist <= err_corridor;
 
-    function loadedim=loadim(x,y,z)
-        loadedim = im2double(imfun(imresize(g_imdb_getim(whd,x,y,z),newsz,'bilinear')));
-    end
-end
+function loadedim=loadim(x,y,z,whd,newsz,imfun)
+loadedim = im2double(imfun(imresize(g_imdb_getim(whd,x,y,z),newsz,'bilinear')));
