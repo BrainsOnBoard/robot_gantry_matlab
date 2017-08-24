@@ -1,4 +1,4 @@
-function [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew,allwhsn]=g_imdb_route_getrealsnapserrs3d(shortwhd,arenafn,routenum,res,zht,useinfomax,improc,forcegen,improcforinfomax)
+function [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew,allwhsn,ridfs]=g_imdb_route_getrealsnapserrs3d(shortwhd,arenafn,routenum,res,zht,useinfomax,improc,forcegen,improcforinfomax)
 if nargin < 9
     improcforinfomax = false;
 end
@@ -10,7 +10,7 @@ if nargin < 7
 end
 
 getallwhsn = true;
-trainheight = 200;
+nth = 360;
 
 whd = fullfile(g_dir_imdb,shortwhd);
 
@@ -30,12 +30,18 @@ else
     improcstr = [improc,'_'];
 end
 figdatfn = fullfile(g_dir_imdb_routes_figdata,sprintf('wrapped_g_imdb_route_geterrs_%s%s_%s_%03d_res%03d_z%d%s.mat',improcstr,shortwhd,matfileremext(arenafn),routenum,res,zht,infomaxstr));
+ridfsfigdatfn = fullfile(g_dir_imdb_routes_ridfs_figdata,sprintf('wrapped_g_imdb_route_geterrs_%s%s_%s_%03d_res%03d_z%d%s.mat',improcstr,shortwhd,matfileremext(arenafn),routenum,res,zht,infomaxstr));
 
 fprintf('target file: %s\n',figdatfn);
 isnew = ~exist(figdatfn,'file');
+getridfs = nargout >= 15;
+haveridfs = exist(ridfsfigdatfn,'file');
 ridfs = []; % kludge to stop matlab complaining about static workspace
-if ~isnew && ~forcegen
+if ~isnew && ~forcegen && (~getridfs || haveridfs)
     load(figdatfn);
+    if getridfs
+        load(ridfsfigdatfn);
+    end
 else
     if forcegen && ~isnew
         warning('generating fig data even though it already exists')
@@ -64,11 +70,13 @@ else
             infomax_wts = infomax_train(size(snaps,3), reshape(snaps,[prod(newsz), size(snaps,3)]), infomax_wts);
         end
         
+        ridfs = NaN(length(p.ys),length(p.xs),nth);
         for xi = 1:length(p.xs)
             for yi = 1:length(p.ys)
                 fr = loadim(xi,yi,zi);
                 if ~isempty(fr)
-                    heads(yi,xi) = infomax_gethead(fr,[],infomax_wts);
+                    [heads(yi,xi),~,cridf] = infomax_gethead(fr,[],infomax_wts);
+                    ridfs(yi,xi,:) = shiftdim(cridf,-2);
                 end
                 
                 if progbar
@@ -82,13 +90,15 @@ else
     else
         allwhsn = NaN([size(heads),size(snaps,3)]);
         
+        ridfs = NaN(length(p.ys),length(p.xs),nth,size(snaps,3));
         for yi = 1:length(p.ys)
             for xi = 1:length(p.xs)
                 fr = loadim(xi,yi,zi);
                 if ~isempty(fr)
-                    % function [head,minval,whsn,diffs] = ridfheadmulti(im,imref,snapweighting,angleunit,nth,snths,getallwhsn)
-                    [heads(yi,xi),~,cwhsn] = ridfheadmulti(fr,snaps,'wta',[],360,[],getallwhsn);
+                    % function [head,minval,whsn,diffs,cridfs] = ridfheadmulti(im,imref,snapweighting,angleunit,nth,snths,getallwhsn)
+                    [heads(yi,xi),~,cwhsn,cridfs] = ridfheadmulti(fr,snaps,'wta',[],nth,[],getallwhsn);
                     allwhsn(yi,xi,:) = shiftdim(cwhsn,-2);
+                    ridfs(yi,xi,:,:) = shiftdim(cridfs,-2);
                 end
                 
                 if progbar
@@ -115,7 +125,14 @@ else
     if ~exist(g_dir_imdb_routes_figdata,'dir')
         mkdir(g_dir_imdb_routes_figdata);
     end
+    fprintf('Saving to %s...\n',figdatfn);
     save(figdatfn,'imxi','imyi','heads','allwhsn','whsn','snx','sny','snth','p','weight_update_count','zht');
+
+    if ~exist(g_dir_imdb_routes_ridfs_figdata,'dir')
+        mkdir(g_dir_imdb_routes_ridfs_figdata);
+    end
+    fprintf('Saving RIDFs to %s...\n\n',ridfsfigdatfn);
+    save(ridfsfigdatfn,'ridfs');
 end
 
 snxi = 1+snx(:) * 1000/(p.imsep*20);

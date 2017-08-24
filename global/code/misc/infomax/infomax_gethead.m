@@ -29,5 +29,3 @@ end
 [minval,minI] = min(ridf);
 
 head = angleunit*(minI-1)/nth;
-
-% keyboard
