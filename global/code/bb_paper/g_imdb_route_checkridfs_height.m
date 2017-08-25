@@ -1,3 +1,5 @@
+function g_imdb_route_checkridfs_height
+
 %%
 clear
 close all
@@ -32,7 +34,14 @@ imfun = gantry_getimfun(improc);
 [snaps,~,snx,sny,snth]=g_imdb_route_getrealsnaps3d(arenafn,routenum,imsz(2),improc);
 while true
     figure(1)
-    [x,y,but] = ginput(1);
+    try
+        [x,y,but] = ginput(1);
+    catch ex
+        if strcmp(ex.identifier,'MATLAB:ginput:FigureDeletionPause')
+            break
+        end
+        rethrow(ex)
+    end
     if isempty(but)
         break
     end
@@ -55,34 +64,40 @@ while true
         gy = p.ys(yi);
         fprintf('selecting point (%d,%d)\n',gx,gy)
         
-        figure(2);clf
-        alsubplot(3+length(zht),2,1:2,1:2)
-        plot(shiftdim(bestridfs(sel,:,:)))
-        xlim([0 nth])
-        title(sprintf('x=%d, y=%d',gx,gy))
-        title(legend(num2str((zht+50)')),'Height (mm)')
-        
-        colormap gray
-        
-        sndist = hypot(gx-snx,gy-sny);
-        [~,snnearest] = min(sndist);
-        alsubplot(3,1:2)
-        imagesc(snaps(:,:,snnearest))
-        ylabel(snnearest)
-        
-        for i = 1:length(zht)
-            im = g_imdb_getprocim(whd,xi,yi,find(p.zs==zht(i)),imfun,imsz(2));
-            alsubplot(3+i,1)
-            imagesc(im)
-            ylabel(zht(i)+50)
-            
-            alsubplot(3+i,2)
-            whsn = bestsnap(sel,i);
-            imagesc(snaps(:,:,whsn));
-            ylabel(whsn)
-        end
+        showridfs(gx,gy,xi,yi,bestridfs(sel,:,:),bestsnap(sel,:),zht,snx,sny,snaps,imfun,whd,imsz(2),p)
     elseif but=='s'
-        figure(2)
-        g_fig_save(sprintf('ridf_%04d_%04d',p.xs(xi),p.ys(yi)),[30 15]);
+        saveridfs(gx,gy);
     end
 end
+
+function showridfs(gx,gy,xi,yi,bestridfs,bestsnap,zht,snx,sny,snaps,imfun,whd,res,p)
+figure(2);clf
+alsubplot(3+length(zht),2,1:2,1:2)
+plot(shiftdim(bestridfs(1,:,:)))
+xlim([0 size(bestridfs,2)])
+title(sprintf('x=%d, y=%d',gx,gy))
+title(legend(num2str((zht+50)')),'Height (mm)')
+
+colormap gray
+
+sndist = hypot(gx-snx,gy-sny);
+[~,snnearest] = min(sndist);
+alsubplot(3,1:2)
+imagesc(snaps(:,:,snnearest))
+ylabel(snnearest)
+
+for i = 1:length(zht)
+    im = g_imdb_getprocim(whd,xi,yi,find(p.zs==zht(i)),imfun,res);
+    alsubplot(3+i,1)
+    imagesc(im)
+    ylabel(zht(i)+50)
+    
+    alsubplot(3+i,2)
+    whsn = bestsnap(1,i);
+    imagesc(snaps(:,:,whsn));
+    ylabel(whsn)
+end
+
+function saveridfs(gx,gy)
+figure(2)
+g_fig_save(sprintf('ridf_%04d_%04d',gx,gy),[30 15]);
