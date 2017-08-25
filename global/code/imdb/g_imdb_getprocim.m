@@ -2,10 +2,10 @@ function im=g_imdb_getprocim(whd,x,y,z,imfun,res)
 if nargin < 5
     imfun = @deal;
 end
-
 if nargin < 6
     res = 720;
 end
+
 docache = res ~= 720 || ~strcmp(char(imfun),'deal');
 if docache
     [~,shortwhd] = fileparts(whd);
@@ -23,7 +23,7 @@ if isempty(im)
 end
 
 if res ~= 720;
-    im = imresize(im,[NaN res],'bilinear');
+    im = imresize(im,round([res*size(im,1)/size(im,2), res]),'bilinear');
 end
 im = im2double(imfun(im));
 

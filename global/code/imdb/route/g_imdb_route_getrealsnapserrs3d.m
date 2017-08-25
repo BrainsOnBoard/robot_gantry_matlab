@@ -36,7 +36,6 @@ fprintf('target file: %s\n',figdatfn);
 isnew = ~exist(figdatfn,'file');
 getridfs = nargout >= 14;
 haveridfs = exist(ridfsfigdatfn,'file');
-ridfs = []; % kludge to stop matlab complaining about static workspace
 if ~isnew && ~forcegen && (~getridfs || haveridfs)
     load(figdatfn);
     if getridfs
@@ -76,8 +75,8 @@ else
         
         ridfs = NaN(nheads,nth);
         for i = 1:nheads
-            fr = loadim(imxi(i),imyi(i),zi,whd,newsz,imfun);
-            [heads(i),~,cridf] = infomax_gethead(fr,[],infomax_wts);
+            im = g_imdb_getprocim(whd,imxi(i),imyi(i),zi,imfun,res);
+            [heads(i),~,cridf] = infomax_gethead(im,[],infomax_wts);
             ridfs(i,:) = cridf';
             
             if progbar
@@ -92,8 +91,8 @@ else
         
         ridfs = NaN(nheads,nth,size(snaps,3));
         for i = 1:nheads
-            fr = loadim(imxi(i),imyi(i),zi,whd,newsz,imfun);
-            [heads(i),~,cwhsn,cridfs] = ridfheadmulti(fr,snaps,'wta',[],nth,[],getallwhsn);
+            im = g_imdb_getprocim(whd,imxi(i),imyi(i),zi,imfun,res);
+            [heads(i),~,cwhsn,cridfs] = ridfheadmulti(im,snaps,'wta',[],nth,[],getallwhsn);
             allwhsn(i,:) = cwhsn';
             ridfs(i,:,:) = shiftdim(cridfs,-1);
             
@@ -137,6 +136,3 @@ err_corridor = 2;
 
 mindist = min(hypot(dx,dy));
 errsel = mindist <= err_corridor;
-
-function loadedim=loadim(x,y,z,whd,newsz,imfun)
-loadedim = im2double(imfun(imresize(g_imdb_getim(whd,x,y,z),newsz,'bilinear')));
