@@ -1,4 +1,4 @@
-function g_imdb_route_showrealsnapsquiver3d(dosave,douseinfomax,improc)
+function g_imdb_route_showrealsnapsquiver3d(dosave,douseinfomax,improc,shortwhd,zht)
 if nargin < 1
     dosave = false;
 end
@@ -8,24 +8,37 @@ end
 if nargin < 3
     improc = '';
 end
+if nargin < 4
+    shortwhd={
+    'imdb_2017-02-09_001'      % open, new boxes
+    %'imdb_2016-03-23_001', ... % open, empty
+    };
+elseif ~iscell(shortwhd)
+    shortwhd = {shortwhd};
+end
+if nargin < 5
+    zht = 0:100:500;
+end
 
 newonly = false;
 forcegen = false;
 
-shortwhd={
-    'imdb_2017-02-09_001'      % open, new boxes
-    %'imdb_2016-03-23_001', ... % open, empty
-    };
 res = 90;
-zht = 0:100:500;
 routenums = 3;
+
+if ~dosave
+    figure(1);clf
+    hold on
+    spcols = ceil(length(zht)/2);
+    subplot(2,spcols,1)
+end
 
 for useinfomax = douseinfomax
     for cres = res
         for i = 1:length(shortwhd)
             for routenum = routenums
-                for czht = zht
-                    [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew] = g_imdb_route_getrealsnapserrs3d(shortwhd{i},'arena2_pile',routenum,cres,czht,useinfomax,improc,forcegen);
+                for j = 1:length(zht)
+                    [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew] = g_imdb_route_getrealsnapserrs3d(shortwhd{i},'arena2_pile',routenum,cres,zht(j),useinfomax,improc,forcegen);
                     
                     if newonly && ~isnew
                         continue
@@ -34,8 +47,13 @@ for useinfomax = douseinfomax
                     whd = fullfile(g_dir_imdb,shortwhd{i});
                     flabel = g_imdb_getlabel(whd);
                     
-                    figure(1);clf
+                    if dosave
+                        figure(1);clf
+                    else
+                        subplot(2,spcols,j)
+                    end
                     hold on
+                    
                     if ~isempty(p.arenafn)
                         load(fullfile(g_dir_arenas,p.arenafn));
                         g_fig_drawobjverts(objverts,[],'k')
@@ -54,7 +72,7 @@ for useinfomax = douseinfomax
                     else
                         methodstr = 'ridf';
                     end
-                    title(sprintf('%s (route %d, res %d, ht %d, %s)', flabel, routenum, cres, czht, methodstr))
+                    title(sprintf('%s (route %d, res %d, ht %d, %s)', flabel, routenum, cres, zht(j), methodstr))
                     g_fig_setfont
                     
                     if dosave
@@ -68,15 +86,7 @@ for useinfomax = douseinfomax
                         else
                             algorithmstr = 'pm';
                         end
-                        g_fig_save(sprintf('%s%s_%s_route%d_res%03d_z%d_ridf_quiver%s',improcstr,algorithmstr,flabel,routenum,cres,czht),[10 10]);
-                    else
-                        try
-                            ginput(1);
-                        catch ex
-                            if strcmp(ex.identifier,'MATLAB:ginput:FigureDeletionPause')
-                                return
-                            end
-                        end
+                        g_fig_save(sprintf('%s%s_%s_route%d_res%03d_z%d_ridf_quiver%s',improcstr,algorithmstr,flabel,routenum,cres,zht(j)),[10 10]);
                     end
                 end
             end
