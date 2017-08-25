@@ -56,25 +56,33 @@ while true
         fprintf('selecting point (%d,%d)\n',gx,gy)
         
         figure(2);clf
-        alsubplot(2+length(zht),2,1:2,1:2)
+        alsubplot(3+length(zht),2,1:2,1:2)
         plot(shiftdim(bestridfs(sel,:,:)))
         xlim([0 nth])
         title(sprintf('x=%d, y=%d',gx,gy))
         title(legend(num2str((zht+50)')),'Height (mm)')
         
+        colormap gray
+        
+        sndist = hypot(gx-snx,gy-sny);
+        [~,snnearest] = min(sndist);
+        alsubplot(3,1:2)
+        imagesc(snaps(:,:,snnearest))
+        ylabel(snnearest)
+        
         for i = 1:length(zht)
             im = g_imdb_getprocim(whd,xi,yi,find(p.zs==zht(i)),imfun,imsz(2));
-            alsubplot(2+i,1)
-            imshow(im)
+            alsubplot(3+i,1)
+            imagesc(im)
             ylabel(zht(i)+50)
             
-            alsubplot(2+i,2)
+            alsubplot(3+i,2)
             whsn = bestsnap(sel,i);
-            imshow(snaps(:,:,whsn));
+            imagesc(snaps(:,:,whsn));
             ylabel(whsn)
         end
     elseif but=='s'
         figure(2)
-        g_fig_save(sprintf('ridf_%04d_%04d',p.xs(xi),p.ys(yi)),[20 15]);
+        g_fig_save(sprintf('ridf_%04d_%04d',p.xs(xi),p.ys(yi)),[30 15]);
     end
 end
