@@ -179,9 +179,10 @@ classdef g_control_object < handle
                 imaqreset;% make sure there are no initialised video objects
                 g.vid=videoinput('winvideo',1,'YUY2_720x576');
                 set(g.vid,'ReturnedColorSpace','rgb');
+                set(getselectedsource(g.vid),'AnalogVideoFormat','pal_b');
                 % having the preview window open seems to make frame acquisition faster
                 if res.vidpreview
-                    preview(g.vid); % line commented out - AD
+                    preview(g.vid);
                 end
                 start(g.vid);
             end
