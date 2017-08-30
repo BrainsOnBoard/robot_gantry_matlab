@@ -7,7 +7,7 @@ function g_route_capturesnaps(arenafn,routenum)
 
 ptr.zht = 200; % mm
 
-g = g_control_object;
+g = [];% g_control_object;
 
 for curroute=routenum
     datafn = sprintf('route_%s_%03d',arenafn,curroute);
@@ -17,7 +17,7 @@ for curroute=routenum
     if isempty(arenafn)
         minht = ptr.zht;
     else
-        load(arenafn,'objhts')
+        [~,objhts] = eval(arenafn);
         minht = max(objhts);
     end
     g.move([0;0;minht]);

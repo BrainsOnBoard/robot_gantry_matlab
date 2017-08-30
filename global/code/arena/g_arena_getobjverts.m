@@ -3,7 +3,7 @@ load('arenadim.mat')
 if isempty(arenafn)
     objmap = zeros(ceil(lim([2 1])'/objgridac));
 else
-    load(arenafn)
+    [objverts,objhts] = g_arena_load(matfileremext(arenafn));
     if ~exist('objhts','var')
         warning('object heights not specified')
         objhts = inf(numel(objverts),1);
