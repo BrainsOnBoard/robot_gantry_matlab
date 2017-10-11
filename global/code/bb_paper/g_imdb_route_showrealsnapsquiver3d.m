@@ -55,7 +55,7 @@ for useinfomax = douseinfomax
                     hold on
                     
                     if ~isempty(p.arenafn)
-                        load(fullfile(g_dir_arenas,p.arenafn));
+                        objverts=g_arena_load(p.arenafn);
                         g_fig_drawobjverts(objverts,[],'k')
                     end
 
