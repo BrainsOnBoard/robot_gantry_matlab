@@ -13,7 +13,7 @@ while true
     figure(5);clf
     subplot(2,1,2)
     if fex(curx,cury,curz)
-        load(fullfile(whd,sprintf('im_%03d_%03d_%03d.mat',curx,cury,curz)));
+        fr = imread(fullfile(whd,sprintf('im_%03d_%03d_%03d.png',curx,cury,curz)));
         imagesc(fr)
         colormap gray
         axis equal tight
