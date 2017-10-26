@@ -1,8 +1,10 @@
-function g_route_showroute
-%G_ROUTE_SHOWROUTE   Show stored training paths.
+function g_route_showroutes(arenafn)
+%G_ROUTE_SHOWROUTES   Show stored training paths.
 
-arenafn = []; %'arena1_boxes';
-datadir = fullfile(mfiledir,'routedat');
+if ~nargin
+    arenafn = []; %'arena1_boxes';
+end
+datadir = g_dir_routes;
 arenascale = 10;
 
 d = dir(fullfile(datadir,['route_' matfileremext(arenafn) '_*.mat']));
@@ -24,7 +26,7 @@ hold on
 
 fns = {d.name};
 for i = 1:length(d)
-    load(fullfile(datadir,fns{i}),'clx','cly')
-    plot(clx,cly)
+    load(fullfile(datadir,fns{i}),'clx','cly','p')
+    plot(clx*p.objgridac/p.arenascale, cly*p.objgridac/p.arenascale)
 end
-% legend(fns{:})
+legend(fns,'Interpreter','none')
