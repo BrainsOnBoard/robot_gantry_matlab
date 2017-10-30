@@ -2,6 +2,7 @@
 # temporary files
 *~
 *.asv
+*.swp
 
 /gantry_figures/
 /.gantry_cache/
