@@ -5,5 +5,5 @@
 *.swp
 
 /gantry_figures/
-/.gantry_cache/
+/gantry_cache/
 gantry_data
