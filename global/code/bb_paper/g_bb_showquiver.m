@@ -1,4 +1,4 @@
-function g_imdb_route_showrealsnapsquiver3d(dosave,useinfomax,improc,shortwhd,zht)
+function g_bb_showquiver(dosave,useinfomax,improc,shortwhd,zht)
 if nargin < 1
     dosave = false;
 end
@@ -46,7 +46,7 @@ for i = 1:length(useinfomax)
         for j = 1:length(shortwhd)
             for routenum = routenums
                 for k = 1:length(zht)
-                    [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew] = g_imdb_route_getrealsnapserrs3d(shortwhd{j},arenafn,routenum,cres,zht(k),useinfomax(i),improc,forcegen);
+                    [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew] = g_imdb_route_getdata(shortwhd{j},arenafn,routenum,cres,zht(k),useinfomax(i),improc,forcegen);
                     
                     if newonly && ~isnew
                         continue

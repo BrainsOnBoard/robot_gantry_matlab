@@ -9,7 +9,7 @@ zht = 0:100:500; % +50mm
 routenum = 3;
 
 for czht = zht
-    [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew,allwhsn] = g_imdb_route_getrealsnapserrs3d(shortwhd,'arena2_pile',routenum,res,czht,false,forcegen);
+    [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew,allwhsn] = g_imdb_route_getdata(shortwhd,'arena2_pile',routenum,res,czht,false,forcegen);
     snx = snx * 1000/20;
     sny = sny * 1000/20;
     wrongness = hypot(sny(nearest)-sny(whsn),snx(nearest)-snx(whsn));

@@ -21,7 +21,7 @@ for useinfomax = douseinfomax
         for i = 1:length(shortwhd)
             for routenum = routenums
                 for czht = zht
-                    [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew] = g_imdb_route_getrealsnapserrs3d(shortwhd{i},'arena2_pile',routenum,cres,czht,useinfomax,forcegen);
+                    [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew] = g_imdb_route_getdata(shortwhd{i},'arena2_pile',routenum,cres,czht,useinfomax,forcegen);
                     
                     if ~showfigs || (newonly && ~isnew)
                         continue

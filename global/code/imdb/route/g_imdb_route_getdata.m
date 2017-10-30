@@ -1,4 +1,4 @@
-function [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew,allwhsn,ridfs]=g_imdb_route_getrealsnapserrs3d(shortwhd,arenafn,routenum,res,zht,useinfomax,improc,forcegen,improcforinfomax)
+function [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew,allwhsn,ridfs]=g_imdb_route_getdata(shortwhd,arenafn,routenum,res,zht,useinfomax,improc,forcegen,improcforinfomax)
 if nargin < 9
     improcforinfomax = false;
 end
@@ -50,7 +50,7 @@ else
     
     weight_update_count = 30;
     
-    [snaps,~,snx,sny,snth]=g_imdb_route_getrealsnaps3d(arenafn,routenum,res,improc);
+    [snaps,~,snx,sny,snth]=g_imdb_route_getrealsnaps(arenafn,routenum,res,improc);
     
     load(fullfile(whd,'im_params.mat'),'p')
     if ~any(zht == p.zs)

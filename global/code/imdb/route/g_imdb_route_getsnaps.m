@@ -1,4 +1,4 @@
-function [snaps,clickis,snx,sny,snth,pxsnx,pxsny,pxsnth,crop,p]=g_imdb_route_getsnaps3d(shortwhd,routenum,zht,res)
+function [snaps,clickis,snx,sny,snth,pxsnx,pxsny,pxsnth,crop,p]=g_imdb_route_getsnaps(shortwhd,routenum,zht,res)
 
 imw = 720;
 

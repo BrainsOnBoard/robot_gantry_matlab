@@ -18,7 +18,7 @@ coords = [1600 1500; 1600 1600; 1500 1600; 1900 1300; 2100 1300; 2300 1200; 2400
 
 %% load RIDFs
 for i = 1:length(zht)
-    [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew,allwhsn,ridfs] = g_imdb_route_getrealsnapserrs3d(shortwhd,arenafn,routenum,imsz(2),zht(i),false,improc,forcegen);
+    [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew,allwhsn,ridfs] = g_imdb_route_getdata(shortwhd,arenafn,routenum,imsz(2),zht(i),false,improc,forcegen);
     
     bestsnap(:,i) = whsn;
     for j = 1:size(ridfs,1)
@@ -29,7 +29,7 @@ bestridfs = bestridfs/prod(imsz);
 
 %%
 imfun = gantry_getimfun(improc);
-[snaps,~,snx,sny,snth]=g_imdb_route_getrealsnaps3d(arenafn,routenum,imsz(2),improc);
+[snaps,~,snx,sny,snth]=g_imdb_route_getrealsnaps(arenafn,routenum,imsz(2),improc);
 
 if dosave
     for i = 1:size(coords,1)

@@ -9,8 +9,8 @@ shortwhd='imdb_2017-02-09_001';      % open, new boxes
 zht = 400; % +50mm
 routenum = 3;
 
-[imxi,imyi,heads,whsn,err_infomax,nearest,dist,snx,sny,snth,errsel,p,isnew] = g_imdb_route_getrealsnapserrs3d(shortwhd,'arena2_pile',routenum,res,zht,true,false);
-[imxi,imyi,heads,whsn,err_pm,nearest,dist,snx,sny,snth,errsel,p,isnew] = g_imdb_route_getrealsnapserrs3d(shortwhd,'arena2_pile',routenum,res,zht,false,false);
+[imxi,imyi,heads,whsn,err_infomax,nearest,dist,snx,sny,snth,errsel,p,isnew] = g_imdb_route_getdata(shortwhd,'arena2_pile',routenum,res,zht,true,false);
+[imxi,imyi,heads,whsn,err_pm,nearest,dist,snx,sny,snth,errsel,p,isnew] = g_imdb_route_getdata(shortwhd,'arena2_pile',routenum,res,zht,false,false);
 
 [errim_infomax,errim_pm] = deal(NaN(length(p.ys),length(p.xs)));
 errim_infomax(sub2ind(size(errim_infomax),imyi,imxi)) = err_infomax;

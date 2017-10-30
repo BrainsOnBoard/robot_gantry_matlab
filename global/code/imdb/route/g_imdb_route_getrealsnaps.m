@@ -1,5 +1,5 @@
-function [snaps,whclick,snx,sny,snth,p,ptr,procsnaps]=g_imdb_route_getrealsnaps3d(arenafn,routenum,res,improc)
-% function [snaps,whclick,clx,cly,clth,p,ptr]=g_imdb_route_getrealsnaps3d(arenafn,routenum,res,improc)
+function [snaps,whclick,snx,sny,snth,p,ptr,procsnaps]=g_imdb_route_getrealsnaps(arenafn,routenum,res,improc)
+% function [snaps,whclick,clx,cly,clth,p,ptr]=g_imdb_route_getrealsnaps(arenafn,routenum,res,improc)
 if nargin < 4
     improc = '';
 end
