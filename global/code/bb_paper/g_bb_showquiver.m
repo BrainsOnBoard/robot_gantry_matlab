@@ -46,7 +46,7 @@ for i = 1:length(useinfomax)
         for j = 1:length(shortwhd)
             for routenum = routenums
                 for k = 1:length(zht)
-                    [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew] = g_imdb_route_getdata(shortwhd{j},arenafn,routenum,cres,zht(k),useinfomax(i),improc,forcegen);
+                    [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew,~,~,snapszht] = g_imdb_route_getdata(shortwhd{j},arenafn,routenum,cres,zht(k),useinfomax(i),improc,forcegen);
                     
                     if newonly && ~isnew
                         continue
@@ -67,8 +67,6 @@ for i = 1:length(useinfomax)
                         g_fig_drawobjverts(objverts,[],'k')
                     end
 
-%                     plot(p.xs(imxi(~errsel)),p.ys(imyi(~errsel)),'b+')
-%                     plot(p.xs(imxi(errsel)),p.ys(imyi(errsel)),'g+')
                     anglequiver(p.xs(imxi(~errsel)),p.ys(imyi(~errsel)),heads(~errsel));
                     anglequiver(p.xs(imxi(errsel)),p.ys(imyi(errsel)),heads(errsel),[],'g')
                     plot(snx*1000/20,sny*1000/20,'ro')
@@ -80,7 +78,12 @@ for i = 1:length(useinfomax)
                     else
                         methodstr = 'ridf';
                     end
-                    title(sprintf('%s (route %d, res %d, ht %d, %s)', flabel, routenum, cres, zht(k), methodstr))
+                    tstr = sprintf('%s (route %d, res %d, ht %d, %s)', flabel, routenum, cres, zht(k), methodstr);
+                    if zht(k)==snapszht
+                        title(tstr,'Color','r')
+                    else
+                        title(tstr)
+                    end
                     g_fig_setfont
                     
                     if dosave

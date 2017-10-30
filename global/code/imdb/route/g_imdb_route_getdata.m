@@ -1,4 +1,4 @@
-function [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew,allwhsn,ridfs]=g_imdb_route_getdata(shortwhd,arenafn,routenum,res,zht,useinfomax,improc,forcegen,improcforinfomax)
+function [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew,allwhsn,ridfs,snapszht]=g_imdb_route_getdata(shortwhd,arenafn,routenum,res,zht,useinfomax,improc,forcegen,improcforinfomax)
 if nargin < 9
     improcforinfomax = false;
 end
@@ -34,11 +34,11 @@ ridfsfigdatfn = fullfile(g_dir_imdb_routes_ridfs_figdata,sprintf('wrapped_g_imdb
 
 fprintf('target file: %s\n',figdatfn);
 isnew = ~exist(figdatfn,'file');
-getridfs = nargout >= 14;
+wantridfs = nargout >= 14;
 haveridfs = exist(ridfsfigdatfn,'file');
-if ~isnew && ~forcegen && (~getridfs || haveridfs)
+if ~isnew && ~forcegen && (~wantridfs || haveridfs)
     load(figdatfn);
-    if getridfs
+    if wantridfs
         load(ridfsfigdatfn);
     end
 else
@@ -50,7 +50,8 @@ else
     
     weight_update_count = 30;
     
-    [snaps,~,snx,sny,snth]=g_imdb_route_getrealsnaps(arenafn,routenum,res,improc);
+    [snaps,~,snx,sny,snth,~,ptr]=g_imdb_route_getrealsnaps(arenafn,routenum,res,improc);
+    snapszht = ptr.zht;
     
     load(fullfile(whd,'im_params.mat'),'p')
     if ~any(zht == p.zs)
@@ -108,7 +109,7 @@ else
         mkdir(g_dir_imdb_routes_figdata);
     end
     fprintf('Saving to %s...\n',figdatfn);
-    save(figdatfn,'imxi','imyi','heads','whsn','snx','sny','snth','p','weight_update_count','zht');
+    save(figdatfn,'imxi','imyi','heads','whsn','snx','sny','snth','p','snapszht','weight_update_count','zht');
 
     if ~exist(g_dir_imdb_routes_ridfs_figdata,'dir')
         mkdir(g_dir_imdb_routes_ridfs_figdata);
