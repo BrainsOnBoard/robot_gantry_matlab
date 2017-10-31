@@ -1,4 +1,6 @@
-function g_bb_showquiver(dosave,useinfomax,improc,shortwhd,zht,userealsnaps)
+function g_bb_showquiver(dosave,useinfomax,improc,shortwhd,zht,userealsnaps,snapszht)
+close all
+
 if nargin < 1 || isempty(dosave)
     dosave = false;
 end
@@ -20,12 +22,16 @@ end
 if nargin < 5 || isempty(zht)
     zht = 0:100:500;
 end
-if nargin < 6
+if nargin < 6 || isempty(userealsnaps)
     userealsnaps = false;
 end
-snapszht = 200;
+if nargin < 7 || isempty(snapszht)
+    snapszht = 200;
+end
+
 newonly = false;
 forcegen = false;
+dosavefigdata = ~forcegen;
 
 res = 90;
 routenums = 3;
@@ -42,65 +48,67 @@ if ~dosave
 end
 
 for i = 1:length(useinfomax)
-    if ~dosave
-        figure(i);clf
-    end
     for cres = res
         for j = 1:length(shortwhd)
             for routenum = routenums
-                for k = 1:length(zht)
-                    [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew,~,~,snapszht] = g_imdb_route_getdata(shortwhd{j},arenafn,routenum,cres,zht(k),useinfomax(i),improc,forcegen,[],userealsnaps,snapszht);
-                    
-                    if newonly && ~isnew
-                        continue
+                for k = 1:length(snapszht)
+                    if ~dosave
+                        figure((i-1)*length(snapszht)+k);clf
                     end
-                    
-                    whd = fullfile(g_dir_imdb,shortwhd{j});
-                    flabel = g_imdb_getlabel(whd);
-                    
-                    if dosave
-                        figure(1);clf
-                    else
-                        subplot(2,spcols,k)
-                    end
-                    hold on
-                    
-                    if ~isempty(p.arenafn)
-                        objverts=g_arena_load(p.arenafn);
-                        g_fig_drawobjverts(objverts,[],'k')
-                    end
-
-                    anglequiver(p.xs(imxi(~errsel)),p.ys(imyi(~errsel)),heads(~errsel));
-                    anglequiver(p.xs(imxi(errsel)),p.ys(imyi(errsel)),heads(errsel),[],'g')
-                    plot(snx,sny,'ro')
-                    axis equal tight
-                    xlabel('x (mm)')
-                    ylabel('y (mm)')
-                    if useinfomax(i)
-                        methodstr = 'infomax';
-                    else
-                        methodstr = 'ridf';
-                    end
-                    tstr = sprintf('%s (route %d, res %d, ht %d, %s)', flabel, routenum, cres, zht(k), methodstr);
-                    if zht(k)==snapszht
-                        title(tstr,'Color','r')
-                    else
-                        title(tstr)
-                    end
-                    g_fig_setfont
-                    
-                    if dosave
-                        if isempty(improc)
-                            improcstr = '';
-                        else
-                            improcstr = [improc,'_'];
+                    for m = 1:length(zht)
+                        [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew,~,~,snapszht(k)] = g_imdb_route_getdata(shortwhd{j},arenafn,routenum,cres,zht(m),useinfomax(i),improc,forcegen,[],userealsnaps,snapszht(k),dosavefigdata);
+                        
+                        if newonly && ~isnew
+                            continue
                         end
+                        
+                        whd = fullfile(g_dir_imdb,shortwhd{j});
+                        flabel = g_imdb_getlabel(whd);
+                        
+                        if dosave
+                            figure(1);clf
+                        else
+                            subplot(2,spcols,m)
+                        end
+                        hold on
+                        
+                        if ~isempty(p.arenafn)
+                            objverts=g_arena_load(p.arenafn);
+                            g_fig_drawobjverts(objverts,[],'k')
+                        end
+                        
+                        anglequiver(p.xs(imxi(~errsel)),p.ys(imyi(~errsel)),heads(~errsel));
+                        anglequiver(p.xs(imxi(errsel)),p.ys(imyi(errsel)),heads(errsel),[],'g')
+                        plot(snx,sny,'ro')
+                        axis equal tight
+                        xlabel('x (mm)')
+                        ylabel('y (mm)')
                         if useinfomax(i)
-                            algorithmstr = 'infomax';
+                            methodstr = 'infomax';
                         else
-                            algorithmstr = 'pm';
+                            methodstr = 'ridf';
                         end
-                        g_fig_save(sprintf('%s%s_%s_route%d_res%03d_z%d_ridf_quiver%s',improcstr,algorithmstr,flabel,routenum,cres,zht(k)),[10 10]);
+                        tstr = sprintf('%s (route %d, res %d, ht %d, %s)', flabel, routenum, cres, zht(m), methodstr);
+                        if zht(m)==snapszht(k)
+                            title(tstr,'Color','r')
+                        else
+                            title(tstr)
+                        end
+                        g_fig_setfont
+                        
+                        if dosave
+                            if isempty(improc)
+                                improcstr = '';
+                            else
+                                improcstr = [improc,'_'];
+                            end
+                            if useinfomax(i)
+                                algorithmstr = 'infomax';
+                            else
+                                algorithmstr = 'pm';
+                            end
+                            g_fig_save(sprintf('%s%s_%s_route%d_res%03d_z%d_ridf_quiver%s',improcstr,algorithmstr,flabel,routenum,cres,zht(m)),[10 10]);
+                        end
                     end
                 end
             end

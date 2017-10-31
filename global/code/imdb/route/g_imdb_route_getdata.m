@@ -1,5 +1,5 @@
-function [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew,allwhsn,ridfs,snapszht]=g_imdb_route_getdata(shortwhd,arenafn,routenum,res,zht,useinfomax,improc,forcegen,improcforinfomax,userealsnaps,snapszht)
-if nargin < 10
+function [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew,allwhsn,ridfs,snapszht]=g_imdb_route_getdata(shortwhd,arenafn,routenum,res,zht,useinfomax,improc,forcegen,improcforinfomax,userealsnaps,snapszht,dosave)
+if nargin < 10 || isempty(userealsnaps)
     userealsnaps = false;
 end
 if nargin < 9 || isempty(improcforinfomax)
@@ -10,6 +10,10 @@ if nargin < 8
 end
 if nargin < 7
     improc = 'histeq';
+end
+
+if nargin < 12
+    dosave = ~forcegen;
 end
 
 getallwhsn = true;
@@ -66,6 +70,10 @@ else
     
     if userealsnaps
         [snaps,~,snx,sny,snth,~,snapszht]=g_imdb_route_getrealsnaps(arenafn,routenum,res,imfun);
+%         snaps = snaps(:,:,1:3:end);
+%         snx = snx(1:3:end);
+%         sny = sny(1:3:end);
+%         snth = snth(1:3:end);
     else
         [snaps,snx,sny,snth]=g_imdb_route_getimdbsnaps(arenafn,routenum,res,imfun,shortwhd,find(snapszht==p.zs),p.imsep);
     end
@@ -115,17 +123,21 @@ else
         whsn = allwhsn(:,1);
     end
     
-    if ~exist(g_dir_imdb_routes_figdata,'dir')
-        mkdir(g_dir_imdb_routes_figdata);
+    if dosave
+        if ~exist(g_dir_imdb_routes_figdata,'dir')
+            mkdir(g_dir_imdb_routes_figdata);
+        end
+        fprintf('Saving to %s...\n',figdatfn);
+        save(figdatfn,'imxi','imyi','heads','whsn','snx','sny','snth','p','userealsnaps','snapszht','weight_update_count','zht');
+
+        if ~exist(g_dir_imdb_routes_ridfs_figdata,'dir')
+            mkdir(g_dir_imdb_routes_ridfs_figdata);
+        end
+        fprintf('Saving RIDFs to %s...\n\n',ridfsfigdatfn);
+        save(ridfsfigdatfn,'ridfs','allwhsn');
+    else
+        warning('not saving data because dosave==false')
     end
-    fprintf('Saving to %s...\n',figdatfn);
-    save(figdatfn,'imxi','imyi','heads','whsn','snx','sny','snth','p','userealsnaps','snapszht','weight_update_count','zht');
-    
-    if ~exist(g_dir_imdb_routes_ridfs_figdata,'dir')
-        mkdir(g_dir_imdb_routes_ridfs_figdata);
-    end
-    fprintf('Saving RIDFs to %s...\n\n',ridfsfigdatfn);
-    save(ridfsfigdatfn,'ridfs','allwhsn');
 end
 
 snxi = 1+snx(:) / p.imsep;
