@@ -1,14 +1,14 @@
-function g_bb_showquiver(dosave,useinfomax,improc,shortwhd,zht)
-if nargin < 1
+function g_bb_showquiver(dosave,useinfomax,improc,shortwhd,zht,userealsnaps)
+if nargin < 1 || isempty(dosave)
     dosave = false;
 end
-if nargin < 2
+if nargin < 2 || isempty(useinfomax)
     useinfomax = [false true];
 end
-if nargin < 3
+if nargin < 3 || isempty(improc)
     improc = '';
 end
-if nargin < 4
+if nargin < 4 || isempty(shortwhd)
     shortwhd={
         'imdb_2017-02-09_001' % open, pile
 %         'imdb_2016-03-23_001' % open, empty
@@ -17,10 +17,13 @@ if nargin < 4
 elseif ~iscell(shortwhd)
     shortwhd = {shortwhd};
 end
-if nargin < 5
+if nargin < 5 || isempty(zht)
     zht = 0:100:500;
 end
-
+if nargin < 6
+    userealsnaps = false;
+end
+snapszht = 200;
 newonly = false;
 forcegen = false;
 
@@ -46,7 +49,7 @@ for i = 1:length(useinfomax)
         for j = 1:length(shortwhd)
             for routenum = routenums
                 for k = 1:length(zht)
-                    [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew,~,~,snapszht] = g_imdb_route_getdata(shortwhd{j},arenafn,routenum,cres,zht(k),useinfomax(i),improc,forcegen);
+                    [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew,~,~,snapszht] = g_imdb_route_getdata(shortwhd{j},arenafn,routenum,cres,zht(k),useinfomax(i),improc,forcegen,[],userealsnaps,snapszht);
                     
                     if newonly && ~isnew
                         continue
@@ -69,7 +72,7 @@ for i = 1:length(useinfomax)
 
                     anglequiver(p.xs(imxi(~errsel)),p.ys(imyi(~errsel)),heads(~errsel));
                     anglequiver(p.xs(imxi(errsel)),p.ys(imyi(errsel)),heads(errsel),[],'g')
-                    plot(snx*1000/20,sny*1000/20,'ro')
+                    plot(snx,sny,'ro')
                     axis equal tight
                     xlabel('x (mm)')
                     ylabel('y (mm)')

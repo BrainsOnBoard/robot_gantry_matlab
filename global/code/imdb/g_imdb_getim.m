@@ -1,5 +1,5 @@
-function fr=g_imdb_getim(whd,x,y,z)
-% function fr=g_imdb_getim(whd,x,y,z)
+function fr=g_imdb_getim(whd,xi,yi,zi)
+% function fr=g_imdb_getim(whd,xi,yi,zi)
 %
 % Load an image at the specified x,y,z position from the specified
 % database. The image is returned as a matrix of uint8s. x,y,z should be
@@ -7,7 +7,7 @@ function fr=g_imdb_getim(whd,x,y,z)
 % 100,200,300).
 
 try
-    fr = imread(fullfile(whd,sprintf('im_%03d_%03d_%03d.png',x,y,z)));
+    fr = imread(fullfile(whd,sprintf('im_%03d_%03d_%03d.png',xi,yi,zi)));
 catch ex
     if strcmp(ex.identifier,'MATLAB:imagesci:imread:fileDoesNotExist')
         fr = [];

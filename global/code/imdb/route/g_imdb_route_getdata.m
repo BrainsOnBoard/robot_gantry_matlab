@@ -1,5 +1,8 @@
-function [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew,allwhsn,ridfs,snapszht]=g_imdb_route_getdata(shortwhd,arenafn,routenum,res,zht,useinfomax,improc,forcegen,improcforinfomax)
-if nargin < 9
+function [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew,allwhsn,ridfs,snapszht]=g_imdb_route_getdata(shortwhd,arenafn,routenum,res,zht,useinfomax,improc,forcegen,improcforinfomax,userealsnaps,snapszht)
+if nargin < 10
+    userealsnaps = false;
+end
+if nargin < 9 || isempty(improcforinfomax)
     improcforinfomax = false;
 end
 if nargin < 8
@@ -29,8 +32,13 @@ if isempty(improc)
 else
     improcstr = [improc,'_'];
 end
-figdatfn = fullfile(g_dir_imdb_routes_figdata,sprintf('wrapped_g_imdb_route_geterrs_%s%s_%s_%03d_res%03d_z%d%s.mat',improcstr,shortwhd,matfileremext(arenafn),routenum,res,zht,infomaxstr));
-ridfsfigdatfn = fullfile(g_dir_imdb_routes_ridfs_figdata,sprintf('wrapped_g_imdb_route_geterrs_%s%s_%s_%03d_res%03d_z%d%s.mat',improcstr,shortwhd,matfileremext(arenafn),routenum,res,zht,infomaxstr));
+if userealsnaps
+    snapstr = '';
+else
+    snapstr = sprintf('_imdbsnaps%d',snapszht);
+end
+figdatfn = fullfile(g_dir_imdb_routes_figdata,sprintf('wrapped_g_imdb_route_geterrs_%s%s_%s_%03d_res%03d_z%d%s%s.mat',improcstr,shortwhd,matfileremext(arenafn),routenum,res,zht,infomaxstr,snapstr));
+ridfsfigdatfn = fullfile(g_dir_imdb_routes_ridfs_figdata,sprintf('wrapped_g_imdb_route_geterrs_%s%s_%s_%03d_res%03d_z%d%s%s.mat',improcstr,shortwhd,matfileremext(arenafn),routenum,res,zht,infomaxstr,snapstr));
 
 fprintf('target file: %s\n',figdatfn);
 isnew = ~exist(figdatfn,'file');
@@ -50,15 +58,17 @@ else
     
     weight_update_count = 30;
     
-    [snaps,~,snx,sny,snth,~,ptr]=g_imdb_route_getrealsnaps(arenafn,routenum,res,improc);
-    snapszht = ptr.zht;
-    
     load(fullfile(whd,'im_params.mat'),'p')
+    zi = find(p.zs==zht);
     if ~any(zht == p.zs)
         error('invalid height: %f',zht);
     end
     
-    zi = find(p.zs==zht);
+    if userealsnaps
+        [snaps,~,snx,sny,snth,~,snapszht]=g_imdb_route_getrealsnaps(arenafn,routenum,res,imfun);
+    else
+        [snaps,snx,sny,snth]=g_imdb_route_getimdbsnaps(arenafn,routenum,res,imfun,shortwhd,find(snapszht==p.zs),p.imsep);
+    end
     
     valids = g_imdb_getimpts(whd,p,zi);
     ind = find(valids);
@@ -109,8 +119,8 @@ else
         mkdir(g_dir_imdb_routes_figdata);
     end
     fprintf('Saving to %s...\n',figdatfn);
-    save(figdatfn,'imxi','imyi','heads','whsn','snx','sny','snth','p','snapszht','weight_update_count','zht');
-
+    save(figdatfn,'imxi','imyi','heads','whsn','snx','sny','snth','p','userealsnaps','snapszht','weight_update_count','zht');
+    
     if ~exist(g_dir_imdb_routes_ridfs_figdata,'dir')
         mkdir(g_dir_imdb_routes_ridfs_figdata);
     end
@@ -118,8 +128,8 @@ else
     save(ridfsfigdatfn,'ridfs','allwhsn');
 end
 
-snxi = 1+snx(:) * 1000/(p.imsep*20);
-snyi = 1+sny(:) * 1000/(p.imsep*20);
+snxi = 1+snx(:) / p.imsep;
+snyi = 1+sny(:) / p.imsep;
 
 dx = bsxfun(@minus,imxi(:)',snxi);
 dy = bsxfun(@minus,imyi(:)',snyi);

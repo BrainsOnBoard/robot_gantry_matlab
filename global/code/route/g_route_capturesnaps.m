@@ -7,7 +7,7 @@ function g_route_capturesnaps(arenafn,routenum)
 
 ptr.zht = 200; % mm
 
-g = [];% g_control_object;
+g = g_control_object;
 
 for curroute=routenum
     datafn = sprintf('route_%s_%03d',arenafn,curroute);

@@ -1,4 +1,4 @@
-function im=g_imdb_getprocim(whd,x,y,z,imfun,res)
+function im=g_imdb_getprocim(whd,xi,yi,zi,imfun,res)
 if nargin < 5
     imfun = @deal;
 end
@@ -10,14 +10,14 @@ docache = res ~= 720 || ~strcmp(char(imfun),'deal');
 if docache
     [~,shortwhd] = fileparts(whd);
     dname = fullfile(g_dir_cache_procim,shortwhd,char(imfun));
-    imfn = fullfile(dname,sprintf('im_%03d_%03d_%03d.mat',x,y,z));
+    imfn = fullfile(dname,sprintf('im_%03d_%03d_%03d.mat',xi,yi,zi));
     if exist(imfn,'file')
         load(imfn,'im')
         return
     end
 end
 
-im = g_imdb_getim(whd,x,y,z);
+im = g_imdb_getim(whd,xi,yi,zi);
 if isempty(im)
     return
 end
