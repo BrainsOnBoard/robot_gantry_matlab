@@ -13,7 +13,7 @@ if nargin < 7
 end
 
 getallwhsn = true;
-nth = 360;
+nth = min(360,res);
 
 whd = fullfile(g_dir_imdb,shortwhd);
 
@@ -87,7 +87,7 @@ else
         ridfs = NaN(nheads,nth);
         for i = 1:nheads
             im = g_imdb_getprocim(whd,imxi(i),imyi(i),zi,imfun,res);
-            [heads(i),~,cridf] = infomax_gethead(im,[],infomax_wts);
+            [heads(i),~,cridf] = infomax_gethead(im,[],infomax_wts,[],nth);
             ridfs(i,:) = cridf';
             
             if progbar
