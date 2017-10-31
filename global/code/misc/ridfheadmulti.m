@@ -12,6 +12,9 @@ else
 end
 if nargin < 5 || isempty(nth)
     nth = size(im,2);
+elseif nth > size(im,2)
+    warning('nth cannot be > size(im,2); using nth=size(im,2)')
+    nth = size(im,2);
 end
 if nargin < 4 || isempty(angleunit)
     angleunit = 2*pi;
