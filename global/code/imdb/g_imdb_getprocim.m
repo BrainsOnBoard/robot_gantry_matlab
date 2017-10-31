@@ -9,7 +9,7 @@ end
 docache = res ~= 720 || ~strcmp(char(imfun),'deal');
 if docache
     [~,shortwhd] = fileparts(whd);
-    dname = fullfile(g_dir_cache_procim,shortwhd,char(imfun));
+    dname = fullfile(g_dir_cache_procim,shortwhd,char(imfun),num2str(res));
     imfn = fullfile(dname,sprintf('im_%03d_%03d_%03d.mat',xi,yi,zi));
     if exist(imfn,'file')
         load(imfn,'im')
