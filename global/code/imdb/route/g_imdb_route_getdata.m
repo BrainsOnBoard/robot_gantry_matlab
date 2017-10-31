@@ -1,6 +1,6 @@
 function [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew,allwhsn,ridfs,snapszht]=g_imdb_route_getdata(shortwhd,arenafn,routenum,res,zht,useinfomax,improc,forcegen,improcforinfomax,userealsnaps,snapszht,dosave)
 if nargin < 10 || isempty(userealsnaps)
-    userealsnaps = false;
+    userealsnaps = true;
 end
 if nargin < 9 || isempty(improcforinfomax)
     improcforinfomax = false;
