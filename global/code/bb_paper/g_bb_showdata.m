@@ -59,6 +59,12 @@ for i = 1:length(useinfomax)
                         
                         whd = fullfile(g_dir_imdb,shortwhd{j});
                         flabel = g_imdb_getlabel(whd);
+                        if useinfomax(i)
+                            methodstr = 'infomax';
+                        else
+                            methodstr = 'ridf';
+                        end
+                        tstr = sprintf('%s (route %d, res %d, ht %d, %s)', flabel, routenum, cres, zht(m), methodstr);
                         
                         if plotquiver
                             if dosave
@@ -80,12 +86,6 @@ for i = 1:length(useinfomax)
                             axis equal tight
                             xlabel('x (mm)')
                             ylabel('y (mm)')
-                            if useinfomax(i)
-                                methodstr = 'infomax';
-                            else
-                                methodstr = 'ridf';
-                            end
-                            tstr = sprintf('%s (route %d, res %d, ht %d, %s)', flabel, routenum, cres, zht(m), methodstr);
                             if zht(m)==snapszht(k)
                                 title(tstr,'Color','r')
                             else
@@ -113,9 +113,33 @@ for i = 1:length(useinfomax)
                             subplot(2,spcols,m)
                             
                             whsnim = makeim(imxi,imyi,whsn);
+                            whsnim(isnan(whsnim)) = 0;
                             imagesc(whsnim)
+                            hot2 = [0,0,1; hot];
+                            colormap(hot2)
+                            hold on
+                            
+                            snxi = 1+(snx/p.imsep);
+                            snyi = 1+(sny/p.imsep);
+                            plot(snxi,snyi,'g.')
+                            
+                            for n = 1:length(snxi)
+                                matched = whsnim(snyi(n),snxi(n));
+                                if matched~=n
+                                    fprintf('expected: %d; matched: %d\n',n,matched)
+                                    line(snxi(n)+[-.5 .5 .5 -.5 -.5],snyi(n)+[-.5 -.5 .5 .5 -.5],'Color','b')
+                                end
+                            end
+                            
                             set(gca,'YDir','normal')
-                            colormap hot
+                            
+                            if zht(m)==snapszht(k)
+                                title(tstr,'Color','r')
+                            else
+                                title(tstr)
+                            end
+                            g_fig_setfont
+                            
                             colorbar
                         end
                     end
