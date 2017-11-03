@@ -5,7 +5,7 @@ if nargin < 1 || isempty(dosave)
     dosave = false;
 end
 if nargin < 2 || isempty(useinfomax)
-    useinfomax = [false true];
+    useinfomax = false;
 end
 if nargin < 3 || isempty(improc)
     improc = '';
