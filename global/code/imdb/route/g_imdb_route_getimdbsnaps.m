@@ -23,6 +23,8 @@ sny = sny(I);
 % snth = atan2(diff(sny),diff(snx));
 % snth(end+1) = snth(end);
 snth = truesnth(nearest(I));
+pxsnx = pxsnx(I);
+pxsny = pxsny(I);
 
 % figure(10);clf
 % plot(snx,sny,'bo',truesnx,truesny,'g');
@@ -49,8 +51,11 @@ for i = 1:length(pxsnx)
 %     keyboard
 end
 
-% figure(11);clf
 % for i = 1:size(snaps,3)
+%     figure(12);clf
+%     plot(pxsnx,pxsny,'bo',pxsnx(i),pxsny(i),'ro')
+%     
+%     figure(11);clf
 %     imshow(snaps(:,:,i));
 %     ginput(1);
 % end
