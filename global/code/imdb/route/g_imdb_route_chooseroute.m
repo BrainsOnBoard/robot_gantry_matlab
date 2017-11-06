@@ -1,26 +1,17 @@
-clear
-
-dosave = true;
-
-p = load('arenadim.mat');
-p.imsep = 100; % mm
-p.xs = 0:p.imsep:p.lim(1);
-p.ys = 0:p.imsep:p.lim(2);
-p.zht = 150;
-p.objgridac = 10; % mm
-p.headclear = 150;
-p.arenafn = 'arena1_boxes.mat';
-
-fex = false(length(p.ys),length(p.xs));
-for xi = 1:length(p.xs)
-    for yi = 1:length(p.ys)
-        fex(yi,xi) = exist(fullfile(g_dir_imdb,'imdb_2016-02-05_001',sprintf('im_%03d_%03d.mat',yi,xi)),'file');
-    end
+function g_imdb_route_chooseroute(dosave,shortwhd)
+if nargin < 1 || isempty(dosave)
+    dosave = false;
+end
+if nargin < 2 || isempty(shortwhd)
+    whd = g_imdb_choosedb;
+else
+    whd = fullfile(g_dir_imdb,shortwhd);
 end
 
-[gx,gy] = meshgrid(p.xs,p.ys);
+[fex,p] = g_imdb_imexist(whd,[],1);
+
+[gy,gx] = meshgrid(p.ys,p.xs);
 ind = find(fex);
-[imyi,imxi] = ind2sub(size(fex),ind);
 
 figure(1);clf
 axis equal
@@ -39,7 +30,14 @@ snx = [];
 sny = [];
 snth = [];
 while true
-    [bx,by,but]=ginput(1);
+    try
+        [bx,by,but]=ginput(1);
+    catch ex
+        if strcmp(ex.identifier,'MATLAB:ginput:FigureDeletionPause')
+            disp('Figure closed')
+            return
+        end
+    end
     if isempty(but)
         break
     end
@@ -60,14 +58,10 @@ while true
         snth(end+1) = atan2(sny(end) - sny(end-1), snx(end) - snx(end-1));
     end
 end
-snth(end+1) = snth(end);
 snth = mod(snth,2*pi);
+snth(end+1) = snth(end);
 
 if dosave
-    if ~exist(g_dir_imdb_routes,'dir')
-        mkdir(g_dir_imdb_routes);
-    end
-    
     filei = 1;
     while true
         datafn = fullfile(g_dir_imdb_routes,sprintf('route_%03d.mat',filei));
@@ -77,6 +71,5 @@ if dosave
         filei = filei + 1;
     end
     
-    fprintf('Saving to %s...\n', datafn);
-    save(datafn,'p','snx','sny','snth');
+    savemeta(datafn,'p','snx','sny','snth');
 end

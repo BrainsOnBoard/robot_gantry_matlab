@@ -78,7 +78,7 @@ else
         [snaps,snx,sny,snth]=g_imdb_route_getimdbsnaps(arenafn,routenum,res,imfun,shortwhd,find(snapszht==p.zs),p.imsep);
     end
     
-    valids = g_imdb_getimpts(whd,p,zi);
+    valids = g_imdb_imexist(whd,p,zi);
     ind = find(valids);
     nheads = length(ind);
     [imxi,imyi] = ind2sub(size(valids),ind);

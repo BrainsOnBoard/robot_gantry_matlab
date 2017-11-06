@@ -1,4 +1,4 @@
-function [fex,p,whd] = g_imdb_getimpts(whd,p,zis)
+function [fex,p,whd] = g_imdb_imexist(whd,p,zis)
 if nargin < 1 || isempty(whd)
     whd = g_imdb_choosedb;
 end

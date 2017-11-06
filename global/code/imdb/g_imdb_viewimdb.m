@@ -2,7 +2,7 @@ function g_imdb_viewimdb
 % Allows the user to view an image database interactively. Views can be
 % cycled through with keypresses.
 
-[fex,p,whd] = g_imdb_getimpts;
+[fex,p,whd] = g_imdb_imexist;
 
 [x,y] = ndgrid(p.xs,p.ys);
 

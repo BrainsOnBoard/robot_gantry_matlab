@@ -1,5 +1,5 @@
-function [whd,whdshort,label]=g_imdb_choosedb
-% function [whd,whdshort,label]=g_imdb_choosedb
+function [whd,shortwhd,label]=g_imdb_choosedb
+% function [whd,shortwhd,label]=g_imdb_choosedb
 %
 % gets the directory name (and label) for an image database chosen by the
 % user
@@ -28,7 +28,7 @@ switch length(ds)
         disp('no image dbs found')
         return
     case 1
-        whdshort = ds{1};
+        shortwhd = ds{1};
         label = labels{1};
     otherwise
         for i = 1:length(ds)
@@ -49,12 +49,12 @@ switch length(ds)
         end
         inp = input(sprintf('Which dir [%d]: ',length(ds)));
         if isempty(inp)
-            whdshort = ds{end};
+            shortwhd = ds{end};
             label = labels{end};
         else
-            whdshort = ds{inp};
+            shortwhd = ds{inp};
             label = labels{inp};
         end
 end
 
-whd = fullfile(ddir,whdshort);
+whd = fullfile(ddir,shortwhd);
