@@ -2,7 +2,7 @@ function [snaps,snx,sny,snth]=g_imdb_route_getimdbsnaps(arenafn,routenum,res,imf
 
 whd = fullfile(g_dir_imdb,shortwhd);
 
-load(fullfile(g_dir_routes,sprintf('route_%s_%03d.mat',matfileremext(arenafn),routenum)),'clx','cly','whclick','p','ptr')
+load(fullfile(g_dir_routes,sprintf('route_%s_%03d.mat',matfileremext(arenafn),routenum)),'clx','cly','whclick','p')
 truesnx = clx*1000/p.arenascale;
 truesny = cly*1000/p.arenascale;
 truesnth = atan2(diff(cly),diff(clx));
@@ -35,6 +35,11 @@ snaps = NaN([sz, length(pxsnx)]);
 sninds = round(snth*720/(2*pi));
 for i = 1:length(pxsnx)
     csnap = g_imdb_getim(whd,pxsnx(i),pxsny(i),zi);
+    if isempty(csnap)
+        warning('im: %s (%d,%d,%d) does not exist',shortwhd,pxsnx(i),pxsny(i),zi);
+        continue
+    end
+    
     snaps(:,:,i) = im2double(imfun(imresize(circshift(csnap,sninds(i),2),sz,'bilinear')));
     
 %     im1 = im2double(csnap);
