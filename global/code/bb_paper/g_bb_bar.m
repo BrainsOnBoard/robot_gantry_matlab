@@ -1,8 +1,14 @@
-function g_bb_bar(dosave,improc)
-if nargin < 2
+function g_bb_bar(dosave,shortwhd,routenums,improc)
+if nargin < 4 || isempty(improc)
     improc = '';
 end
-if nargin < 1
+if nargin < 3 || isempty(routenums)
+    routenums = 3;
+end
+if nargin < 2 || isempty(shortwhd)
+    [~,shortwhd] = g_imdb_choosedb;
+end
+if nargin < 1 || isempty(dosave)
     dosave = false;
 end
 
@@ -11,13 +17,6 @@ improcforinfomax = false;
 res = 90;
 zht = 0:100:500;
 forcegen = false;
-
-shortwhd={
-    'imdb_2017-02-09_001'      % open, pile
-    %'imdb_2016-03-23_001', ... % open, empty
-};
-
-routenums = 3;
 
 [stderrs,means] = deal(NaN(length(useinfomax),length(res),length(shortwhd),length(routenums),length(zht)));
 
