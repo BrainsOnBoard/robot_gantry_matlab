@@ -1,4 +1,4 @@
-function g_imdb_route_stacked_perfrealsnapsbarcharts3d(dosave,improc)
+function g_bb_bar(dosave,improc)
 if nargin < 2
     improc = '';
 end
@@ -9,13 +9,15 @@ end
 useinfomax = [false true];
 improcforinfomax = false;
 res = 90;
-shortwhd={
-    'imdb_2017-02-09_001'      % open, new boxes
-    %'imdb_2016-03-23_001', ... % open, empty
-    };
 zht = 0:100:500;
-routenums = 3;
 forcegen = false;
+
+shortwhd={
+    'imdb_2017-02-09_001'      % open, pile
+    %'imdb_2016-03-23_001', ... % open, empty
+};
+
+routenums = 3;
 
 [stderrs,means] = deal(NaN(length(useinfomax),length(res),length(shortwhd),length(routenums),length(zht)));
 
