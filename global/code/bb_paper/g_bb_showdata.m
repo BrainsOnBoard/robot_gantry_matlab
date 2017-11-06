@@ -1,4 +1,4 @@
-function g_bb_showdata(dosave,useinfomax,improc,shortwhd,zht,userealsnaps,snapszht)
+function g_bb_showdata(dosave,useinfomax,improc,shortwhd,zht,userealsnaps,snapszht,plotquiver,plotwhsn)
 close all
 
 if nargin < 1 || isempty(dosave)
@@ -28,13 +28,16 @@ end
 if nargin < 7 || isempty(snapszht)
     snapszht = 200;
 end
+if nargin < 8 || isempty(plotquiver)
+    plotquiver = true;
+end
+if nargin < 9 || isempty(plotwhsn)
+    plotwhsn = false;
+end
 
 newonly = false;
 forcegen = false;
 dosavefigdata = ~forcegen;
-
-plotquiver = true;
-plotwhsn = true;
 
 res = 90;
 % routenums = 3;
@@ -112,7 +115,7 @@ for i = 1:length(useinfomax)
                             figure(10*length(snapszht)+k)
                             subplot(2,spcols,m)
                             
-                            whsnim = makeim(imxi,imyi,whsn);
+                            whsnim = makeim(imxi,imyi,whsn,length(p.xs),length(p.ys));
                             whsnim(isnan(whsnim)) = 0;
                             imagesc(whsnim)
                             hot2 = [0,0,1; hot];
