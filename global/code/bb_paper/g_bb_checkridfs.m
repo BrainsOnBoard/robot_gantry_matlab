@@ -1,10 +1,9 @@
-function g_imdb_route_checkridfs_height(dosave)
+function g_bb_checkridfs(dosave)
 if ~nargin
     dosave=false;
 end
 close all
 
-nth = 360;
 improc = '';
 forcegen = false;
 
@@ -56,7 +55,7 @@ if dosave
 %         saverealsnapsridfs(coords(i,1),coords(i,2))
 %     end
 else
-    g_bb_showdata(false,false,improc,shortwhd,zht,true,false);
+    g_bb_showdata(false,false,improc,shortwhd,zht,userealsnaps,snapszht,true,false);
     
     cridfs = NaN(imsz(2),length(zht));
     cbestsnap = NaN(length(zht),1);
