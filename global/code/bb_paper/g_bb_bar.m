@@ -7,6 +7,9 @@ if nargin < 3 || isempty(routenums)
 end
 if nargin < 2 || isempty(shortwhd)
     [~,shortwhd] = g_imdb_choosedb;
+    shortwhd = {shortwhd};
+elseif ~iscell(shortwhd)
+    shortwhd = {shortwhd};
 end
 if nargin < 1 || isempty(dosave)
     dosave = false;
