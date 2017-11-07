@@ -125,8 +125,8 @@ for i = 1:length(useinfomax)
                             colormap(hot2)
                             hold on
                             
-                            snxi = 1+(snx/p.imsep);
-                            snyi = 1+(sny/p.imsep);
+                            snxi = round(1+(snx/p.imsep));
+                            snyi = round(1+(sny/p.imsep));
                             plot(snxi,snyi,'g.')
                             
                             for n = 1:length(snxi)
