@@ -12,10 +12,12 @@ if nargin < 3 || isempty(improc)
 end
 if nargin < 4 || isempty(shortwhd)
     shortwhd={
-%         'imdb_2017-02-09_001' % open, pile
+        'imdb_2017-02-09_001' % open, pile
 %         'imdb_2016-03-23_001' % open, empty
-        'imdb_2016-03-29_001' % open, boxes
+%         'imdb_2016-03-29_001' % open, boxes
+%         'imdb_2017-06-06_001' % closed, plants
         };
+%     [~,shortwhd] = g_imdb_choosedb;
 elseif ~iscell(shortwhd)
     shortwhd = {shortwhd};
 end
@@ -40,11 +42,12 @@ forcegen = false;
 dosavefigdata = ~forcegen;
 
 res = 90;
-% routenums = 3;
-routenums = 1;
+routenums = 3;
+% routenums = 1;
 
-% arenafn = 'arena2_pile';
-arenafn = 'arena1_boxes';
+arenafn = 'arena2_pile';
+% arenafn = 'arena1_boxes';
+% arenafn = 'arena_plants';
 
 spcols = ceil(length(zht)/2);
 
@@ -130,7 +133,12 @@ for i = 1:length(useinfomax)
                                 matched = whsnim(snyi(n),snxi(n));
                                 if matched~=n
                                     fprintf('expected: %d; matched: %d\n',n,matched)
-                                    line(snxi(n)+[-.5 .5 .5 -.5 -.5],snyi(n)+[-.5 -.5 .5 .5 -.5],'Color','b')
+                                    if snapszht(k)==zht(m)
+                                        col = 'g';
+                                    else
+                                        col = 'b';
+                                    end
+                                    line(snxi(n)+[-.5 .5 .5 -.5 -.5],snyi(n)+[-.5 -.5 .5 .5 -.5],'Color',col)
                                 end
                             end
                             
