@@ -42,12 +42,7 @@ forcegen = false;
 dosavefigdata = ~forcegen;
 
 res = 90;
-routenums = 3;
-% routenums = 1;
-
-arenafn = 'arena2_pile';
-% arenafn = 'arena1_boxes';
-% arenafn = 'arena_plants';
+routenums = 1;
 
 spcols = ceil(length(zht)/2);
 
@@ -57,7 +52,11 @@ for i = 1:length(useinfomax)
             for routenum = routenums
                 for k = 1:length(snapszht)
                     for m = 1:length(zht)
-                        [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew,~,~,snapszht(k)] = g_imdb_route_getdata(shortwhd{j},arenafn,routenum,cres,zht(m),useinfomax(i),improc,forcegen,[],userealsnaps,snapszht(k),dosavefigdata);
+                        [imxi,imyi,heads,whsn,~,~,~,snx,sny,~,errsel,p, ...
+                         isnew,~,~,snapszht(k)] = g_imdb_route_getdata( ...
+                            shortwhd{j},routenum,cres,zht(m), ...
+                            useinfomax(i),improc,forcegen,[], ...
+                            userealsnaps,snapszht(k),dosavefigdata);
                         
                         if newonly && ~isnew
                             continue

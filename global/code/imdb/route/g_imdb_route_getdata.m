@@ -1,18 +1,18 @@
-function [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew,allwhsn,ridfs,snapszht,snxi,snyi]=g_imdb_route_getdata(shortwhd,arenafn,routenum,res,zht,useinfomax,improc,forcegen,improcforinfomax,userealsnaps,snapszht,dosave)
-if nargin < 10 || isempty(userealsnaps)
+function [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew,allwhsn,ridfs,snapszht,snxi,snyi]=g_imdb_route_getdata(shortwhd,routenum,res,zht,useinfomax,improc,forcegen,improcforinfomax,userealsnaps,snapszht,dosave)
+if nargin < 9 || isempty(userealsnaps)
     userealsnaps = true;
 end
-if nargin < 9 || isempty(improcforinfomax)
+if nargin < 8 || isempty(improcforinfomax)
     improcforinfomax = false;
 end
-if nargin < 8
+if nargin < 7
     forcegen = false;
 end
-if nargin < 7
+if nargin < 6
     improc = '';
 end
 
-if nargin < 12
+if nargin < 11
     dosave = ~forcegen;
 end
 
@@ -41,8 +41,8 @@ if userealsnaps
 else
     snapstr = sprintf('_imdbsnaps%d',snapszht);
 end
-figdatfn = fullfile(g_dir_imdb_routes_figdata,sprintf('wrapped_g_imdb_route_geterrs_%s%s_%s_%03d_res%03d_z%d%s%s.mat',improcstr,shortwhd,matfileremext(arenafn),routenum,res,zht,infomaxstr,snapstr));
-ridfsfigdatfn = fullfile(g_dir_imdb_routes_ridfs_figdata,sprintf('wrapped_g_imdb_route_geterrs_%s%s_%s_%03d_res%03d_z%d%s%s.mat',improcstr,shortwhd,matfileremext(arenafn),routenum,res,zht,infomaxstr,snapstr));
+figdatfn = fullfile(g_dir_imdb_routes_figdata,sprintf('wrapped_g_imdb_route_geterrs_%s%s_%03d_res%03d_z%d%s%s.mat',improcstr,shortwhd,routenum,res,zht,infomaxstr,snapstr));
+ridfsfigdatfn = fullfile(g_dir_imdb_routes_ridfs_figdata,sprintf('wrapped_g_imdb_route_geterrs_%s%s_%03d_res%03d_z%d%s%s.mat',improcstr,shortwhd,routenum,res,zht,infomaxstr,snapstr));
 
 fprintf('target file: %s\n',figdatfn);
 isnew = ~exist(figdatfn,'file');
@@ -69,13 +69,13 @@ else
     end
     
     if userealsnaps
-        [snaps,~,snx,sny,snth,~,snapszht]=g_imdb_route_getrealsnaps(arenafn,routenum,res,imfun);
+        [snaps,~,snx,sny,snth,~,snapszht]=g_imdb_route_getrealsnaps(p.arenafn,routenum,res,imfun);
 %         snaps = snaps(:,:,1:3:end);
 %         snx = snx(1:3:end);
 %         sny = sny(1:3:end);
 %         snth = snth(1:3:end);
     else
-        [snaps,snx,sny,snth]=g_imdb_route_getimdbsnaps(arenafn,routenum,res,imfun,shortwhd,find(snapszht==p.zs),p.imsep);
+        [snaps,snx,sny,snth]=g_imdb_route_getimdbsnaps(p.arenafn,routenum,res,imfun,shortwhd,find(snapszht==p.zs),p.imsep);
     end
     
     valids = g_imdb_imexist(whd,p,zi);

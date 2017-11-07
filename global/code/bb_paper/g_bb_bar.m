@@ -3,7 +3,7 @@ if nargin < 4 || isempty(improc)
     improc = '';
 end
 if nargin < 3 || isempty(routenums)
-    routenums = 3;
+    routenums = 1;
 end
 if nargin < 2 || isempty(shortwhd)
     [~,shortwhd] = g_imdb_choosedb;
@@ -16,6 +16,8 @@ if nargin < 1 || isempty(dosave)
 end
 
 useinfomax = [false true];
+userealsnaps = false;
+snapszht = 200;
 improcforinfomax = false;
 res = 90;
 zht = 0:100:500;
@@ -28,7 +30,10 @@ for i = 1:length(useinfomax)
         for k = 1:length(shortwhd)
             for l = 1:length(routenums)
                 for m = 1:length(zht)
-                    [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew] = g_imdb_route_getdata(shortwhd{k},'arena2_pile',routenums(l),res(j),zht(m),useinfomax(i),improc,forcegen,improcforinfomax);
+                    [~,~,~,~,err,~,~,~,~,~,errsel] = g_imdb_route_getdata( ...
+                        shortwhd{k},routenums(l),res(j),zht(m), ...
+                        useinfomax(i),improc,forcegen,improcforinfomax, ...
+                        userealsnaps, snapszht);
                     
                     means(i,j,k,l,m) = mean(err(errsel));
                     stderrs(i,j,k,l,m) = stderr(err(errsel));

@@ -23,7 +23,9 @@ for i = 1:length(useinfomax)
             for l = 1:length(routenums)
                 for m = 1:length(zht)
                     for n = 1:length(improc)
-                        [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew] = g_imdb_route_getdata(shortwhd{k},'arena2_pile',routenums(l),res(j),zht(m),useinfomax(i),improc{n},false,true);
+                        [~,~,~,~,err,~,~,~,~,~,errsel] = g_imdb_route_getdata( ...
+                            shortwhd{k},routenums(l),res(j),zht(m), ...
+                            useinfomax(i),improc{n},false,true);
                         
                         means(i,j,k,l,m,n) = mean(err(errsel));
                         stderrs(i,j,k,l,m,n) = stderr(err(errsel));

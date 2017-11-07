@@ -12,11 +12,8 @@ imsz = [7 90];
 shortwhd='imdb_2016-03-29_001';
 whd = fullfile(g_dir_imdb,shortwhd);
 zht = 0:100:500; % +50mm
-% routenum = 3;
-routenum = 1;
 
-% arenafn = 'arena2_pile';
-arenafn = 'arena1_boxes';
+routenum = 1;
 
 userealsnaps = false;
 snapszht = 200;
@@ -27,7 +24,9 @@ coords = [1600 1500; 1600 1600; 1500 1600; 1900 1300; 2100 1300; 2300 1200; 2400
 %% load RIDFs
 [bestsnap,bestridfs,imxyi] = deal(cell(length(zht),1));
 for i = 1:length(zht)
-    [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew,allwhsn,ridfs] = g_imdb_route_getdata(shortwhd,arenafn,routenum,imsz(2),zht(i),false,improc,forcegen,[],userealsnaps,snapszht);
+    [imxi,imyi,~,whsn,~,~,~,~,~,~,~,p,~,~,ridfs] = g_imdb_route_getdata( ...
+        shortwhd,routenum,imsz(2),zht(i),false,improc,forcegen,[], ...
+        userealsnaps,snapszht);
     
     imxyi{i} = [imxi, imyi];
     bestsnap{i} = whsn;
@@ -40,9 +39,9 @@ end
 %%
 imfun = gantry_getimfun(improc);
 if userealsnaps
-    [snaps,~,snx,sny]=g_imdb_route_getrealsnaps(arenafn,routenum,imsz(2),improc);
+    [snaps,~,snx,sny]=g_imdb_route_getrealsnaps(p.arenafn,routenum,imsz(2),improc);
 else
-    [snaps,snx,sny]=g_imdb_route_getimdbsnaps(arenafn,routenum,imsz(2),imfun,shortwhd,find(p.zs==snapszht),p.imsep);
+    [snaps,snx,sny]=g_imdb_route_getimdbsnaps(p.arenafn,routenum,imsz(2),imfun,shortwhd,find(p.zs==snapszht),p.imsep);
 end
 
 if dosave
