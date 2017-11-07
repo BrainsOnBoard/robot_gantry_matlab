@@ -9,7 +9,7 @@ if nargin < 8
     forcegen = false;
 end
 if nargin < 7
-    improc = 'histeq';
+    improc = '';
 end
 
 if nargin < 12
