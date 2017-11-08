@@ -2,7 +2,7 @@ function cnt=g_fig_save(ofname,sz,ext,type,r)
 %function cnt=g_fig_save(ofname,sz,ext,type,r)
 
 global LASTFIGS
-% function savefig(fname,sz,ext,type)
+
 % global verbose
 if nargin < 5
     r = 300;
@@ -62,26 +62,9 @@ print(['-d' type],sprintf('-r%d',r),fname);
 if isempty(LASTFIGS)
     LASTFIGS = { fname };
 else
-    LASTFIGS = [ {fname}; LASTFIGS ];
+    LASTFIGS = [ LASTFIGS; {fname} ];
 end
-
-% if strcmpi(ext,'.eps') || strcmpi(ext,'.pdf')
-%     system(['okular "' fname '" &']);
-% else
-%     system(['ristretto "' fname '" &']);
-% end
 
 if ~nargout
     clear cnt
 end
-% if issvg % do conversion
-%     sfname = [figdir filesep ofname];
-%     cnt = 2;
-%     while exist([sfname '.svg'],'file')
-%         sfname = sprintf('%s (%d)',ofname,cnt);
-%         cnt = cnt+1;
-%     end
-%     sfname = [sfname '.svg'];
-%     fprintf('Converted file name: %s\n',sfname);
-%     system(sprintf('inkscape -l "%s" "%s%s"',sfname,fname,ext));
-% end
