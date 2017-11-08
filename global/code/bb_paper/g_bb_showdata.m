@@ -12,12 +12,10 @@ if nargin < 3 || isempty(improc)
 end
 if nargin < 4 || isempty(shortwhd)
     shortwhd={
-        'imdb_2017-02-09_001' % open, pile
-%         'imdb_2016-03-23_001' % open, empty
+        'imdb_2017-02-09_001'  % open, pile
 %         'imdb_2016-03-29_001' % open, boxes
 %         'imdb_2017-06-06_001' % closed, plants
         };
-%     [~,shortwhd] = g_imdb_choosedb;
 elseif ~iscell(shortwhd)
     shortwhd = {shortwhd};
 end
@@ -49,27 +47,31 @@ spcols = ceil(length(zht)/2);
 for i = 1:length(useinfomax)
     for cres = res
         for j = 1:length(shortwhd)
-            for routenum = routenums
-                for k = 1:length(snapszht)
+            whd = fullfile(g_dir_imdb,shortwhd{j});
+            flabel = g_imdb_getlabel(whd);
+            if dosave
+                g_fig_series_start
+            end
+            for k = 1:length(snapszht)
+                for routenum = routenums
                     for m = 1:length(zht)
                         [imxi,imyi,heads,whsn,~,~,~,snx,sny,~,errsel,p, ...
-                         isnew,~,~,snapszht(k)] = g_imdb_route_getdata( ...
-                            shortwhd{j},routenum,cres,zht(m), ...
-                            useinfomax(i),improc,forcegen,[], ...
-                            userealsnaps,snapszht(k),dosavefigdata);
+                            isnew,~,~,snapszht(k)] = g_imdb_route_getdata( ...
+                                shortwhd{j},routenum,cres,zht(m), ...
+                                useinfomax(i),improc,forcegen,[], ...
+                                userealsnaps,snapszht(k),dosavefigdata);
                         
                         if newonly && ~isnew
                             continue
                         end
                         
-                        whd = fullfile(g_dir_imdb,shortwhd{j});
-                        flabel = g_imdb_getlabel(whd);
                         if useinfomax(i)
                             methodstr = 'infomax';
                         else
                             methodstr = 'ridf';
                         end
-                        tstr = sprintf('%s (route %d, res %d, ht %d, %s)', flabel, routenum, cres, zht(m), methodstr);
+                        tstr = sprintf('%s (route %d, res %d, ht %d, snapht %d, %s)', ...
+                            flabel, routenum, cres, zht(m), snapszht(k), methodstr);
                         
                         if plotquiver
                             if dosave
@@ -109,7 +111,7 @@ for i = 1:length(useinfomax)
                                 else
                                     algorithmstr = 'pm';
                                 end
-                                g_fig_save(sprintf('%s%s_%s_route%d_res%03d_z%d_ridf_quiver%s',improcstr,algorithmstr,flabel,routenum,cres,zht(m)),[10 10]);
+                                g_fig_save(sprintf('%s%s_%s_route%d_res%03d_z%d_quiver%s',improcstr,algorithmstr,flabel,routenum,cres,zht(m)),[10 10]);
                             end
                         end
                         
@@ -154,6 +156,9 @@ for i = 1:length(useinfomax)
                         end
                     end
                 end
+            end
+            if dosave
+                g_fig_series_end(sprintf('quiver_%s_%s%s_res%03d.pdf',flabel,improcstr,algorithmstr,cres));
             end
         end
     end
