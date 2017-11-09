@@ -35,12 +35,14 @@ pxsny = pxsny(I);
 sz = round([res*58/720, res]);
 snaps = NaN([sz, length(pxsnx)]);
 sninds = round(snth*720/(2*pi));
+anyvalidsnaps = false;
 for i = 1:length(pxsnx)
     csnap = g_imdb_getim(whd,pxsnx(i),pxsny(i),zi);
     if isempty(csnap)
         warning('im: %s (%d,%d,%d) does not exist',shortwhd,pxsnx(i),pxsny(i),zi);
         continue
     end
+    anyvalidsnaps = true;
     
     snaps(:,:,i) = im2double(imfun(imresize(circshift(csnap,sninds(i),2),sz,'bilinear')));
     
@@ -49,6 +51,9 @@ for i = 1:length(pxsnx)
 %     [head,~,cwhsn,cridfs] = ridfheadmulti(im2double(imfun(imresize(csnap,sz,'bilinear'))),snaps(:,:,i),'wta',[],length(sninds),[],true);
 %     [head,~,cwhsn,cridfs] = ridfheadmulti(im1,im2,'wta',[],size(im1,2),[],true);
 %     keyboard
+end
+if ~anyvalidsnaps
+    error('no valid images for snapshots')
 end
 
 % for i = 1:size(snaps,3)
