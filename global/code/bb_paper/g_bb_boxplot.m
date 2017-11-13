@@ -24,39 +24,58 @@ res = 90;
 zht = 0:100:500;
 forcegen = false;
 
-errs = cell(length(useinfomax),length(res),length(shortwhd),length(routenums),length(zht));
+errs = cell(length(useinfomax),length(res),length(shortwhd), ...
+    length(snapszht),length(routenums),length(zht));
 
 for i = 1:length(useinfomax)
     for j = 1:length(res)
         for k = 1:length(shortwhd)
-            for l = 1:length(routenums)
-                for m = 1:length(zht)
-                    [~,~,~,~,err,~,~,~,~,~,errsel] = g_imdb_route_getdata( ...
-                        shortwhd{k},routenums(l),res(j),zht(m), ...
-                        useinfomax(i),improc,forcegen,improcforinfomax, ...
-                        userealsnaps,snapszht);
-                    
-                    errs{i,j,k,l,m} = err(errsel);
+            for l = 1:length(snapszht)
+                for m = 1:length(routenums)
+                    for n = 1:length(zht)
+                        [~,~,~,~,err,~,~,~,~,~,errsel] = g_imdb_route_getdata( ...
+                            shortwhd{k},routenums(m),res(j),zht(n), ...
+                            useinfomax(i),improc,forcegen,improcforinfomax, ...
+                            userealsnaps,snapszht(l));
+
+                        errs{i,j,k,l,m,n} = err(errsel);
+                    end
                 end
             end
         end
     end
 end
 
-figure(1);clf
-subplot(2,1,1)
-doboxplot(errs(1,:,:,:,:),zht);
-title('Perfect memory')
-
-subplot(2,1,2)
-doboxplot(errs(2,:,:,:,:),zht);
-title('Infomax')
-
 if dosave
-    if ~empty(improc)
+    if ~isempty(improc)
         improc(end+1) = '_';
     end
-    g_fig_save(['boxplot_',improc,'pm_inf_height'],[20 10]);
+    flabel = g_imdb_getlabel(fullfile(g_dir_imdb,shortwhd{1}));
+    
+    g_fig_series_start
+end
+for m = 1:length(routenums)
+    for l = 1:length(snapszht)
+        if dosave
+            figure(1);clf
+        else
+            figure((l-1)*length(routenums) + m);clf
+        end
+        subplot(2,1,1)
+        doboxplot(errs(1,:,:,l,m,:),zht);
+        title(sprintf('Perfect memory (route %d, snapht %d)',routenums(m),snapszht(l)))
+        
+        subplot(2,1,2)
+        doboxplot(errs(2,:,:,l,m,:),zht);
+        title('Infomax')
+        
+        if dosave
+            g_fig_save(sprintf('boxplot_%s_%sres%03d_route%03d_snapszht%03d',flabel,improc,res,routenums(m),snapszht(l)),[20 10]);
+        end
+    end
+end
+if dosave
+    g_fig_series_end(sprintf('boxplot_%s_%sres%03d.pdf',flabel,improc,res))
 end
 
 function doboxplot(errs,zht)
