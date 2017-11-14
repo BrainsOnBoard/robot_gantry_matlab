@@ -151,13 +151,12 @@ try
                 minghtpath = 0;
             else % then work out if going to collide
                 
-                %                 fprintf('x: %g, %g\ny: %g, %g\n',lastx,curx,lasty,cury)
-                
-                %                 figure(1);clf
-                %                 subplot(1,2,1)
-                %                 imshow(objtf)
-                %                 subplot(1,2,2)
-                %                 imshow(headpath)
+%                 fprintf('x: %g, %g\ny: %g, %g\n',lastx,curx,lasty,cury)
+%                 figure(1);clf
+%                 subplot(1,2,1)
+%                 imshow(objtf)
+%                 subplot(1,2,2)
+%                 imshow(headpath)
                 
                 oendx = find(curx<=oxs,1)-1;
                 oendy = find(cury<=oys,1)-1;
@@ -193,7 +192,7 @@ try
             for zi = czs
                 fprintf('image %d/%d (%d, %d, %d)\n',cim,nim,xi,yi,zi)
                 cim = cim+1;
-                curimfn = fullfile(p.imdir,sprintf('im_%03d_%03d_%03d.mat',xi,yi,zi));
+                curimfn = fullfile(p.imdir,sprintf('im_%03d_%03d_%03d.png',xi,yi,zi));
                 if exist(curimfn,'file')
                     continue
                 end
@@ -231,11 +230,11 @@ try
                     fr = g.get_frame;
                     timestamp = now;
                     
-                    %                     figure(10);clf
-                    %                     imshow(fr)
-                    %                     drawnow
+%                     figure(10);clf
+%                     imshow(fr)
+%                     drawnow
                     
-                    save(curimfn,'fr','timestamp')
+                    imwrite(fr,curimfn);
                 end
                 
                 lastx = curx;
