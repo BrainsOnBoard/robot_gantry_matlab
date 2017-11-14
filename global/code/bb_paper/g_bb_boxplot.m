@@ -61,13 +61,17 @@ for m = 1:length(routenums)
         else
             figure((l-1)*length(routenums) + m);clf
         end
-        subplot(2,1,1)
+        if length(useinfomax)==2
+            subplot(2,1,1)
+        end
         doboxplot(errs(1,:,:,l,m,:),zht);
         title(sprintf('Perfect memory (route %d, snapht %d)',routenums(m),snapszht(l)))
         
-        subplot(2,1,2)
-        doboxplot(errs(2,:,:,l,m,:),zht);
-        title('Infomax')
+        if length(useinfomax)==2
+            subplot(2,1,2)
+            doboxplot(errs(2,:,:,l,m,:),zht);
+            title('Infomax')
+        end
         
         if dosave
             g_fig_save(sprintf('boxplot_%s_%sres%03d_route%03d_snapszht%03d',flabel,improc,res,routenums(m),snapszht(l)),[20 10]);
