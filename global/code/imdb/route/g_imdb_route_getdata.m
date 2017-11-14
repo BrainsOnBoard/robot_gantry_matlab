@@ -70,10 +70,6 @@ else
     
     if userealsnaps
         [snaps,~,snx,sny,snth,~,snapszht]=g_imdb_route_getrealsnaps(p.arenafn,routenum,res,imfun);
-%         snaps = snaps(:,:,1:3:end);
-%         snx = snx(1:3:end);
-%         sny = sny(1:3:end);
-%         snth = snth(1:3:end);
     else
         [snaps,snx,sny,snth]=g_imdb_route_getimdbsnaps(p.arenafn,routenum,res,imfun,shortwhd,find(snapszht==p.zs),p.imsep);
     end
@@ -89,7 +85,8 @@ else
     if useinfomax
         infomax_wts = [];
         for xi = 1:weight_update_count
-            infomax_wts = infomax_train(size(snaps,3), reshape(snaps,[prod(newsz), size(snaps,3)]), infomax_wts);
+            infomax_wts = infomax_train(size(snaps,3), reshape(snaps,[prod(newsz), ...
+                size(snaps,3)]), infomax_wts);
         end
         
         ridfs = NaN(nheads,nth);
