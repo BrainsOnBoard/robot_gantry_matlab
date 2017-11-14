@@ -116,8 +116,12 @@ for i = 1:length(useinfomax)
                         end
                         
                         if ~useinfomax(i) && plotwhsn
-                            figure(10*length(snapszht)+k)
-                            subplot(2,spcols,m)
+                            if dosave
+                                figure(2);clf
+                            else
+                                figure(10*length(snapszht)+k)
+                                subplot(2,spcols,m)
+                            end
                             
                             whsnim = makeim(imxi,imyi,whsn,length(p.xs),length(p.ys));
                             whsnim(isnan(whsnim)) = 0;
@@ -144,6 +148,7 @@ for i = 1:length(useinfomax)
                             end
                             
                             set(gca,'YDir','normal')
+                            axis equal tight
                             
                             if zht(m)==snapszht(k)
                                 title(tstr,'Color','r')
@@ -153,12 +158,33 @@ for i = 1:length(useinfomax)
                             g_fig_setfont
                             
                             colorbar
+                            
+                            if dosave
+                                if isempty(improc)
+                                    improcstr = '';
+                                else
+                                    improcstr = [improc,'_'];
+                                end
+                                if useinfomax(i)
+                                    algorithmstr = 'infomax';
+                                else
+                                    algorithmstr = 'pm';
+                                end
+                                g_fig_save(sprintf('%s%s_%s_route%d_res%03d_z%d_quiver%s',improcstr,algorithmstr,flabel,routenum,cres,zht(m)),[10 10]);
+                            end
                         end
                     end
                 end
             end
             if dosave
-                g_fig_series_end(sprintf('quiver_%s_%s%s_res%03d.pdf',flabel,improcstr,algorithmstr,cres));
+                plotstr = '';
+                if plotquiver
+                    plotstr = [plotstr 'quiver']; %#ok<AGROW>
+                end
+                if plotwhsn
+                    plotstr = [plotstr 'whsn']; %#ok<AGROW>
+                end
+                g_fig_series_end(sprintf('%s_%s_%s%s_res%03d.pdf',plotstr,flabel,improcstr,algorithmstr,cres));
             end
         end
     end
