@@ -15,6 +15,7 @@ if nargin < 4 || isempty(shortwhd)
         'imdb_2017-02-09_001'  % open, pile
 %         'imdb_2016-03-29_001' % open, boxes
 %         'imdb_2017-06-06_001' % closed, plants
+%         'imdb_2016-02-08_003' % closed, boxes (z=250mm)
         };
 elseif ~iscell(shortwhd)
     shortwhd = {shortwhd};
@@ -26,7 +27,7 @@ if nargin < 6 || isempty(userealsnaps)
     userealsnaps = false;
 end
 if nargin < 7 || isempty(snapszht)
-    snapszht = 200;
+    snapszht = 0:100:500;
 end
 if nargin < 8 || isempty(plotquiver)
     plotquiver = true;
@@ -49,11 +50,11 @@ for i = 1:length(useinfomax)
         for j = 1:length(shortwhd)
             whd = fullfile(g_dir_imdb,shortwhd{j});
             flabel = g_imdb_getlabel(whd);
-            if dosave
-                g_fig_series_start
-            end
-            for k = 1:length(snapszht)
-                for routenum = routenums
+            for routenum = routenums
+                if dosave
+                    g_fig_series_start
+                end
+                for k = 1:length(snapszht)
                     for m = 1:length(zht)
                         [imxi,imyi,heads,whsn,~,~,~,snx,sny,~,errsel,p, ...
                             isnew,~,~,snapszht(k)] = g_imdb_route_getdata( ...
@@ -70,15 +71,15 @@ for i = 1:length(useinfomax)
                         else
                             methodstr = 'ridf';
                         end
-                        tstr = sprintf('%s (route %d, res %d, ht %d, snapht %d, %s)', ...
-                            flabel, routenum, cres, zht(m), snapszht(k), methodstr);
+                        tstr = sprintf('(route %d, res %d, ht %d, snapht %d, %s)', ...
+                            routenum, cres, zht(m), snapszht(k), methodstr);
                         
                         if plotquiver
                             if dosave
                                 figure(1);clf
                             else
-                                figure((i-1)*length(snapszht)+k)
-                                subplot(2,spcols,m)
+                                figure(sub2ind([length(useinfomax),length(snapszht),max(routenums)],i,k,routenum))
+                                subplot(min(2,length(zht)),spcols,m)
                             end
                             hold on
                             
@@ -119,8 +120,8 @@ for i = 1:length(useinfomax)
                             if dosave
                                 figure(2);clf
                             else
-                                figure(10*length(snapszht)+k)
-                                subplot(2,spcols,m)
+                                figure(100+sub2ind([length(useinfomax),length(snapszht),max(routenums)],i,k,routenum))
+                                subplot(min(2,length(zht)),spcols,m)
                             end
                             
                             whsnim = makeim(imxi,imyi,whsn,length(p.xs),length(p.ys));
@@ -175,16 +176,16 @@ for i = 1:length(useinfomax)
                         end
                     end
                 end
-            end
-            if dosave
-                plotstr = '';
-                if plotquiver
-                    plotstr = [plotstr 'quiver']; %#ok<AGROW>
+                if dosave
+                    plotstr = '';
+                    if plotquiver
+                        plotstr = [plotstr 'quiver']; %#ok<AGROW>
+                    end
+                    if plotwhsn
+                        plotstr = [plotstr 'whsn']; %#ok<AGROW>
+                    end
+                    g_fig_series_end(sprintf('%s_%s_route%d_%s%s_res%03d.pdf',plotstr,flabel,routenum,improcstr,algorithmstr,cres));
                 end
-                if plotwhsn
-                    plotstr = [plotstr 'whsn']; %#ok<AGROW>
-                end
-                g_fig_series_end(sprintf('%s_%s_%s%s_res%03d.pdf',plotstr,flabel,improcstr,algorithmstr,cres));
             end
         end
     end
