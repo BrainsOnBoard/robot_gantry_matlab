@@ -1,4 +1,4 @@
-function g_bb_showdata(dosave,useinfomax,improc,shortwhd,zht,userealsnaps,snapszht,plotquiver,plotwhsn,routenums)
+function g_bb_showdata(dosave,useinfomax,improc,shortwhd,zht,userealsnaps,snapszht,plotquiver,plotwhsn,routenums,dosingleplot)
 close all
 
 if nargin < 1 || isempty(dosave)
@@ -38,6 +38,9 @@ end
 if nargin < 10 || isempty(routenums)
     routenums = 1;
 end
+if nargin < 11 || isempty(dosingleplot)
+    dosingleplot = false;
+end
 
 newonly = false;
 forcegen = false;
@@ -47,7 +50,18 @@ res = 90;
 
 spcols = ceil(length(zht)/2);
 
+if isempty(improc)
+    improcstr = '';
+else
+    improcstr = [improc,'_'];
+end
+
 for i = 1:length(useinfomax)
+    if useinfomax(i)
+        algorithmstr = 'infomax';
+    else
+        algorithmstr = 'pm';
+    end
     for cres = res
         for j = 1:length(shortwhd)
             whd = fullfile(g_dir_imdb,shortwhd{j});
@@ -73,15 +87,19 @@ for i = 1:length(useinfomax)
                         else
                             methodstr = 'ridf';
                         end
-                        tstr = sprintf('(route %d, res %d, ht %d, snapht %d, %s)', ...
-                            routenum, cres, zht(m), snapszht(k), methodstr);
+                        if dosingleplot
+                            tstr = sprintf('Height: %d mm',zht(m)+50);
+                        else
+                            tstr = sprintf('(route %d, res %d, ht %d, snapht %d, %s)', ...
+                                routenum, cres, zht(m), snapszht(k), methodstr);
+                        end
                         
                         if plotquiver
-                            if dosave
-                                figure(1);clf
-                            else
+                            if dosingleplot
                                 figure(sub2ind([length(useinfomax),length(snapszht),max(routenums)],i,k,routenum))
                                 subplot(min(2,length(zht)),spcols,m)
+                            else
+                                figure(1);clf
                             end
                             hold on
                             
@@ -103,12 +121,7 @@ for i = 1:length(useinfomax)
                             end
                             g_fig_setfont
                             
-                            if dosave
-                                if isempty(improc)
-                                    improcstr = '';
-                                else
-                                    improcstr = [improc,'_'];
-                                end
+                            if dosave && ~dosingleplot
                                 if useinfomax(i)
                                     algorithmstr = 'infomax';
                                 else
@@ -119,11 +132,11 @@ for i = 1:length(useinfomax)
                         end
                         
                         if ~useinfomax(i) && plotwhsn
-                            if dosave
-                                figure(2);clf
-                            else
+                            if dosingleplot
                                 figure(100+sub2ind([length(useinfomax),length(snapszht),max(routenums)],i,k,routenum))
                                 subplot(min(2,length(zht)),spcols,m)
+                            else
+                                figure(2);clf
                             end
                             
                             whsnim = makeim(imxi,imyi,whsn,length(p.xs),length(p.ys));
@@ -162,16 +175,11 @@ for i = 1:length(useinfomax)
                             
                             colorbar
                             
-                            if dosave
+                            if dosave && ~dosingleplot
                                 if isempty(improc)
                                     improcstr = '';
                                 else
                                     improcstr = [improc,'_'];
-                                end
-                                if useinfomax(i)
-                                    algorithmstr = 'infomax';
-                                else
-                                    algorithmstr = 'pm';
                                 end
                                 g_fig_save(sprintf('%s%s_%s_route%d_res%03d_z%d_quiver%s',improcstr,algorithmstr,flabel,routenum,cres,zht(m)),[10 10]);
                             end
@@ -186,7 +194,13 @@ for i = 1:length(useinfomax)
                     if plotwhsn
                         plotstr = [plotstr 'whsn']; %#ok<AGROW>
                     end
-                    g_fig_series_end(sprintf('%s_%s_route%d_%s%s_res%03d.pdf',plotstr,flabel,routenum,improcstr,algorithmstr,cres));
+                    
+                    fname = sprintf('%s_%s_route%d_%s%s_res%03d.pdf',plotstr,flabel,routenum,improcstr,algorithmstr,cres);
+                    if dosingleplot
+                        g_fig_save(fname);
+                    else
+                        g_fig_series_end(fname);
+                    end
                 end
             end
         end
