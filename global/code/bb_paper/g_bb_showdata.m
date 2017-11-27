@@ -187,12 +187,11 @@ for i = 1:length(useinfomax)
                     end
                 end
                 if dosave
-                    plotstr = '';
                     if plotquiver
-                        plotstr = [plotstr 'quiver']; %#ok<AGROW>
+                        plotstr = 'quiver';
                     end
                     if plotwhsn
-                        plotstr = [plotstr 'whsn']; %#ok<AGROW>
+                        plotstr = 'whsn';
                     end
                     
                     fname = sprintf('%s_%s_route%d_%s%s_res%03d.pdf',plotstr,flabel,routenum,improcstr,algorithmstr,cres);
