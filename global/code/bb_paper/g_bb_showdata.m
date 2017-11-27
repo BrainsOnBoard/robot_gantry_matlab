@@ -1,4 +1,4 @@
-function g_bb_showdata(dosave,useinfomax,improc,shortwhd,zht,userealsnaps,snapszht,plotquiver,plotwhsn)
+function g_bb_showdata(dosave,useinfomax,improc,shortwhd,zht,userealsnaps,snapszht,plotquiver,plotwhsn,routenums)
 close all
 
 if nargin < 1 || isempty(dosave)
@@ -14,8 +14,8 @@ if nargin < 4 || isempty(shortwhd)
     shortwhd={
         'imdb_2017-02-09_001'  % open, pile
 %         'imdb_2016-03-29_001' % open, boxes
-%         'imdb_2017-06-06_001' % closed, plants
 %         'imdb_2016-02-08_003' % closed, boxes (z=250mm)
+%         'imdb_2017-06-06_001' % closed, plants
         };
 elseif ~iscell(shortwhd)
     shortwhd = {shortwhd};
@@ -35,13 +35,15 @@ end
 if nargin < 9 || isempty(plotwhsn)
     plotwhsn = false;
 end
+if nargin < 10 || isempty(routenums)
+    routenums = 1;
+end
 
 newonly = false;
 forcegen = false;
 dosavefigdata = ~forcegen;
 
 res = 90;
-routenums = 1;
 
 spcols = ceil(length(zht)/2);
 
