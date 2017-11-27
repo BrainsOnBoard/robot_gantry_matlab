@@ -39,6 +39,7 @@ end
 improcforinfomax = false;
 res = 90;
 forcegen = false;
+spcols = ceil(length(snapszht)/2);
 
 errs = cell(length(useinfomax),length(res),length(shortwhd), ...
     length(snapszht),length(routenums),length(zht));
@@ -69,46 +70,68 @@ if dosave
     flabel = g_imdb_getlabel(fullfile(g_dir_imdb,shortwhd{1}));
 end
 
-% if dosave && doseparateplots
-%     g_fig_series_start
-% end
-for m = 1:length(routenums)
-    for l = 1:length(snapszht)
-        if dosave
-            figure(1);clf
-        else
-            figure((l-1)*length(routenums) + m);clf
-        end
-        if ~doseparateplots
-            subplot(2,1,1)
-        end
-        doboxplot(errs(1,:,:,l,m,:),zht);
-        title(sprintf('Perfect memory (snapshot height: %d mm)',snapszht(l)+50));
-        g_fig_setfont
-        
+if any(~useinfomax)
+    % plot perfect memory results
+    for m = 1:length(routenums)
         if dosave && doseparateplots
-            g_fig_save(sprintf('boxplot_%s_%s%sres%03d_route%03d_snapszht%03d',flabel,improc,'pm_',res,routenums(m),snapszht(l)),[20 10]);
+            g_fig_series_start
         end
-        
+        for l = 1:length(snapszht)
+            if doseparateplots
+                figure(1);clf
+            else
+                figure(m)
+                subplot(min(2,length(snapszht)),spcols,l)
+            end
+            
+            doboxplot(errs(~useinfomax,:,:,l,m,:),zht);
+            title(sprintf('Perfect memory (snapshot height: %d mm)',snapszht(l)+50));
+            g_fig_setfont
+            
+            if dosave && doseparateplots
+                g_fig_save(sprintf('boxplot_%s_%s%sres%03d_route%03d_snapszht%03d',flabel,improc,'pm_',res,routenums(m),snapszht(l)),[20 10]);
+            end
+        end
+    end
+    if dosave
         if doseparateplots
-            figure(2);clf
-            algstr = 'infomax_';
+            g_fig_series_end(sprintf('boxplot_%s_pm_%sres%03d.pdf',flabel,improc,res))
         else
-            subplot(2,1,2)
-            algstr = '';
-        end
-        doboxplot(errs(2,:,:,l,m,:),zht);
-        title(sprintf('Infomax (snapshot height: %d mm)',snapszht(l)+50))
-        g_fig_setfont
-        
-        if dosave
-            g_fig_save(sprintf('boxplot_%s_%s%sres%03d_route%03d_snapszht%03d',flabel,improc,algstr,res,routenums(m),snapszht(l)),[20 10]);
+            g_fig_save(sprintf('boxplot_%s_pm_%sres%03d.pdf',flabel,improc,res),[20 10])
         end
     end
 end
-% if dosave && doseparateplots
-%     g_fig_series_end(sprintf('boxplot_%s_%sres%03d.pdf',flabel,improc,res))
-% end
+
+if any(useinfomax)
+    % plot infomax results
+    for m = 1:length(routenums)
+        if dosave && doseparateplots
+            g_fig_series_start
+        end
+        for l = 1:length(snapszht)
+            if doseparateplots
+                figure(2);clf
+            else
+                figure(100+m)
+                subplot(min(2,length(snapszht)),spcols,l)
+            end
+            doboxplot(errs(useinfomax,:,:,l,m,:),zht);
+            title(sprintf('Infomax (snapshot height: %d mm)',snapszht(l)+50))
+            g_fig_setfont
+            
+            if dosave && doseparateplots
+                g_fig_save(sprintf('boxplot_%s_%s%sres%03d_route%03d_snapszht%03d',flabel,improc,'infomax_',res,routenums(m),snapszht(l)),[20 10]);
+            end
+        end
+        if dosave
+            if doseparateplots
+                g_fig_series_end(sprintf('boxplot_%s_infomax_%sres%03d.pdf',flabel,improc,res))
+            else
+                g_fig_save(sprintf('boxplot_%s_infomax_%sres%03d.pdf',flabel,improc,res),[20 10])
+            end
+        end
+    end
+end
 
 function doboxplot(errs,zht)
 hold on
@@ -123,4 +146,3 @@ set(gca,'XTick',1:i,'XTickLabel',zht+50)
 
 xlabel('Test height (mm)')
 ylabel('Error (deg)')
-
