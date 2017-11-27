@@ -1,16 +1,7 @@
-function g_bb_showdata(dosave,useinfomax,improc,shortwhd,zht,userealsnaps,snapszht,plotquiver,plotwhsn,routenums,dosingleplot)
+function g_bb_showdata(shortwhd,routenums,zht,snapszht,userealsnaps,useinfomax,improc,plotquiver,plotwhsn,dosave,doseparateplots)
 close all
 
-if nargin < 1 || isempty(dosave)
-    dosave = false;
-end
-if nargin < 2 || isempty(useinfomax)
-    useinfomax = false;
-end
-if nargin < 3 || isempty(improc)
-    improc = '';
-end
-if nargin < 4 || isempty(shortwhd)
+if nargin < 1 || isempty(shortwhd)
     shortwhd={
         'imdb_2017-02-09_001'  % open, pile
 %         'imdb_2016-03-29_001' % open, boxes
@@ -20,14 +11,23 @@ if nargin < 4 || isempty(shortwhd)
 elseif ~iscell(shortwhd)
     shortwhd = {shortwhd};
 end
-if nargin < 5 || isempty(zht)
+if nargin < 2 || isempty(routenums)
+    routenums = 1;
+end
+if nargin < 3 || isempty(zht)
     zht = 0:100:500;
 end
-if nargin < 6 || isempty(userealsnaps)
+if nargin < 4 || isempty(snapszht)
+    snapszht = 0:100:500;
+end
+if nargin < 5 || isempty(userealsnaps)
     userealsnaps = false;
 end
-if nargin < 7 || isempty(snapszht)
-    snapszht = 0:100:500;
+if nargin < 6 || isempty(useinfomax)
+    useinfomax = false;
+end
+if nargin < 7 || isempty(improc)
+    improc = '';
 end
 if nargin < 8 || isempty(plotquiver)
     plotquiver = true;
@@ -35,11 +35,11 @@ end
 if nargin < 9 || isempty(plotwhsn)
     plotwhsn = false;
 end
-if nargin < 10 || isempty(routenums)
-    routenums = 1;
+if nargin < 10 || isempty(dosave)
+    dosave = false;
 end
-if nargin < 11 || isempty(dosingleplot)
-    dosingleplot = false;
+if nargin < 11 || isempty(doseparateplots)
+    doseparateplots = true;
 end
 
 newonly = false;
@@ -87,19 +87,19 @@ for i = 1:length(useinfomax)
                         else
                             methodstr = 'ridf';
                         end
-                        if dosingleplot
-                            tstr = sprintf('Height: %d mm',zht(m)+50);
-                        else
+                        if doseparateplots
                             tstr = sprintf('(route %d, res %d, ht %d, snapht %d, %s)', ...
                                 routenum, cres, zht(m), snapszht(k), methodstr);
+                        else
+                            tstr = sprintf('Height: %d mm',zht(m)+50);
                         end
                         
                         if plotquiver
-                            if dosingleplot
+                            if doseparateplots
+                                figure(1);clf
+                            else
                                 figure(sub2ind([length(useinfomax),length(snapszht),max(routenums)],i,k,routenum))
                                 subplot(min(2,length(zht)),spcols,m)
-                            else
-                                figure(1);clf
                             end
                             hold on
                             
@@ -121,7 +121,7 @@ for i = 1:length(useinfomax)
                             end
                             g_fig_setfont
                             
-                            if dosave && ~dosingleplot
+                            if dosave && doseparateplots
                                 if useinfomax(i)
                                     algorithmstr = 'infomax';
                                 else
@@ -132,11 +132,11 @@ for i = 1:length(useinfomax)
                         end
                         
                         if ~useinfomax(i) && plotwhsn
-                            if dosingleplot
+                            if doseparateplots
+                                figure(2);clf
+                            else
                                 figure(100+sub2ind([length(useinfomax),length(snapszht),max(routenums)],i,k,routenum))
                                 subplot(min(2,length(zht)),spcols,m)
-                            else
-                                figure(2);clf
                             end
                             
                             whsnim = makeim(imxi,imyi,whsn,length(p.xs),length(p.ys));
@@ -175,7 +175,7 @@ for i = 1:length(useinfomax)
                             
                             colorbar
                             
-                            if dosave && ~dosingleplot
+                            if dosave && doseparateplots
                                 if isempty(improc)
                                     improcstr = '';
                                 else
@@ -196,11 +196,10 @@ for i = 1:length(useinfomax)
                     end
                     
                     fname = sprintf('%s_%s_route%d_%s%s_res%03d.pdf',plotstr,flabel,routenum,improcstr,algorithmstr,cres);
-                    if dosingleplot
+                    if ~doseparateplots
                         g_fig_save(fname);
-                    else
-                        g_fig_series_end(fname);
                     end
+                    g_fig_series_end(fname);
                 end
             end
         end
