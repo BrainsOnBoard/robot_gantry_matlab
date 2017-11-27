@@ -71,6 +71,8 @@ if dosave
 end
 
 if any(~useinfomax)
+    disp('Plotting perfect memory results...')
+    
     % plot perfect memory results
     for m = 1:length(routenums)
         if dosave && doseparateplots
@@ -84,8 +86,8 @@ if any(~useinfomax)
                 subplot(min(2,length(snapszht)),spcols,l)
             end
             
-            doboxplot(errs(~useinfomax,:,:,l,m,:),zht);
-            title(sprintf('Perfect memory (snapshot height: %d mm)',snapszht(l)+50));
+            doboxplot(errs(~useinfomax,:,:,l,m,:),zht,mod(l-1,ceil(length(snapszht)/2)));
+            title(sprintf('Train height: %d mm',snapszht(l)+50));
             g_fig_setfont
             
             if dosave && doseparateplots
@@ -97,12 +99,14 @@ if any(~useinfomax)
         if doseparateplots
             g_fig_series_end(sprintf('boxplot_%s_pm_%sres%03d.pdf',flabel,improc,res))
         else
-            g_fig_save(sprintf('boxplot_%s_pm_%sres%03d.pdf',flabel,improc,res),[20 10])
+            g_fig_save(sprintf('boxplot_%s_pm_%sres%03d.pdf',flabel,improc,res),[20 15])
         end
     end
 end
 
 if any(useinfomax)
+    disp('Plotting infomax results...')
+    
     % plot infomax results
     for m = 1:length(routenums)
         if dosave && doseparateplots
@@ -115,8 +119,9 @@ if any(useinfomax)
                 figure(100+m)
                 subplot(min(2,length(snapszht)),spcols,l)
             end
-            doboxplot(errs(useinfomax,:,:,l,m,:),zht);
-            title(sprintf('Infomax (snapshot height: %d mm)',snapszht(l)+50))
+            
+            doboxplot(errs(useinfomax,:,:,l,m,:),zht,mod(l-1,ceil(length(snapszht)/2)));
+            title(sprintf('Train height: %d mm',snapszht(l)+50))
             g_fig_setfont
             
             if dosave && doseparateplots
@@ -127,13 +132,13 @@ if any(useinfomax)
             if doseparateplots
                 g_fig_series_end(sprintf('boxplot_%s_infomax_%sres%03d.pdf',flabel,improc,res))
             else
-                g_fig_save(sprintf('boxplot_%s_infomax_%sres%03d.pdf',flabel,improc,res),[20 10])
+                g_fig_save(sprintf('boxplot_%s_infomax_%sres%03d.pdf',flabel,improc,res),[20 15])
             end
         end
     end
 end
 
-function doboxplot(errs,zht)
+function doboxplot(errs,zht,hidey)
 hold on
 for i = 1:numel(errs)
     boxplot(errs{i},'Positions',i);
@@ -141,8 +146,12 @@ end
 
 xlim([0 i+1])
 set(gca,'XTick',1:i,'XTickLabel',zht+50)
-% ylim([0 90])
-% set(gca,'YTick',0:15:90)
-
 xlabel('Test height (mm)')
-ylabel('Error (deg)')
+
+ylim([0 90])
+if hidey
+    set(gca,'YTick',[])
+else
+    set(gca,'YTick',0:15:90)
+    ylabel('Error (deg)')
+end
