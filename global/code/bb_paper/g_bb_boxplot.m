@@ -99,7 +99,7 @@ if any(~useinfomax)
         if doseparateplots
             g_fig_series_end(sprintf('boxplot_%s_pm_%sres%03d.pdf',flabel,improc,res))
         else
-            g_fig_save(sprintf('boxplot_%s_pm_%sres%03d.pdf',flabel,improc,res),[20 15])
+            g_fig_save(sprintf('boxplot_%s_pm_%sres%03d.pdf',flabel,improc,res),[20 15],[],[],[],false)
         end
     end
 end
@@ -132,7 +132,7 @@ if any(useinfomax)
             if doseparateplots
                 g_fig_series_end(sprintf('boxplot_%s_infomax_%sres%03d.pdf',flabel,improc,res))
             else
-                g_fig_save(sprintf('boxplot_%s_infomax_%sres%03d.pdf',flabel,improc,res),[20 15])
+                g_fig_save(sprintf('boxplot_%s_infomax_%sres%03d.pdf',flabel,improc,res),[20 15],[],[],[],false)
             end
         end
     end
