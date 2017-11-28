@@ -38,6 +38,8 @@ imsz = [7 90];
 whd = fullfile(g_dir_imdb,shortwhd);
 
 %% load RIDFs
+% extract best-matching snaps and RIDFs and put into cell array (because
+% the dimensions differ)
 [bestsnap,bestridfs,imxyi] = deal(cell(length(zht),1));
 for i = 1:length(zht)
     [imxi,imyi,~,whsn,~,~,~,~,~,~,~,p,~,~,ridfs] = g_imdb_route_getdata( ...
@@ -54,6 +56,7 @@ end
 
 %%
 imfun = gantry_getimfun(improc);
+
 if userealsnaps
     [snaps,~,snx,sny]=g_imdb_route_getrealsnaps(p.arenafn,routenum,imsz(2),imfun);
 else
@@ -66,27 +69,17 @@ else
     improcstr = [improc '_'];
 end
 flabel = g_imdb_getlabel(fullfile(g_dir_imdb,shortwhd));
-if ~isempty(coords)
+
+if ~isempty(coords) % empty coords signals interactive mode
     if joinpdfs
         g_fig_series_start
     end
     for i = 1:size(coords,1)
+        % get corresponding grid coords
         xi = find(p.xs==coords(i,1));
         yi = find(p.ys==coords(i,2));
-
-        % yuck!
-        cridfs = NaN(imsz(2),length(zht));
-        cbestsnap = NaN(length(zht),1);
-        for j = 1:length(zht)
-            cind = find(all(bsxfun(@eq,imxyi{j},[xi yi]),2),1);
-            if isempty(cind)
-                break
-            end
-
-            cridfs(:,j) = bestridfs{j}(cind,:);
-            cbestsnap(j) = bestsnap{j}(cind);
-        end
         
+        [cridfs,cbestsnap]=getbest(xi,yi);
         showridfs(coords(i,1),coords(i,2),xi,yi,cridfs,cbestsnap,zht,snx,sny,snaps,imfun,whd,imsz(2),p,~dosave)
         if dosave
             g_fig_save(sprintf('ridf_%s_%s%sres%03d_route%03d_snapszht%03d_x%04d_y%04d', ...
@@ -95,13 +88,12 @@ if ~isempty(coords)
     end
     if joinpdfs
         g_fig_series_end(sprintf('ridf_%s_%s%sres%03d_route%03d_snapszht%03d.pdf', ...
-                flabel,improcstr,'pm_',imsz(2),routenum,snapszht),[30 30]);
+            flabel,improcstr,'pm_',imsz(2),routenum,snapszht),[30 30]);
     end
 else
+    % show quiver plot to click on
     g_bb_quiver(shortwhd,routenum,zht,snapszht,userealsnaps,false,improc,true,false);
     
-    cridfs = NaN(imsz(2),length(zht));
-    cbestsnap = NaN(length(zht),1);
     while true
         figure(1)
         try
@@ -116,35 +108,38 @@ else
             break
         end
         
-        if but==1
+        if but==1 % left mouse button
             if x < 0 || x > p.lim(1) || y < 0 || y > p.lim(2)
                 disp('Invalid point selected')
                 continue
             end
             
+            % get nearest point on grid to click
             [~,xi] = min(abs(p.xs-x));
             [~,yi] = min(abs(p.ys-y));
             gx = p.xs(xi);
             gy = p.ys(yi);
             
-            for i = 1:length(zht)
-                cind = find(all(bsxfun(@eq,imxyi{i},[xi yi]),2),1);
-                if isempty(cind)
-                    break
-                end
-                
-                cridfs(:,i) = bestridfs{i}(cind,:);
-                cbestsnap(i) = bestsnap{i}(cind);
-            end
-            if isempty(cind)
-                disp('Invalid point selected')
-                continue
-            end
-            
+            [cridfs,cbestsnap]=getbest(xi,yi);
             showridfs(gx,gy,xi,yi,cridfs,cbestsnap,zht,snx,sny,snaps,imfun,whd,imsz(2),p,false)
         elseif but=='s'
             g_fig_save(sprintf('ridf_%s_%s%sres%03d_route%03d_snapszht%03d_x%04d_y%04d', ...
                 flabel,improcstr,'pm_',imsz(2),routenum,snapszht,coords(i,1),coords(i,2)),[30 30]);
+        end
+    end
+end
+
+    function [ridfs,snaps]=getbest(xi,yi)
+        ridfs = NaN(imsz(2),length(zht));
+        snaps = NaN(length(zht),1);
+        for besti = 1:length(zht)
+            cind = find(all(bsxfun(@eq,imxyi{besti},[xi yi]),2),1);
+            if isempty(cind)
+                break
+            end
+            
+            ridfs(:,besti) = bestridfs{besti}(cind,:);
+            snaps(besti) = bestsnap{besti}(cind);
         end
     end
 end
@@ -181,4 +176,6 @@ for i = 1:length(zht)
     whsn = cbestsnap(i);
     imagesc(snaps(:,:,whsn));
     ylabel(whsn)
+end
+
 end
