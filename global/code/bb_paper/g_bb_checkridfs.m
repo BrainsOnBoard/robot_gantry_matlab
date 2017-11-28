@@ -22,9 +22,8 @@ end
 if nargin < 6 || isempty(improc)
     improc = '';
 end
-if nargin < 7 || isempty(coords)
-    % fixed coordinates to save RIDFs for if dosave==true
-    coords = [1600 1500; 1600 1600; 1500 1600; 1900 1300; 2100 1300; 2300 1200; 2400 1100];
+if nargin < 7
+    coords = [];
 end
 if nargin < 8 || isempty(dosave)
     dosave = false;
@@ -58,15 +57,29 @@ else
     [snaps,snx,sny]=g_imdb_route_getimdbsnaps(p.arenafn,routenum,imsz(2),imfun,shortwhd,find(p.zs==snapszht),p.imsep);
 end
 
-if dosave
-%     for i = 1:size(coords,1)
-%         xi = find(p.xs==coords(i,1));
-%         yi = find(p.ys==coords(i,2));
-%         sel = xi==imxi & yi==imyi;
-%         
-%         showridfs(coords(i,1),coords(i,2),xi,yi,bestridfs(sel,:,:),bestsnap(sel,:),zht,snx,sny,snaps,imfun,whd,imsz(2),p)
-%         saverealsnapsridfs(coords(i,1),coords(i,2))
-%     end
+if ~isempty(coords)
+    for i = 1:size(coords,1)
+        xi = find(p.xs==coords(i,1));
+        yi = find(p.ys==coords(i,2));
+
+        % yuck!
+        cridfs = NaN(imsz(2),length(zht));
+        cbestsnap = NaN(length(zht),1);
+        for j = 1:length(zht)
+            cind = find(all(bsxfun(@eq,imxyi{j},[xi yi]),2),1);
+            if isempty(cind)
+                break
+            end
+
+            cridfs(:,j) = bestridfs{j}(cind,:);
+            cbestsnap(j) = bestsnap{j}(cind);
+        end
+        
+        showridfs(coords(i,1),coords(i,2),xi,yi,cridfs,cbestsnap,zht,snx,sny,snaps,imfun,whd,imsz(2),p)
+        if dosave
+            saverealsnapsridfs(coords(i,1),coords(i,2))
+        end
+    end
 else
     g_bb_showdata(shortwhd,routenum,zht,snapszht,userealsnaps,false,improc,true,false);
     
