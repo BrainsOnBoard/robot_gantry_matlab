@@ -86,7 +86,7 @@ if any(~useinfomax)
                 subplot(min(2,length(snapszht)),spcols,l)
             end
             
-            doboxplot(errs(~useinfomax,:,:,l,m,:),zht,mod(l-1,ceil(length(snapszht)/2)));
+            doboxplot(errs(~useinfomax,:,:,l,m,:),zht);
             title(sprintf('Train height: %d mm',snapszht(l)+50));
             g_fig_setfont
             
@@ -120,7 +120,7 @@ if any(useinfomax)
                 subplot(min(2,length(snapszht)),spcols,l)
             end
             
-            doboxplot(errs(useinfomax,:,:,l,m,:),zht,mod(l-1,ceil(length(snapszht)/2)));
+            doboxplot(errs(useinfomax,:,:,l,m,:),zht);
             title(sprintf('Train height: %d mm',snapszht(l)+50))
             g_fig_setfont
             
@@ -138,7 +138,7 @@ if any(useinfomax)
     end
 end
 
-function doboxplot(errs,zht,hidey)
+function doboxplot(errs,zht)
 hold on
 for i = 1:numel(errs)
     boxplot(errs{i},'Positions',i);
@@ -149,9 +149,5 @@ set(gca,'XTick',1:i,'XTickLabel',zht+50)
 xlabel('Test height (mm)')
 
 ylim([0 90])
-if hidey
-    set(gca,'YTick',[])
-else
-    set(gca,'YTick',0:15:90)
-    ylabel('Error (deg)')
-end
+set(gca,'YTick',0:15:90)
+ylabel('Error (deg)')
