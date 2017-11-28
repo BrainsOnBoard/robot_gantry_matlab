@@ -1,17 +1,10 @@
 function [snaps,whclick,snx,sny,snth,p,snapszht,procsnaps]=g_imdb_route_getrealsnaps(arenafn,routenum,res,imfun)
 % function [snaps,whclick,snx,sny,snth,p,snapszht,procsnaps,arenascale]=g_imdb_route_getrealsnaps(arenafn,routenum,res,improc)
 
-fov = 360;
-
 routefn = sprintf('route_%s_%03d',matfileremext(arenafn),routenum);
 
-snfn = sprintf('snaps_%s_fov%03d_imw%03d.mat',routefn,fov,res);
-fname = fullfile(g_dir_routes_snaps,snfn);
-if ~exist(fname,'file')
-    % NB: fov is not currently implemented (28/11/2017)
-    g_route_getsnaps(res,[],arenafn,routenum)
-end
-load(fname,'fovsnaps')
+% NB: fov is not currently implemented; defaults to 360° (28/11/2017)
+fovsnaps=g_route_getsnaps(res,[],arenafn,routenum);
 
 snaps = NaN(size(fovsnaps));
 for i = 1:size(fovsnaps,3)

@@ -1,13 +1,7 @@
-function g_route_getsnaps(res,fov,arenafn,routenum)
+function fovsnaps=g_route_getsnaps(res,fov,arenafn,routenum)
 % for working fov version of code (without res param though) see
 % g_live_getsnapsfov
 
-if nargin < 3
-    d = dir(fullfile(g_dir_routes,'route_*.mat'));
-    fns = {d.name};
-else
-    fns = {sprintf('route_%s_%03d.mat',matfileremext(arenafn),routenum)};
-end
 if nargin < 2 || isempty(fov)
     fov = 360;
 end
@@ -16,14 +10,28 @@ if nargin < 1 || isempty(res)
 end
 
 snapdir = g_dir_routes_snaps;
+if nargin >= 3
+    routefn = sprintf('route_%s_%03d.mat',matfileremext(arenafn),routenum);
+    outfn = fullfile(snapdir,sprintf('snaps_%s_fov%03d_imw%03d.mat',routefn(1:end-4),fov,res));
+    if exist(outfn,'file')
+        load(outfn,'fovsnaps')
+        return
+    end
+    
+    routefns = {routefn};
+else
+    d = dir(fullfile(g_dir_routes,'route_*.mat'));
+    routefns = {d.name};
+end
+
 if ~exist(snapdir,'dir')
     mkdir(snapdir);
 end
 
-for i = 1:length(fns)
-    cfn = fullfile(g_dir_routes,fns{i});
+for i = 1:length(routefns)
+    cfn = fullfile(g_dir_routes,routefns{i});
     if ~varsinmatfile(cfn,'snaps')
-        warning('snaps not found in %s. skipping.',fns{i})
+        warning('snaps not found in %s. skipping.',routefns{i})
         continue
     end
     
@@ -34,7 +42,7 @@ for i = 1:length(fns)
     for cimw = res
         for cfov = fov
             newsz = round(cimw * [size(snaps,1)/size(snaps,2), cfov/360]);
-            outfn = fullfile(snapdir,sprintf('snaps_%s_fov%03d_imw%03d.mat',matfileremext(fns{i}),cfov,cimw));
+            outfn = fullfile(snapdir,sprintf('snaps_%s_fov%03d_imw%03d.mat',matfileremext(routefns{i}),cfov,cimw));
             if exist(outfn,'file')
                 warning('file %s already exists, skipping...',outfn)
                 continue
