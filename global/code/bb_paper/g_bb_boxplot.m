@@ -148,6 +148,6 @@ xlim([0 i+1])
 set(gca,'XTick',1:i,'XTickLabel',zht+50)
 xlabel('Test height (mm)')
 
-ylim([0 90])
+ylim([0 45])
 set(gca,'YTick',0:15:90)
 ylabel('Error (deg)')
