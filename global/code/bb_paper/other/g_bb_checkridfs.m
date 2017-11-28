@@ -1,25 +1,39 @@
-function g_bb_checkridfs(dosave)
-if ~nargin
-    dosave=false;
-end
+function g_bb_checkridfs(shortwhd,routenum,zht,snapszht,userealsnaps,improc,coords,dosave)
 close all
 
-improc = '';
+if nargin < 1 || isempty(shortwhd)
+    shortwhd='imdb_2017-02-09_001';  % open, pile
+%     shortwhd='imdb_2016-03-29_001'; % open, boxes
+%     shortwhd='imdb_2016-02-08_003'; % closed, boxes (z=250mm)
+%     shortwhd='imdb_2017-06-06_001'; % closed, plants
+end
+if nargin < 2 || isempty(routenum)
+    routenum = 1;
+end
+if nargin < 3 || isempty(zht)
+    zht = 0:100:500; % +50mm
+end
+if nargin < 4 || isempty(snapszht)
+    snapszht = 200; % +50mm
+end
+if nargin < 5 || isempty(userealsnaps)
+    userealsnaps = false;
+end
+if nargin < 6 || isempty(improc)
+    improc = '';
+end
+if nargin < 7 || isempty(coords)
+    % fixed coordinates to save RIDFs for if dosave==true
+    coords = [1600 1500; 1600 1600; 1500 1600; 1900 1300; 2100 1300; 2300 1200; 2400 1100];
+end
+if nargin < 8 || isempty(dosave)
+    dosave = false;
+end
+
 forcegen = false;
 
 imsz = [7 90];
-% shortwhd='imdb_2017-02-09_001'; % open, new boxes
-shortwhd='imdb_2016-03-29_001';
 whd = fullfile(g_dir_imdb,shortwhd);
-zht = 0:100:500; % +50mm
-
-routenum = 1;
-
-userealsnaps = false;
-snapszht = 200;
-
-% fixed coordinates to save RIDFs for if dosave==true
-coords = [1600 1500; 1600 1600; 1500 1600; 1900 1300; 2100 1300; 2300 1200; 2400 1100];
 
 %% load RIDFs
 [bestsnap,bestridfs,imxyi] = deal(cell(length(zht),1));
