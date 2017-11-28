@@ -1,4 +1,4 @@
-function g_bb_checkridfs(shortwhd,routenum,zht,snapszht,userealsnaps,improc,coords,dosave)
+function g_bb_ridf(shortwhd,routenum,zht,snapszht,userealsnaps,improc,coords,dosave)
 close all
 
 if nargin < 1 || isempty(shortwhd)
