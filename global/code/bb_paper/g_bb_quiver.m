@@ -1,4 +1,4 @@
-function g_bb_showdata(shortwhd,routenums,zht,snapszht,userealsnaps,useinfomax,improc,plotquiver,plotwhsn,dosave,doseparateplots)
+function g_bb_quiver(shortwhd,routenums,zht,snapszht,userealsnaps,useinfomax,improc,plotquiver,plotwhsn,dosave,doseparateplots)
 close all
 
 if nargin < 1 || isempty(shortwhd)

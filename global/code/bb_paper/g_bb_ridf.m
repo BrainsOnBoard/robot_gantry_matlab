@@ -98,7 +98,7 @@ if ~isempty(coords)
                 flabel,improcstr,'pm_',imsz(2),routenum,snapszht),[30 30]);
     end
 else
-    g_bb_showdata(shortwhd,routenum,zht,snapszht,userealsnaps,false,improc,true,false);
+    g_bb_quiver(shortwhd,routenum,zht,snapszht,userealsnaps,false,improc,true,false);
     
     cridfs = NaN(imsz(2),length(zht));
     cbestsnap = NaN(length(zht),1);
