@@ -1,4 +1,4 @@
-function g_bb_ridf(shortwhd,routenum,zht,snapszht,userealsnaps,improc,coords,dosave)
+function g_bb_ridf(shortwhd,routenum,zht,snapszht,userealsnaps,improc,coords,dosave,joinpdfs)
 close all
 
 if nargin < 1 || isempty(shortwhd)
@@ -27,6 +27,9 @@ if nargin < 7
 end
 if nargin < 8 || isempty(dosave)
     dosave = false;
+end
+if nargin < 9 || isempty(joinpdfs)
+    joinpdfs = false;
 end
 
 forcegen = false;
@@ -64,6 +67,9 @@ else
 end
 flabel = g_imdb_getlabel(fullfile(g_dir_imdb,shortwhd));
 if ~isempty(coords)
+    if joinpdfs
+        g_fig_series_start
+    end
     for i = 1:size(coords,1)
         xi = find(p.xs==coords(i,1));
         yi = find(p.ys==coords(i,2));
@@ -84,8 +90,12 @@ if ~isempty(coords)
         showridfs(coords(i,1),coords(i,2),xi,yi,cridfs,cbestsnap,zht,snx,sny,snaps,imfun,whd,imsz(2),p,~dosave)
         if dosave
             g_fig_save(sprintf('ridf_%s_%s%sres%03d_route%03d_snapszht%03d_x%04d_y%04d', ...
-                flabel,improcstr,'pm_',imsz(2),routenum,snapszht,coords(i,1),coords(i,2)),[30 30]);
+                flabel,improcstr,'pm_',imsz(2),routenum,snapszht,coords(i,1),coords(i,2)),[30 30],[],[],[],joinpdfs);
         end
+    end
+    if joinpdfs
+        g_fig_series_end(sprintf('ridf_%s_%s%sres%03d_route%03d_snapszht%03d.pdf', ...
+                flabel,improcstr,'pm_',imsz(2),routenum,snapszht),[30 30]);
     end
 else
     g_bb_showdata(shortwhd,routenum,zht,snapszht,userealsnaps,false,improc,true,false);
