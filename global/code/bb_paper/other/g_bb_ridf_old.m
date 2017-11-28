@@ -35,7 +35,7 @@ end
 forcegen = false;
 
 imsz = [7 90];
-% whd = fullfile(g_dir_imdb,shortwhd);
+whd = fullfile(g_dir_imdb,shortwhd);
 
 %% load RIDFs
 % extract best-matching snaps and RIDFs and put into cell array (because
@@ -55,12 +55,13 @@ for i = 1:length(zht)
 end
 
 %%
-% imfun = gantry_getimfun(improc);
-% if userealsnaps
-%     [snaps,~,snx,sny]=g_imdb_route_getrealsnaps(p.arenafn,routenum,imsz(2),imfun);
-% else
-%     [snaps,snx,sny]=g_imdb_route_getimdbsnaps(p.arenafn,routenum,imsz(2),imfun,shortwhd,find(p.zs==snapszht),p.imsep);
-% end
+imfun = gantry_getimfun(improc);
+
+if userealsnaps
+    [snaps,~,snx,sny]=g_imdb_route_getrealsnaps(p.arenafn,routenum,imsz(2),imfun);
+else
+    [snaps,snx,sny]=g_imdb_route_getimdbsnaps(p.arenafn,routenum,imsz(2),imfun,shortwhd,find(p.zs==snapszht),p.imsep);
+end
 
 if isempty(improc)
     improcstr = '';
@@ -78,8 +79,8 @@ if ~isempty(coords) % empty coords signals interactive mode
         xi = find(p.xs==coords(i,1));
         yi = find(p.ys==coords(i,2));
         
-        cridfs=getbest(xi,yi);
-        showridfs(coords(i,1),coords(i,2),cridfs,zht,~dosave)
+        [cridfs,cbestsnap]=getbest(xi,yi);
+        showridfs(coords(i,1),coords(i,2),xi,yi,cridfs,cbestsnap,zht,snx,sny,snaps,imfun,whd,imsz(2),p,~dosave)
         if dosave
             g_fig_save(sprintf('ridf_%s_%s%sres%03d_route%03d_snapszht%03d_x%04d_y%04d', ...
                 flabel,improcstr,'pm_',imsz(2),routenum,snapszht,coords(i,1),coords(i,2)),[30 30],[],[],[],joinpdfs);
@@ -119,8 +120,8 @@ else
             gx = p.xs(xi);
             gy = p.ys(yi);
             
-            cridfs=getbest(xi,yi);
-            showridfs(gx,gy,cridfs,zht,false)
+            [cridfs,cbestsnap]=getbest(xi,yi);
+            showridfs(gx,gy,xi,yi,cridfs,cbestsnap,zht,snx,sny,snaps,imfun,whd,imsz(2),p,false)
         elseif but=='s'
             g_fig_save(sprintf('ridf_%s_%s%sres%03d_route%03d_snapszht%03d_x%04d_y%04d', ...
                 flabel,improcstr,'pm_',imsz(2),routenum,snapszht,coords(i,1),coords(i,2)),[30 30]);
@@ -143,7 +144,7 @@ end
     end
 end
 
-function showridfs(gx,gy,cridfs,zht,doseparateplots)
+function showridfs(gx,gy,xi,yi,cridfs,cbestsnap,zht,snx,sny,snaps,imfun,whd,res,p,doseparateplots)
 fprintf('selecting point (%d,%d)\n',gx,gy)
 
 if doseparateplots
@@ -151,11 +152,30 @@ if doseparateplots
 else
     figure(2);clf
 end
+alsubplot(3+length(zht),2,1:2,1:2)
 plot(cridfs)
 xlim([1 size(cridfs,1)])
 title(sprintf('x=%d, y=%d',gx,gy))
 title(legend(num2str((zht+50)')),'Height (mm)')
 
 colormap gray
+
+sndist = hypot(gx-snx,gy-sny);
+[~,snnearest] = min(sndist);
+alsubplot(3,1:2)
+imagesc(snaps(:,:,snnearest))
+ylabel(snnearest)
+
+for i = 1:length(zht)
+    im = g_imdb_getprocim(whd,xi,yi,find(p.zs==zht(i)),imfun,res);
+    alsubplot(3+i,1)
+    imagesc(im)
+    ylabel(zht(i)+50)
+    
+    alsubplot(3+i,2)
+    whsn = cbestsnap(i);
+    imagesc(snaps(:,:,whsn));
+    ylabel(whsn)
+end
 
 end
