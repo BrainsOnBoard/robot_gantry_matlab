@@ -119,6 +119,7 @@ for i = 1:length(useinfomax)
                             else
                                 title(tstr)
                             end
+                            andy_setbox
                             g_fig_setfont
                             
                             if dosave && doseparateplots
@@ -171,6 +172,7 @@ for i = 1:length(useinfomax)
                             else
                                 title(tstr)
                             end
+                            andy_setbox
                             g_fig_setfont
                             
                             colorbar
