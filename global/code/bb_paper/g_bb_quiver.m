@@ -48,7 +48,7 @@ dosavefigdata = ~forcegen;
 
 res = 90;
 
-spcols = ceil(length(zht)/2);
+sprows = ceil(length(zht)/2);
 
 if isempty(improc)
     improcstr = '';
@@ -99,7 +99,7 @@ for i = 1:length(useinfomax)
                                 figure(1);clf
                             else
                                 figure(sub2ind([length(useinfomax),length(snapszht),max(routenums)],i,k,routenum))
-                                subplot(min(2,length(zht)),spcols,m)
+                                subplot(sprows,min(2,length(zht)),m)
                             end
                             hold on
                             
@@ -137,7 +137,7 @@ for i = 1:length(useinfomax)
                                 figure(2);clf
                             else
                                 figure(100+sub2ind([length(useinfomax),length(snapszht),max(routenums)],i,k,routenum))
-                                subplot(min(2,length(zht)),spcols,m)
+                                subplot(sprows,min(2,length(zht)),m)
                             end
                             
                             whsnim = makeim(imxi,imyi,whsn,length(p.xs),length(p.ys));
