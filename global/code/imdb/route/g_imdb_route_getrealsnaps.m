@@ -4,8 +4,14 @@ function [snaps,whclick,snx,sny,snth,p,snapszht,procsnaps]=g_imdb_route_getreals
 fov = 360;
 
 routefn = sprintf('route_%s_%03d',matfileremext(arenafn),routenum);
-snfn = sprintf('snaps_%s_fov%03d_imw%03d',routefn,fov,res);
-load(fullfile(g_dir_routes_snaps,snfn),'fovsnaps')
+
+snfn = sprintf('snaps_%s_fov%03d_imw%03d.mat',routefn,fov,res);
+fname = fullfile(g_dir_routes_snaps,snfn);
+if ~exist(fname,'file')
+    g_route_getsnaps(res,fov)
+end
+load(fname,'fovsnaps')
+
 snaps = NaN(size(fovsnaps));
 for i = 1:size(fovsnaps,3)
     snaps(:,:,i) = im2double(fovsnaps(:,:,i));
