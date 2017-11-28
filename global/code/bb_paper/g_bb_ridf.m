@@ -12,9 +12,13 @@ if nargin < 2 || isempty(routenum)
 end
 if nargin < 3 || isempty(zht)
     zht = 0:100:500; % +50mm
+else
+    zht = sort(zht);
 end
 if nargin < 4 || isempty(snapszht)
     snapszht = 200; % +50mm
+else
+    snapszht = sort(snapszht);
 end
 if nargin < 5 || isempty(userealsnaps)
     userealsnaps = false;
@@ -98,8 +102,11 @@ if ~isempty(coords) % empty coords signals interactive mode
             flabel,improcstr,'pm_',imsz(2),routenum,snapszhtstr),[30 30]);
     end
 else
+    czhti = floor(round(length(zht))/2);
+    csnzhti = floor(round(length(snapszht))/2);
+    
     % show quiver plot to click on
-    g_bb_quiver(shortwhd,routenum,zht,snapszht,userealsnaps,false,improc,true,false);
+    showquiver
     
     while true % loop until user quits
         figure(1)
@@ -115,23 +122,48 @@ else
             break
         end
         
-        if but==1 % left mouse button
-            if x < 0 || x > p.lim(1) || y < 0 || y > p.lim(2)
-                disp('Invalid point selected')
-                continue
-            end
-            
-            % get nearest point on grid to click
-            [~,xi] = min(abs(p.xs-x));
-            [~,yi] = min(abs(p.ys-y));
-            
-            plotridfs(xi,yi)
-        elseif but=='s'
-            g_fig_save(sprintf('ridf_%s_%s%sres%03d_route%03d_snapszht%s_x%04d_y%04d', ...
-                flabel,improcstr,'pm_',imsz(2),routenum,snapszhtstr,coords(i,1),coords(i,2)),[30 30]);
+        switch but
+            case 1 % left mouse button
+                if x < 0 || x > p.lim(1) || y < 0 || y > p.lim(2)
+                    disp('Invalid point selected')
+                    break
+                end
+
+                % get nearest point on grid to click
+                [~,xi] = min(abs(p.xs-x));
+                [~,yi] = min(abs(p.ys-y));
+
+                plotridfs(xi,yi)
+            case 'w' % zht up
+                if czhti < length(zht)
+                    czhti = czhti+1;
+                    showquiver
+                end
+            case 's' % zht down
+                if czhti > 1
+                    czhti = czhti-1;
+                    showquiver
+                end
+            case 'q' % snapszht up
+                if csnzhti < length(snapszht)
+                    csnzhti = csnzhti+1;
+                    showquiver
+                end
+            case 'a' % snapszht down
+                if csnzhti > 1
+                    csnzhti = csnzhti-1;
+                    showquiver
+                end
+            case ' ' % save
+                g_fig_save(sprintf('ridf_%s_%s%sres%03d_route%03d_snapszht%s_x%04d_y%04d', ...
+                    flabel,improcstr,'pm_',imsz(2),routenum,snapszhtstr,coords(i,1),coords(i,2)),[30 30]);
         end
     end
 end
+
+    function showquiver
+        g_bb_quiver(shortwhd,routenum,zht(czhti),snapszht(csnzhti),userealsnaps,false,improc,true,false);
+    end
 
     function plotridfs(xi,yi)
         gx = p.xs(xi);
