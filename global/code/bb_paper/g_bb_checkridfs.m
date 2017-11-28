@@ -75,7 +75,7 @@ if ~isempty(coords)
             cbestsnap(j) = bestsnap{j}(cind);
         end
         
-        showridfs(coords(i,1),coords(i,2),xi,yi,cridfs,cbestsnap,zht,snx,sny,snaps,imfun,whd,imsz(2),p)
+        showridfs(coords(i,1),coords(i,2),xi,yi,cridfs,cbestsnap,zht,snx,sny,snaps,imfun,whd,imsz(2),p,~dosave)
         if dosave
             saverealsnapsridfs(coords(i,1),coords(i,2))
         end
@@ -124,17 +124,21 @@ else
                 continue
             end
             
-            showridfs(gx,gy,xi,yi,cridfs,cbestsnap,zht,snx,sny,snaps,imfun,whd,imsz(2),p)
+            showridfs(gx,gy,xi,yi,cridfs,cbestsnap,zht,snx,sny,snaps,imfun,whd,imsz(2),p,false)
         elseif but=='s'
             saverealsnapsridfs(gx,gy);
         end
     end
 end
 
-function showridfs(gx,gy,xi,yi,cridfs,cbestsnap,zht,snx,sny,snaps,imfun,whd,res,p)
+function showridfs(gx,gy,xi,yi,cridfs,cbestsnap,zht,snx,sny,snaps,imfun,whd,res,p,doseparateplots)
 fprintf('selecting point (%d,%d)\n',gx,gy)
 
-figure(2);clf
+if doseparateplots
+    figure
+else
+    figure(2);clf
+end
 alsubplot(3+length(zht),2,1:2,1:2)
 plot(cridfs)
 xlim([1 size(cridfs,1)])
