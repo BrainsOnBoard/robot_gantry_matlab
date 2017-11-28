@@ -54,7 +54,7 @@ if dosave
 %         saverealsnapsridfs(coords(i,1),coords(i,2))
 %     end
 else
-    g_bb_showdata(false,false,improc,shortwhd,zht,userealsnaps,snapszht,true,false);
+    g_bb_showdata(shortwhd,routenum,zht,snapszht,userealsnaps,false,improc,true,false);
     
     cridfs = NaN(imsz(2),length(zht));
     cbestsnap = NaN(length(zht),1);
