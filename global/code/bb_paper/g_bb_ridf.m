@@ -57,6 +57,12 @@ else
     [snaps,snx,sny]=g_imdb_route_getimdbsnaps(p.arenafn,routenum,imsz(2),imfun,shortwhd,find(p.zs==snapszht),p.imsep);
 end
 
+if isempty(improc)
+    improcstr = '';
+else
+    improcstr = [improc '_'];
+end
+flabel = g_imdb_getlabel(fullfile(g_dir_imdb,shortwhd));
 if ~isempty(coords)
     for i = 1:size(coords,1)
         xi = find(p.xs==coords(i,1));
@@ -77,7 +83,8 @@ if ~isempty(coords)
         
         showridfs(coords(i,1),coords(i,2),xi,yi,cridfs,cbestsnap,zht,snx,sny,snaps,imfun,whd,imsz(2),p,~dosave)
         if dosave
-            saverealsnapsridfs(coords(i,1),coords(i,2))
+            g_fig_save(sprintf('ridf_%s_%s%sres%03d_route%03d_snapszht%03d_x%04d_y%04d', ...
+                flabel,improcstr,'pm_',imsz(2),routenum,snapszht,coords(i,1),coords(i,2)),[30 30]);
         end
     end
 else
@@ -126,7 +133,8 @@ else
             
             showridfs(gx,gy,xi,yi,cridfs,cbestsnap,zht,snx,sny,snaps,imfun,whd,imsz(2),p,false)
         elseif but=='s'
-            saverealsnapsridfs(gx,gy);
+            g_fig_save(sprintf('ridf_%s_%s%sres%03d_route%03d_snapszht%03d_x%04d_y%04d', ...
+                flabel,improcstr,'pm_',imsz(2),routenum,snapszht,coords(i,1),coords(i,2)),[30 30]);
         end
     end
 end
@@ -164,7 +172,3 @@ for i = 1:length(zht)
     imagesc(snaps(:,:,whsn));
     ylabel(whsn)
 end
-
-function saverealsnapsridfs(gx,gy)
-figure(2)
-g_fig_save(sprintf('ridf_%04d_%04d',gx,gy),[30 30]);
