@@ -20,4 +20,4 @@ g_bb_boxplot('imdb_2016-03-29_001',3,[],0:100:500,false,useinfomax,improc,dosave
 %% RIDFs
 % open, pile
 coords = [1600 1500; 1600 1600; 1500 1600; 1900 1300; 2100 1300; 2300 1200; 2400 1100];
-g_bb_ridf('imdb_2017-02-09_001',1,[],[],[],improc,coords,dosave);
+g_bb_ridf('imdb_2017-02-09_001',1,[],[],true,improc,coords,dosave);
