@@ -37,7 +37,11 @@ else
     improcstr = [improc,'_'];
 end
 if userealsnaps
-    snapstr = '';
+    if userealsnaps==1
+        snapstr = '';
+    else
+        snapstr = sprintf('_realsnaps%d',userealsnaps);
+    end
 else
     snapstr = sprintf('_imdbsnaps%d',snapszht);
 end
@@ -70,6 +74,15 @@ else
     
     if userealsnaps
         [snaps,~,snx,sny,snth,~,snapszht]=g_imdb_route_getrealsnaps(p.arenafn,routenum,res,imfun);
+        if userealsnaps~=1
+            len = size(snaps,3);
+            ind = 1:double(userealsnaps):len;
+            snaps = snaps(:,:,ind);
+            snx = snx(ind);
+            sny = sny(ind);
+            snth = snth(ind);
+            fprintf('using every 1 in %d real snapshots (n=%d/%d)\n',userealsnaps,size(snaps,3),len);
+        end
     else
         [snaps,snx,sny,snth]=g_imdb_route_getimdbsnaps(p.arenafn,routenum,res,imfun,shortwhd,find(snapszht==p.zs),p.imsep);
     end
