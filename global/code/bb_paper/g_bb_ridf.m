@@ -32,6 +32,11 @@ if nargin < 9 || isempty(joinpdfs)
     joinpdfs = false;
 end
 
+if userealsnaps && length(snapszht) > 1
+    % this may change...
+    error('cannot have real snapshots and multiple snapszht')
+end
+
 forcegen = false;
 
 imsz = [7 90];
@@ -40,17 +45,19 @@ imsz = [7 90];
 %% load RIDFs
 % extract best-matching snaps and RIDFs and put into cell array (because
 % the dimensions differ)
-[bestsnap,bestridfs,imxyi] = deal(cell(length(zht),1));
+[bestsnap,bestridfs,imxyi] = deal(cell(length(zht),length(snapszht)));
 for i = 1:length(zht)
-    [imxi,imyi,~,whsn,~,~,~,~,~,~,~,p,~,~,ridfs] = g_imdb_route_getdata( ...
-        shortwhd,routenum,imsz(2),zht(i),false,improc,forcegen,[], ...
-        userealsnaps,snapszht);
-    
-    imxyi{i} = [imxi, imyi];
-    bestsnap{i} = whsn;
-    bestridfs{i} = NaN(length(imxi),imsz(2));
-    for j = 1:size(ridfs,1)
-        bestridfs{i}(j,:) = ridfs(j,:,whsn(j)) / prod(imsz);
+    for j = 1:length(snapszht)
+        [imxi,imyi,~,whsn,~,~,~,~,~,~,~,p,~,~,ridfs] = g_imdb_route_getdata( ...
+            shortwhd,routenum,imsz(2),zht(i),false,improc,forcegen,[], ...
+            userealsnaps,snapszht(j));
+
+        imxyi{i,j} = [imxi, imyi];
+        bestsnap{i,j} = whsn;
+        bestridfs{i,j} = NaN(length(imxi),imsz(2));
+        for k = 1:size(ridfs,1)
+            bestridfs{i,j}(k,:) = ridfs(k,:,whsn(k)) / prod(imsz);
+        end
     end
 end
 
@@ -68,6 +75,8 @@ else
     improcstr = [improc '_'];
 end
 flabel = g_imdb_getlabel(fullfile(g_dir_imdb,shortwhd));
+sprows = ceil(length(snapszht)/2);
+snapszhtstr = numjoin(snapszht);
 
 if ~isempty(coords) % empty coords signals interactive mode
     if joinpdfs
@@ -78,22 +87,21 @@ if ~isempty(coords) % empty coords signals interactive mode
         xi = find(p.xs==coords(i,1));
         yi = find(p.ys==coords(i,2));
         
-        cridfs=getbest(xi,yi);
-        showridfs(coords(i,1),coords(i,2),cridfs,zht,~dosave)
+        plotridfs(xi,yi)
         if dosave
-            g_fig_save(sprintf('ridf_%s_%s%sres%03d_route%03d_snapszht%03d_x%04d_y%04d', ...
-                flabel,improcstr,'pm_',imsz(2),routenum,snapszht,coords(i,1),coords(i,2)),[30 30],[],[],[],joinpdfs);
+            g_fig_save(sprintf('ridf_%s_%s%sres%03d_route%03d_snapszht%s_x%04d_y%04d', ...
+                flabel,improcstr,'pm_',imsz(2),routenum,snapszhtstr,coords(i,1),coords(i,2)),[30 30],[],[],[],joinpdfs);
         end
     end
     if joinpdfs
-        g_fig_series_end(sprintf('ridf_%s_%s%sres%03d_route%03d_snapszht%03d.pdf', ...
-            flabel,improcstr,'pm_',imsz(2),routenum,snapszht),[30 30]);
+        g_fig_series_end(sprintf('ridf_%s_%s%sres%03d_route%03d_snapszht%s.pdf', ...
+            flabel,improcstr,'pm_',imsz(2),routenum,snapszhtstr),[30 30]);
     end
 else
     % show quiver plot to click on
     g_bb_quiver(shortwhd,routenum,zht,snapszht,userealsnaps,false,improc,true,false);
     
-    while true
+    while true % loop until user quits
         figure(1)
         try
             [x,y,but] = ginput(1);
@@ -116,46 +124,47 @@ else
             % get nearest point on grid to click
             [~,xi] = min(abs(p.xs-x));
             [~,yi] = min(abs(p.ys-y));
-            gx = p.xs(xi);
-            gy = p.ys(yi);
             
-            cridfs=getbest(xi,yi);
-            showridfs(gx,gy,cridfs,zht,false)
+            plotridfs(xi,yi)
         elseif but=='s'
-            g_fig_save(sprintf('ridf_%s_%s%sres%03d_route%03d_snapszht%03d_x%04d_y%04d', ...
-                flabel,improcstr,'pm_',imsz(2),routenum,snapszht,coords(i,1),coords(i,2)),[30 30]);
+            g_fig_save(sprintf('ridf_%s_%s%sres%03d_route%03d_snapszht%s_x%04d_y%04d', ...
+                flabel,improcstr,'pm_',imsz(2),routenum,snapszhtstr,coords(i,1),coords(i,2)),[30 30]);
         end
     end
 end
 
-    function [ridfs,snaps]=getbest(xi,yi)
-        ridfs = NaN(imsz(2),length(zht));
-        snaps = NaN(length(zht),1);
-        for besti = 1:length(zht)
-            cind = find(all(bsxfun(@eq,imxyi{besti},[xi yi]),2),1);
-            if isempty(cind)
-                break
+    function plotridfs(xi,yi)
+        gx = p.xs(xi);
+        gy = p.ys(yi);
+        fprintf('selecting point (%d,%d)\n',gx,gy)
+        
+        if joinpdfs
+            figure(2);clf
+        else
+            figure
+        end
+        for csnapszhti = 1:length(snapszht)
+            % get RIDF for best match
+            cridfs = NaN(imsz(2),length(zht));
+%             snaps = NaN(length(zht),1);
+            for besti = 1:length(zht)
+                cind = find(all(bsxfun(@eq,imxyi{besti,csnapszhti},[xi yi]),2),1);
+                if isempty(cind)
+                    warning('no match found')
+                    return
+                end
+
+                cridfs(:,besti) = bestridfs{besti,csnapszhti}(cind,:);
+%                 snaps(besti) = bestsnap{besti,csnapszhti}(cind);
             end
             
-            ridfs(:,besti) = bestridfs{besti}(cind,:);
-            snaps(besti) = bestsnap{besti}(cind);
+            subplot(sprows,min(2,length(snapszht)),csnapszhti)
+            plot(cridfs)
+            xlim([1 size(cridfs,1)])
+            title(sprintf('x=%d, y=%d, snapszht=%dmm',gx,gy,snapszht(csnapszhti)+50))
+            title(legend(num2str((zht+50)')),'Height (mm)')
+            
+            colormap gray
         end
     end
-end
-
-function showridfs(gx,gy,cridfs,zht,doseparateplots)
-fprintf('selecting point (%d,%d)\n',gx,gy)
-
-if doseparateplots
-    figure
-else
-    figure(2);clf
-end
-plot(cridfs)
-xlim([1 size(cridfs,1)])
-title(sprintf('x=%d, y=%d',gx,gy))
-title(legend(num2str((zht+50)')),'Height (mm)')
-
-colormap gray
-
 end
