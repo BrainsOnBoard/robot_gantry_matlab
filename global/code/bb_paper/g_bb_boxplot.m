@@ -39,7 +39,7 @@ end
 improcforinfomax = false;
 res = 90;
 forcegen = false;
-spcols = ceil(length(snapszht)/2);
+sprows = ceil(length(snapszht)/2);
 
 errs = cell(length(useinfomax),length(res),length(shortwhd), ...
     length(snapszht),length(routenums),length(zht));
@@ -83,7 +83,7 @@ if any(~useinfomax)
                 figure(1);clf
             else
                 figure(m)
-                subplot(min(2,length(snapszht)),spcols,l)
+                subplot(sprows,min(2,length(snapszht)),l)
             end
             
             doboxplot(errs(~useinfomax,:,:,l,m,:),zht);
@@ -99,7 +99,7 @@ if any(~useinfomax)
         if doseparateplots
             g_fig_series_end(sprintf('boxplot_%s_pm_%sres%03d.pdf',flabel,improc,res))
         else
-            g_fig_save(sprintf('boxplot_%s_pm_%sres%03d.pdf',flabel,improc,res),[20 15],[],[],[],false)
+            g_fig_save(sprintf('boxplot_%s_pm_%sres%03d.pdf',flabel,improc,res),[18 20],[],[],[],false)
         end
     end
 end
@@ -117,7 +117,7 @@ if any(useinfomax)
                 figure(2);clf
             else
                 figure(100+m)
-                subplot(min(2,length(snapszht)),spcols,l)
+                subplot(sprows,min(2,length(snapszht)),l)
             end
             
             doboxplot(errs(useinfomax,:,:,l,m,:),zht);
@@ -132,7 +132,7 @@ if any(useinfomax)
             if doseparateplots
                 g_fig_series_end(sprintf('boxplot_%s_infomax_%sres%03d.pdf',flabel,improc,res))
             else
-                g_fig_save(sprintf('boxplot_%s_infomax_%sres%03d.pdf',flabel,improc,res),[20 15],[],[],[],false)
+                g_fig_save(sprintf('boxplot_%s_infomax_%sres%03d.pdf',flabel,improc,res),[18 20],[],[],[],false)
             end
         end
     end
