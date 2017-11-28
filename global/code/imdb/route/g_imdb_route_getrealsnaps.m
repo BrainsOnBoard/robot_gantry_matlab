@@ -8,7 +8,8 @@ routefn = sprintf('route_%s_%03d',matfileremext(arenafn),routenum);
 snfn = sprintf('snaps_%s_fov%03d_imw%03d.mat',routefn,fov,res);
 fname = fullfile(g_dir_routes_snaps,snfn);
 if ~exist(fname,'file')
-    g_route_getsnaps(res,fov)
+    % NB: fov is not currently implemented (28/11/2017)
+    g_route_getsnaps(res,[],arenafn,routenum)
 end
 load(fname,'fovsnaps')
 
