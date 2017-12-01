@@ -1,15 +1,30 @@
 function g_bb_ridf_getmostdiff_printbest
 improc = '';
 snapszht = 200;
-[minima,imxi,imyi,p] = g_bb_ridf_getmostdiff('imdb_2017-02-09_001',1,[],snapszht,false,improc);
+snapszhtall = 0:100:500;
+[minima,imxi,imyi,p] = g_bb_ridf_getmostdiff('imdb_2017-02-09_001',1,[],snapszhtall,false,improc);
 
 %% get biggest diffs for given snapszht
-[~,I] = sort(minima(:,end)-minima(:,1),'descend');
-coords = [p.xs(imxi(I))' p.ys(imyi(I))'];
+ind = snapszhtall==snapszht;
+[~,I] = sort(minima(:,end,ind)-minima(:,1,ind),'descend');
 
-%% print results
-fprintf('\ncoords = [%d %d',coords(1,:))
-for i = 2:10
-    fprintf('; %d %d',coords(i,:))
+fprintf('\n%% biggest diffs for snapszht=%d\n',snapszht)
+printcoords(I);
+
+%% get biggest average diffs across snapszhts
+[~,I] = sort(mean(minima(:,end,:)-minima(:,1,:),3));
+
+disp('% biggest mean diffs across snapzhts')
+printcoords(I);
+
+    function printcoords(imind)
+        coords = [p.xs(imxi(imind))' p.ys(imyi(imind))'];
+
+        fprintf('coords = [%d %d',coords(1,:))
+        for i = 2:10
+            fprintf('; %d %d',coords(i,:))
+        end
+        fprintf('];\n\n');
+    end
+
 end
-fprintf('];\n');
