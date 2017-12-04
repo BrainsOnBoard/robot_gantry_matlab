@@ -191,7 +191,8 @@ end
             end
             
             subplot(sprows,min(2,length(snapszht)),csnapszhti)
-            plot(cridfs)
+            h=plot(cridfs);
+            h(csnapszhti).LineStyle='--';
             xlim([1 size(cridfs,1)])
             title(sprintf('x=%d, y=%d, snapszht=%dmm',gx,gy,snapszht(csnapszhti)+50))
             title(legend(num2str((zht+50)')),'Height (mm)')
