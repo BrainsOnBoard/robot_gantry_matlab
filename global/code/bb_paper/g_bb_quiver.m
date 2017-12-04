@@ -47,6 +47,7 @@ forcegen = false;
 dosavefigdata = ~forcegen;
 
 res = 90;
+figsz = [18 25];
 
 sprows = ceil(length(zht)/2);
 
@@ -128,7 +129,7 @@ for i = 1:length(useinfomax)
                                 else
                                     algorithmstr = 'pm';
                                 end
-                                g_fig_save(sprintf('%s%s_%s_route%d_res%03d_z%d_quiver%s',improcstr,algorithmstr,flabel,routenum,cres,zht(m)),[10 10]);
+                                g_fig_save(sprintf('%s%s_%s_route%d_res%03d_z%d_quiver%s',improcstr,algorithmstr,flabel,routenum,cres,zht(m)),figsz);
                             end
                         end
                         
@@ -183,7 +184,7 @@ for i = 1:length(useinfomax)
                                 else
                                     improcstr = [improc,'_'];
                                 end
-                                g_fig_save(sprintf('%s%s_%s_route%d_res%03d_z%d_quiver%s',improcstr,algorithmstr,flabel,routenum,cres,zht(m)),[10 10]);
+                                g_fig_save(sprintf('%s%s_%s_route%d_res%03d_z%d_quiver%s',improcstr,algorithmstr,flabel,routenum,cres,zht(m)),figsz);
                             end
                         end
                     end
@@ -198,7 +199,7 @@ for i = 1:length(useinfomax)
                     
                     fname = sprintf('%s_%s_route%d_%s%s_res%03d.pdf',plotstr,flabel,routenum,improcstr,algorithmstr,cres);
                     if ~doseparateplots
-                        g_fig_save(fname);
+                        g_fig_save(fname,figsz);
                     end
                     g_fig_series_end(fname);
                 end
