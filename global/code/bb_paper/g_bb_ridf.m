@@ -197,6 +197,9 @@ end
             title(legend(num2str((zht+50)')),'Height (mm)')
             
             colormap gray
+            
+            g_fig_setfont
+            andy_setbox
         end
     end
 end
