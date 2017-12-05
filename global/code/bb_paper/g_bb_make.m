@@ -1,24 +1,28 @@
 %%
 clear
+
 dosave = true;
 useinfomax = [false true];
 improc = '';
 realsnapsel = 3;
 snapszhtall = 0:100:500;
 
+arena_pile = 'imdb_2017-02-09_001';
+arena_boxes = 'imdb_2016-03-29_001';
+
 %% quivers
 % open, pile
-g_bb_quiver('imdb_2017-02-09_001',1,[],200,realsnapsel,useinfomax,improc,true,false,dosave,false);
+g_bb_quiver(arena_pile,1,[],200,realsnapsel,useinfomax,improc,true,false,dosave,false);
 
 % open, boxes
-g_bb_quiver('imdb_2016-03-29_001',3,[],200,false,useinfomax,improc,true,false,dosave,false);
+g_bb_quiver(arena_boxes,3,[],200,false,useinfomax,improc,true,false,dosave,false);
 
 %% boxplots
 % open, pile
-g_bb_boxplot('imdb_2017-02-09_001',1,[],snapszhtall,realsnapsel,useinfomax,improc,dosave,false);
+g_bb_boxplot(arena_pile,1,[],snapszhtall,realsnapsel,useinfomax,improc,dosave,false);
 
 % open, boxes
-g_bb_boxplot('imdb_2016-03-29_001',3,[],snapszhtall,false,useinfomax,improc,dosave,false);
+g_bb_boxplot(arena_boxes,3,[],snapszhtall,false,useinfomax,improc,dosave,false);
 
 %% RIDFs
 % % old coords
@@ -31,4 +35,4 @@ g_bb_boxplot('imdb_2016-03-29_001',3,[],snapszhtall,false,useinfomax,improc,dosa
 coords = [800 0; 2200 800; 800 100; 700 0; 700 100; 2200 900; 600 0; 1600 200; 800 200; 900 900];
 
 % open, pile
-g_bb_ridf('imdb_2017-02-09_001',1,[],snapszhtall,false,improc,coords,dosave,true);
+g_bb_ridf(arena_pile,1,[],snapszhtall,false,improc,coords,dosave,true);
