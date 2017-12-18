@@ -115,6 +115,8 @@ for i = 1:length(useinfomax)
                             axis equal tight
                             xlabel('x (mm)')
                             ylabel('y (mm)')
+                            xlim([0 p.lim(1)])
+                            ylim([0 p.lim(2)])
                             if zht(m)==snapszht(k)
                                 title(tstr,'Color','r')
                             else
