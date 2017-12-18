@@ -46,6 +46,8 @@ forcegen = false;
 imsz = [7 90];
 % whd = fullfile(g_dir_imdb,shortwhd);
 
+figsz = [30 30];
+
 %% load RIDFs
 % extract best-matching snaps and RIDFs and put into cell array (because
 % the dimensions differ)
@@ -94,7 +96,7 @@ if ~isempty(coords) % empty coords signals interactive mode
         plotridfs(xi,yi)
         if dosave
             g_fig_save(sprintf('ridf_%s_%s%sres%03d_route%03d_snapszht%s_x%04d_y%04d', ...
-                flabel,improcstr,'pm_',imsz(2),routenum,snapszhtstr,coords(i,1),coords(i,2)),[30 30],[],[],[],joinpdfs);
+                flabel,improcstr,'pm_',imsz(2),routenum,snapszhtstr,coords(i,1),coords(i,2)),figsz,[],[],[],joinpdfs);
         end
     end
     if joinpdfs
@@ -156,7 +158,7 @@ else
                 end
             case ' ' % save
                 g_fig_save(sprintf('ridf_%s_%s%sres%03d_route%03d_snapszht%s_x%04d_y%04d', ...
-                    flabel,improcstr,'pm_',imsz(2),routenum,snapszhtstr,coords(i,1),coords(i,2)),[30 30]);
+                    flabel,improcstr,'pm_',imsz(2),routenum,snapszhtstr,coords(i,1),coords(i,2)),figsz);
         end
     end
 end
@@ -190,10 +192,17 @@ end
 %                 snaps(besti) = bestsnap{besti,csnapszhti}(cind);
             end
             
+            ths = repmat(linspace(-180,180,size(cridfs,1)+1)',1,size(cridfs,2));
+            cridfs = circshift(cridfs,floor(size(cridfs,1)/2));
+            cridfs(end+1,:) = cridfs(1,:);
+            
             subplot(sprows,min(2,length(snapszht)),csnapszhti)
-            h=plot(cridfs);
+            h=plot(ths,cridfs);
             h(csnapszhti).LineStyle='--';
-            xlim([1 size(cridfs,1)])
+            xlim([-180 180])
+            set(gca,'XTick',-180:90:180)
+            xlabel('Angle (deg)')
+            ylim([0 0.25])
             title(sprintf('x=%d, y=%d, snapszht=%dmm',gx,gy,snapszht(csnapszhti)+50))
             title(legend(num2str((zht+50)')),'Height (mm)')
             
