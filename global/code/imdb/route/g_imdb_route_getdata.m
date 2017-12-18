@@ -73,7 +73,12 @@ else
     end
     
     if userealsnaps
+        % TODO: check that we're not overwriting a different value of
+        % snapszht here
         [snaps,~,snx,sny,snth,~,snapszht]=g_imdb_route_getrealsnaps(p.arenafn,routenum,res,imfun);
+        allsnx = snx;
+        allsny = sny;
+        allsnth = snth;
         if userealsnaps~=1
             len = size(snaps,3);
             ind = 1:double(userealsnaps):len;
@@ -85,6 +90,9 @@ else
         end
     else
         [snaps,snx,sny,snth]=g_imdb_route_getimdbsnaps(p.arenafn,routenum,res,imfun,shortwhd,find(snapszht==p.zs),p.imsep);
+        allsnx = snx;
+        allsny = sny;
+        allsnth = snth;
     end
     
     valids = g_imdb_imexist(whd,p,zi);
@@ -138,7 +146,7 @@ else
             mkdir(g_dir_imdb_routes_figdata);
         end
         fprintf('Saving to %s...\n',figdatfn);
-        save(figdatfn,'imxi','imyi','heads','whsn','snx','sny','snth','p','userealsnaps','snapszht','weight_update_count','zht');
+        save(figdatfn,'imxi','imyi','heads','whsn','allsnx','allsny','allsnth','snx','sny','snth','p','userealsnaps','snapszht','weight_update_count','zht');
 
         if ~exist(g_dir_imdb_routes_ridfs_figdata,'dir')
             mkdir(g_dir_imdb_routes_ridfs_figdata);
@@ -150,8 +158,8 @@ else
     end
 end
 
-snxi = 1+snx(:) / p.imsep;
-snyi = 1+sny(:) / p.imsep;
+snxi = 1+allsnx(:) / p.imsep;
+snyi = 1+allsny(:) / p.imsep;
 
 dx = bsxfun(@minus,imxi(:)',snxi);
 dy = bsxfun(@minus,imyi(:)',snyi);
@@ -159,8 +167,8 @@ alldist = p.imsep * hypot(dy, dx);
 [dist,nearest] = min(alldist);
 
 % calculate error on heading (0 to 90 deg)
-snth = snth(:);
-target_heads = snth(nearest);
+allsnth = allsnth(:);
+target_heads = allsnth(nearest);
 err = circ_dist(heads, target_heads);
 err = abs(err);
 err = min(pi/2,err) * 180/pi;
