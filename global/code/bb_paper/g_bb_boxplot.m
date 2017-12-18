@@ -139,16 +139,19 @@ if any(useinfomax)
 end
 
 function doboxplot(errs,zht)
+ymax = 0;
 hold on
 for i = 1:numel(errs)
     boxplot(errs{i},'Positions',i);
+    yl = ylim;
+    ymax = max(yl(2),ymax);
 end
 
 xlim([0 i+1])
 set(gca,'XTick',1:i,'XTickLabel',zht+50)
 xlabel('Test height (mm)')
 
-ylim([0 45])
+ylim([0 ymax])
 set(gca,'YTick',0:15:90)
 ylabel('Error (deg)')
 
