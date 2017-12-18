@@ -1,8 +1,10 @@
 function g_bb_ridf_getmostdiff_printbest
+[~,shortwhd] = g_imdb_choosedb;
+
 improc = '';
 snapszht = 200;
 snapszhtall = 0:100:500;
-[minima,imxi,imyi,p] = g_bb_ridf_getmostdiff('imdb_2017-02-09_001',1,[],snapszhtall,false,improc);
+[minima,imxi,imyi,p] = g_bb_ridf_getmostdiff(shortwhd,1,[],snapszhtall,false,improc);
 
 %% get biggest diffs for given snapszht
 ind = snapszhtall==snapszht;
