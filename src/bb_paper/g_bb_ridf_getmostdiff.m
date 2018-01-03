@@ -54,6 +54,7 @@ for i = 1:length(zht)
     end
 end
 
+% TODO: fix this for when number of snapshots differs with height
 minima = NaN([size(bestridfs{1},1) size(bestridfs)]);
 for i = 1:size(minima,2)
     for j = 1:size(minima,3)
