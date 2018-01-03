@@ -12,10 +12,10 @@ arena_boxes = 'imdb_2016-03-29_001';
 
 %% quivers
 % open, pile
-g_bb_quiver(arena_pile,1,[],200,realsnapsel,useinfomax,improc,true,false,dosave,false);
+g_bb_quiver(arena_pile,1,[],200,realsnapsel,useinfomax,improc,true,true,dosave,false);
 
 % open, boxes
-g_bb_quiver(arena_boxes,3,[],200,false,useinfomax,improc,true,false,dosave,false);
+g_bb_quiver(arena_boxes,3,[],200,false,useinfomax,improc,true,true,dosave,false);
 
 %% boxplots
 % open, pile
