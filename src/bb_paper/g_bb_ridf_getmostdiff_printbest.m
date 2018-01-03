@@ -1,10 +1,15 @@
 function g_bb_ridf_getmostdiff_printbest
 [~,shortwhd] = g_imdb_choosedb;
 
+routenum = input('Enter route number [1]: ');
+if isempty(routenum)
+    routenum = 1;
+end
+
 improc = '';
 snapszht = 200;
 snapszhtall = 0:100:500;
-[minima,imxi,imyi,p] = g_bb_ridf_getmostdiff(shortwhd,1,[],snapszhtall,false,improc);
+[minima,imxi,imyi,p] = g_bb_ridf_getmostdiff(shortwhd,routenum,[],snapszhtall,false,improc);
 
 %% get biggest diffs for given snapszht
 ind = snapszhtall==snapszht;
