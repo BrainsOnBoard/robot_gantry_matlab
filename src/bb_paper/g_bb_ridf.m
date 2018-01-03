@@ -54,7 +54,7 @@ figsz = [30 30];
 [bestsnap,bestridfs,imxyi] = deal(cell(length(zht),length(snapszht)));
 for i = 1:length(zht)
     for j = 1:length(snapszht)
-        [imxi,imyi,~,whsn,~,~,~,~,~,~,~,p,~,~,ridfs] = g_imdb_route_getdata( ...
+        [imxi,imyi,~,whsn,~,~,~,~,~,snth,~,p,~,~,ridfs] = g_imdb_route_getdata( ...
             shortwhd,routenum,imsz(2),zht(i),false,improc,forcegen,[], ...
             userealsnaps,snapszht(j));
 
@@ -62,7 +62,9 @@ for i = 1:length(zht)
         bestsnap{i,j} = whsn;
         bestridfs{i,j} = NaN(length(imxi),imsz(2));
         for k = 1:size(ridfs,1)
-            bestridfs{i,j}(k,:) = ridfs(k,:,whsn(k)) / prod(imsz);
+            % RIDFs will be shifted by snth(whsn(k)); centre on 0° instead
+            cridf = circshift(ridfs(k,:,whsn(k)),-round(snth(whsn(k)) * size(ridfs,2) / (2*pi)),2);
+            bestridfs{i,j}(k,:) = cridf / prod(imsz);
         end
     end
 end
