@@ -53,7 +53,13 @@ isnew = ~exist(figdatfn,'file');
 wantridfs = nargout >= 14;
 haveridfs = exist(ridfsfigdatfn,'file');
 if ~isnew && ~forcegen && (~wantridfs || haveridfs)
+    oldsnapszht = snapszht;
     load(figdatfn);
+    if ~isempty(oldsnapszht) && snapszht ~= oldsnapszht
+        error(['specified snapshot height differs from the height at ' ...
+               'which real snapshots were taken'])
+    end
+        
     if wantridfs
         load(ridfsfigdatfn);
     end
@@ -73,9 +79,12 @@ else
     end
     
     if userealsnaps
-        % TODO: check that we're not overwriting a different value of
-        % snapszht here
+        oldsnapszht = snapszht;
         [snaps,~,snx,sny,snth,~,snapszht]=g_imdb_route_getrealsnaps(p.arenafn,routenum,res,imfun);
+        if ~isempty(oldsnapszht) && snapszht ~= oldsnapszht
+            error(['specified snapshot height differs from the height at ' ...
+                   'which real snapshots were taken'])
+        end
         allsnx = snx;
         allsny = sny;
         allsnth = snth;
