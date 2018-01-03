@@ -174,6 +174,8 @@ end
         gy = p.ys(yi);
         fprintf('selecting point (%d,%d)\n',gx,gy)
         
+        spcols = min(2,length(snapszht));
+        ymax = 0;
         if joinpdfs
             figure(2);clf
         else
@@ -198,13 +200,12 @@ end
             cridfs = circshift(cridfs,floor(size(cridfs,1)/2));
             cridfs(end+1,:) = cridfs(1,:);
             
-            subplot(sprows,min(2,length(snapszht)),csnapszhti)
+            subplot(sprows,spcols,csnapszhti)
             h=plot(ths,cridfs);
             h(csnapszhti).LineStyle='--';
             xlim([-180 180])
             set(gca,'XTick',-180:90:180)
             xlabel('Angle (deg)')
-%             ylim([0 0.25])
             title(sprintf('x=%d, y=%d, snapszht=%dmm',gx,gy,snapszht(csnapszhti)+50))
             title(legend(num2str((zht+50)')),'Height (mm)')
             
@@ -212,6 +213,13 @@ end
             
             g_fig_setfont
             andy_setbox
+            
+            yl = ylim;
+            ymax = max(yl(2),ymax);
+        end
+        for csnapszhti = 1:length(snapszht)
+            subplot(sprows,spcols,csnapszhti)
+            ylim([0 ymax])
         end
     end
 end
