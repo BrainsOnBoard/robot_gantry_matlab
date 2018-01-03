@@ -202,7 +202,7 @@ end
             xlim([-180 180])
             set(gca,'XTick',-180:90:180)
             xlabel('Angle (deg)')
-            ylim([0 0.25])
+%             ylim([0 0.25])
             title(sprintf('x=%d, y=%d, snapszht=%dmm',gx,gy,snapszht(csnapszhti)+50))
             title(legend(num2str((zht+50)')),'Height (mm)')
             
