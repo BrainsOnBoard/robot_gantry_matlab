@@ -2,7 +2,7 @@
 clear
 
 dosave = true;
-useinfomax = [false true];
+useinfomax = false; %[false true];
 improc = '';
 realsnapsel = 3;
 snapszhtall = 0:100:500;
