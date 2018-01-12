@@ -71,75 +71,50 @@ if dosave
     flabel = g_imdb_getlabel(fullfile(g_dir_imdb,shortwhd{1}));
 end
 
-if any(~useinfomax)
-    disp('Plotting perfect memory results...')
-    
-    % plot perfect memory results
-    for m = 1:length(routenums)
-        if dosave && doseparateplots
-            g_fig_series_start
-        end
-        for l = 1:length(snapszht)
-            if doseparateplots
-                figure(1);clf
-            else
-                figure(m)
-                subplot(sprows,min(2,length(snapszht)),l)
-            end
-            
-            doboxplot(errs(~useinfomax,:,:,l,m,:),zht);
-            title(sprintf('Train height: %d mm',snapszht(l)+50));
-            g_fig_setfont
-            
-            if dosave && doseparateplots
-                g_fig_save(sprintf('boxplot_%s_%s%sres%03d_route%03d_snapszht%03d',flabel,improc,'pm_',res,routenums(m),snapszht(l)),[20 10]);
-            end
-        end
-    end
-    if dosave
-        if doseparateplots
-            g_fig_series_end(sprintf('boxplot_%s_pm_%sres%03d.pdf',flabel,improc,res))
-        else
-            g_fig_save(sprintf('boxplot_%s_pm_%sres%03d.pdf',flabel,improc,res),figsz,[],[],[],false)
-        end
-    end
-end
+domultiboxplots('pm',shiftdim(errs(~useinfomax,:,:,:,:,:),1))
+domultiboxplots('infomax',shiftdim(errs(useinfomax,:,:,:,:,:),1))
 
-if any(useinfomax)
-    disp('Plotting infomax results...')
-    
-    % plot infomax results
-    for m = 1:length(routenums)
-        if dosave && doseparateplots
-            g_fig_series_start
-        end
-        for l = 1:length(snapszht)
-            if doseparateplots
-                figure(2);clf
-            else
-                figure(100+m)
-                subplot(sprows,min(2,length(snapszht)),l)
-            end
-            
-            doboxplot(errs(useinfomax,:,:,l,m,:),zht);
-            title(sprintf('Train height: %d mm',snapszht(l)+50))
-            g_fig_setfont
-            
+    function domultiboxplots(name,cerrs)
+        fprintf('Plotting %s results...\n',name)
+        spcols = min(2,length(snapszht));
+        
+        % plot infomax results
+        for m = 1:length(routenums)
+            ymax = 0;
             if dosave && doseparateplots
-                g_fig_save(sprintf('boxplot_%s_%s%sres%03d_route%03d_snapszht%03d',flabel,improc,'infomax_',res,routenums(m),snapszht(l)),[20 10]);
+                g_fig_series_start
             end
-        end
-        if dosave
-            if doseparateplots
-                g_fig_series_end(sprintf('boxplot_%s_infomax_%sres%03d.pdf',flabel,improc,res))
-            else
-                g_fig_save(sprintf('boxplot_%s_infomax_%sres%03d.pdf',flabel,improc,res),figsz,[],[],[],false)
+            h = NaN(size(snapszht));
+            for l = 1:length(snapszht)
+                if doseparateplots
+                    figure(2);clf
+                else
+                    figure(100+m)
+                    h(l)=subplot(sprows,spcols,l);
+                end
+                
+                ymax = max(ymax,doboxplot(cerrs(:,:,l,m,:),zht));
+                title(sprintf('Train height: %d mm',snapszht(l)+50))
+                g_fig_setfont
+
+
+                if dosave && doseparateplots
+                    g_fig_save(sprintf('boxplot_%s_%s%s_res%03d_route%03d_snapszht%03d',flabel,improc,name,res,routenums(m),snapszht(l)),[20 10]);
+                end
+            end
+            if dosave
+                if doseparateplots
+                    g_fig_series_end(sprintf('boxplot_%s_%s%s_res%03d.pdf',flabel,improc,name,res))
+                else
+                    set(h, 'YLim', [0 ymax]);
+                    g_fig_save(sprintf('boxplot_%s_%s%s_res%03d.pdf',flabel,improc,name,res),figsz,[],[],[],false)
+                end
             end
         end
     end
 end
 
-function doboxplot(errs,zht)
+function ymax=doboxplot(errs,zht)
 ymax = 0;
 hold on
 for i = 1:numel(errs)
@@ -158,3 +133,4 @@ set(gca,'YTick',0:15:90)
 ylabel('Error (deg)')
 
 andy_setbox
+end
