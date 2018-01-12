@@ -106,7 +106,7 @@ domultiboxplots('infomax',shiftdim(errs(useinfomax,:,:,:,:,:),1))
                 if doseparateplots
                     g_fig_series_end(sprintf('boxplot_%s_%s%s_res%03d.pdf',flabel,improc,name,res))
                 else
-                    set(h, 'YLim', [0 ymax]);
+                    set(h, 'YLim', [0 min(90,ymax)]);
                     g_fig_save(sprintf('boxplot_%s_%s%s_res%03d.pdf',flabel,improc,name,res),figsz,[],[],[],false)
                 end
             end
