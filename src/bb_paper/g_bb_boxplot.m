@@ -40,6 +40,7 @@ improcforinfomax = false;
 res = 90;
 forcegen = false;
 sprows = ceil(length(snapszht)/2);
+figsz = [18 15];
 
 errs = cell(length(useinfomax),length(res),length(shortwhd), ...
     length(snapszht),length(routenums),length(zht));
@@ -99,7 +100,7 @@ if any(~useinfomax)
         if doseparateplots
             g_fig_series_end(sprintf('boxplot_%s_pm_%sres%03d.pdf',flabel,improc,res))
         else
-            g_fig_save(sprintf('boxplot_%s_pm_%sres%03d.pdf',flabel,improc,res),[18 20],[],[],[],false)
+            g_fig_save(sprintf('boxplot_%s_pm_%sres%03d.pdf',flabel,improc,res),figsz,[],[],[],false)
         end
     end
 end
@@ -132,7 +133,7 @@ if any(useinfomax)
             if doseparateplots
                 g_fig_series_end(sprintf('boxplot_%s_infomax_%sres%03d.pdf',flabel,improc,res))
             else
-                g_fig_save(sprintf('boxplot_%s_infomax_%sres%03d.pdf',flabel,improc,res),[18 20],[],[],[],false)
+                g_fig_save(sprintf('boxplot_%s_infomax_%sres%03d.pdf',flabel,improc,res),figsz,[],[],[],false)
             end
         end
     end
@@ -152,6 +153,7 @@ set(gca,'XTick',1:i,'XTickLabel',zht+50)
 xlabel('Test height (mm)')
 
 ylim([0 ymax])
+% ylim([0 30])
 set(gca,'YTick',0:15:90)
 ylabel('Error (deg)')
 

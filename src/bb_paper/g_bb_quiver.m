@@ -42,6 +42,13 @@ if nargin < 11 || isempty(doseparateplots)
     doseparateplots = true;
 end
 
+if plotquiver
+    plotstr = 'quiver';
+end
+if plotwhsn
+    plotstr = 'whsn';
+end
+
 newonly = false;
 forcegen = false;
 dosavefigdata = ~forcegen;
@@ -190,19 +197,16 @@ for i = 1:length(useinfomax)
                             end
                         end
                     end
-                end
-                if dosave
-                    if plotquiver
-                        plotstr = 'quiver';
-                    end
-                    if plotwhsn
-                        plotstr = 'whsn';
-                    end
-                    
-                    fname = sprintf('%s_%s_route%d_%s%s_res%03d.pdf',plotstr,flabel,routenum,improcstr,algorithmstr,cres);
-                    if ~doseparateplots
+                    fname = sprintf('%s_%s_route%d_%s%s_res%03d_snapszht%03d.pdf',plotstr,flabel,routenum,improcstr,algorithmstr,cres,snapszht(k));
+                    if dosave && ~doseparateplots
                         g_fig_save(fname,figsz);
                     end
+                end
+                if dosave                    
+                    fname = sprintf('%s_%s_route%d_%s%s_res%03d.pdf',plotstr,flabel,routenum,improcstr,algorithmstr,cres);
+%                     if dosave && ~doseparateplots
+%                         g_fig_save(fname,figsz);
+%                     end
                     g_fig_series_end(fname);
                 end
             end
