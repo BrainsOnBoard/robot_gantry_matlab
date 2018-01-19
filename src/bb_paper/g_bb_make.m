@@ -28,13 +28,13 @@ g_bb_quiver(arena_plants,1,[],snapszhtreal,false,useinfomax,improc,doquiver,dowh
 
 %% boxplots
 % open, pile
-g_bb_boxplot(arena_pile,1,[],snapszhtall,false,useinfomax,improc,dosave,false);
+g_bb_boxplot(arena_pile,1,[],snapszhtall,false,useinfomax,improc,false,dosave,figtype);
 
 % open, boxes
-g_bb_boxplot(arena_boxes,3,[],snapszhtall,false,useinfomax,improc,dosave,false);
+g_bb_boxplot(arena_boxes,3,[],snapszhtall,false,useinfomax,improc,false,dosave,figtype);
 
 % plants
-g_bb_boxplot(arena_plants,1,[],snapszhtall,false,useinfomax,improc,dosave,false);
+g_bb_boxplot(arena_plants,1,[],snapszhtall,false,useinfomax,improc,false,dosave,figtype);
 
 %% RIDFs
 % % old coords

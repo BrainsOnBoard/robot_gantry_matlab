@@ -1,4 +1,4 @@
-function g_bb_boxplot(shortwhd,routenums,zht,snapszht,userealsnaps,useinfomax,improc,dosave,doseparateplots)
+function g_bb_boxplot(shortwhd,routenums,zht,snapszht,userealsnaps,useinfomax,improc,doseparateplots,dosave,figtype)
 close all
 
 if nargin < 1 || isempty(shortwhd)
@@ -29,11 +29,14 @@ end
 if nargin < 7 || isempty(improc)
     improc = '';
 end
-if nargin < 8 || isempty(dosave)
+if nargin < 8 || isempty(doseparateplots)
+    doseparateplots = true;
+end
+if nargin < 9 || isempty(dosave)
     dosave = false;
 end
-if nargin < 9 || isempty(doseparateplots)
-    doseparateplots = true;
+if nargin < 10 || isempty(figtype)
+    figtype = 'pdf';
 end
 
 improcforinfomax = false;
@@ -99,7 +102,9 @@ domultiboxplots('infomax',shiftdim(errs(useinfomax,:,:,:,:,:),1))
 
 
                 if dosave && doseparateplots
-                    g_fig_save(sprintf('boxplot_%s_%s%s_res%03d_route%03d_snapszht%03d',flabel,improc,name,res,routenums(m),snapszht(l)),[20 10]);
+                    g_fig_save(sprintf('boxplot_%s_%s%s_res%03d_route%03d_snapszht%03d', ...
+                        flabel,improc,name,res,routenums(m),snapszht(l)), ...
+                        [20 10],figtype);
                 end
             end
             if dosave
@@ -107,7 +112,7 @@ domultiboxplots('infomax',shiftdim(errs(useinfomax,:,:,:,:,:),1))
                     g_fig_series_end(sprintf('boxplot_%s_%s%s_res%03d.pdf',flabel,improc,name,res))
                 else
                     set(h, 'YLim', [0 min(90,ymax)]);
-                    g_fig_save(sprintf('boxplot_%s_%s%s_res%03d.pdf',flabel,improc,name,res),figsz,[],[],[],false)
+                    g_fig_save(sprintf('boxplot_%s_%s%s_res%03d.pdf',flabel,improc,name,res),figsz,figtype,[],[],false)
                 end
             end
         end

@@ -25,13 +25,13 @@ g_bb_quiver(arena_plants,1,zht,snapszhtall,realsnapsel,useinfomax,improc,true,fa
 
 %% boxplots
 % open, pile
-g_bb_boxplot(arena_pile,1,zht,snapszhtall,false,useinfomax,improc,dosave,false);
+g_bb_boxplot(arena_pile,1,zht,snapszhtall,false,useinfomax,improc,false,dosave);
 
 % % open, boxes
-% g_bb_boxplot(arena_boxes,3,zht,snapszhtall,false,useinfomax,improc,dosave,false);
+% g_bb_boxplot(arena_boxes,3,zht,snapszhtall,false,useinfomax,improc,false,dosave);
 
 % plants
-g_bb_boxplot(arena_plants,1,zht,snapszhtall,false,useinfomax,improc,dosave,false);
+g_bb_boxplot(arena_plants,1,zht,snapszhtall,false,useinfomax,improc,false,dosave);
 
 %% RIDFs
 % % biggest diffs for snapszht=200

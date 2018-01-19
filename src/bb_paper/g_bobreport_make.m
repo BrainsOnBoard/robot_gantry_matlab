@@ -38,5 +38,5 @@ g_bb_ridf(arena_pile,1,[],trainht,realsnapsel,improc,coords(2,:),dosave,true);
 g_bb_ridf(arena_plants,1,[],trainht,realsnapsel,improc,[300 1400],dosave,true);
 
 %% boxplots
-g_bb_boxplot(arena_pile,1,[],trainht,realsnapsel,useinfomax,improc,dosave,false);
-g_bb_boxplot(arena_plants,1,[],trainht,false,useinfomax,improc,dosave,false);
+g_bb_boxplot(arena_pile,1,[],trainht,realsnapsel,useinfomax,improc,false,dosave);
+g_bb_boxplot(arena_plants,1,[],trainht,false,useinfomax,improc,false,dosave);

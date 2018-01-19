@@ -9,12 +9,11 @@ end
 if nargin < 5 || isempty(r)
     r = 300;
 end
-if nargin == 3
-    type = ext;
-end
 if nargin < 3 || isempty(ext)
     type = 'pdf';
-    ext = 'pdf';
+end
+if nargin == 3 || isempty(type)
+    type = ext;
 end
 ext = ['.' ext];
 if nargin < 2
