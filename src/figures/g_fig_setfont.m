@@ -1,4 +1,4 @@
 function g_fig_setfont
 % project-wide figure font settings
 
-setfigfont('Arial',10);
+setfigfont('Arial',8);
