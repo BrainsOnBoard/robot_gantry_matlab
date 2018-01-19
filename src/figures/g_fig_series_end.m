@@ -1,10 +1,15 @@
-function g_fig_series_end(name,dodelete)
+function g_fig_series_end(name,dodelete,figtype)
+if nargin >= 3 && (~isempty(figtype) && ~strcmpi(figtype,'pdf'))
+    % we can only join pdf files
+    return
+end
+
 if ispc
     warning('not joining figures')
     return
 end
 
-if nargin < 2
+if nargin < 2 || isempty(dodelete)
     dodelete = true;
 end
 

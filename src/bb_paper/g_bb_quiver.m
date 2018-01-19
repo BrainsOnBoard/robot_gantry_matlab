@@ -1,4 +1,4 @@
-function g_bb_quiver(shortwhd,routenums,zht,snapszht,userealsnaps,useinfomax,improc,plotquiver,plotwhsn,dosave,doseparateplots)
+function g_bb_quiver(shortwhd,routenums,zht,snapszht,userealsnaps,useinfomax,improc,plotquiver,plotwhsn,doseparateplots,dosave,figtype)
 close all
 
 if nargin < 1 || isempty(shortwhd)
@@ -35,11 +35,14 @@ end
 if nargin < 9 || isempty(plotwhsn)
     plotwhsn = false;
 end
-if nargin < 10 || isempty(dosave)
+if nargin < 10 || isempty(doseparateplots)
+    doseparateplots = true;
+end
+if nargin < 11 || isempty(dosave)
     dosave = false;
 end
-if nargin < 11 || isempty(doseparateplots)
-    doseparateplots = true;
+if nargin < 12 || isempty(figtype)
+    figtype = 'pdf';
 end
 
 if plotquiver
@@ -138,7 +141,7 @@ for i = 1:length(useinfomax)
                                 else
                                     algorithmstr = 'pm';
                                 end
-                                g_fig_save(sprintf('%s%s_%s_route%d_res%03d_z%d_quiver%s',improcstr,algorithmstr,flabel,routenum,cres,zht(m)),figsz);
+                                g_fig_save(sprintf('%s%s_%s_route%d_res%03d_z%d_quiver%s',improcstr,algorithmstr,flabel,routenum,cres,zht(m)),figsz,figtype);
                             end
                         end
                         
@@ -193,21 +196,21 @@ for i = 1:length(useinfomax)
                                 else
                                     improcstr = [improc,'_'];
                                 end
-                                g_fig_save(sprintf('%s%s_%s_route%d_res%03d_z%d_quiver%s',improcstr,algorithmstr,flabel,routenum,cres,zht(m)),figsz);
+                                g_fig_save(sprintf('%s%s_%s_route%d_res%03d_z%d_quiver%s',improcstr,algorithmstr,flabel,routenum,cres,zht(m)),figsz,figtype);
                             end
                         end
                     end
-                    fname = sprintf('%s_%s_route%d_%s%s_res%03d_snapszht%03d.pdf',plotstr,flabel,routenum,improcstr,algorithmstr,cres,snapszht(k));
+                    fname = sprintf('%s_%s_route%d_%s%s_res%03d_snapszht%03d',plotstr,flabel,routenum,improcstr,algorithmstr,cres,snapszht(k));
                     if dosave && ~doseparateplots
-                        g_fig_save(fname,figsz);
+                        g_fig_save(fname,figsz,figtype);
                     end
                 end
-                if dosave                    
+                if dosave
                     fname = sprintf('%s_%s_route%d_%s%s_res%03d.pdf',plotstr,flabel,routenum,improcstr,algorithmstr,cres);
 %                     if dosave && ~doseparateplots
-%                         g_fig_save(fname,figsz);
+%                         g_fig_save(fname,figsz,figtype);
 %                     end
-                    g_fig_series_end(fname);
+                    g_fig_series_end(fname,[],figtype);
                 end
             end
         end

@@ -15,13 +15,13 @@ arena_plants = 'imdb_2017-06-06_001';
 
 %% quivers
 % open, pile
-g_bb_quiver(arena_pile,1,zht,snapszhtall,realsnapsel,useinfomax,improc,true,false,dosave,false);
+g_bb_quiver(arena_pile,1,zht,snapszhtall,realsnapsel,useinfomax,improc,true,false,false,dosave);
 
 % % open, boxes
-% g_bb_quiver(arena_boxes,3,zht,snapszhtall,false,useinfomax,improc,true,false,dosave,false);
+% g_bb_quiver(arena_boxes,3,zht,snapszhtall,false,useinfomax,improc,true,false,false,dosave);
 
 % plants
-g_bb_quiver(arena_plants,1,zht,snapszhtall,realsnapsel,useinfomax,improc,true,false,dosave,false);
+g_bb_quiver(arena_plants,1,zht,snapszhtall,realsnapsel,useinfomax,improc,true,false,false,dosave);
 
 %% boxplots
 % open, pile

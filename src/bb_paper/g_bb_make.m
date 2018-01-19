@@ -2,6 +2,7 @@
 clear
 
 dosave = true;
+figtype = 'svg';
 useinfomax = [false true];
 improc = '';
 % realsnapsel = 3;
@@ -17,13 +18,13 @@ arena_plants = 'imdb_2017-06-06_001';
 
 %% quivers
 % open, pile
-g_bb_quiver(arena_pile,1,[],snapszhtreal,false,useinfomax,improc,doquiver,dowhsn,dosave,false);
+g_bb_quiver(arena_pile,1,[],snapszhtreal,false,useinfomax,improc,doquiver,dowhsn,false,dosave,figtype);
 
 % open, boxes
-g_bb_quiver(arena_boxes,3,[],snapszhtreal,false,useinfomax,improc,doquiver,dowhsn,dosave,false);
+g_bb_quiver(arena_boxes,3,[],snapszhtreal,false,useinfomax,improc,doquiver,dowhsn,false,dosave,figtype);
 
 % plants
-g_bb_quiver(arena_plants,1,[],snapszhtreal,false,useinfomax,improc,doquiver,dowhsn,dosave,false);
+g_bb_quiver(arena_plants,1,[],snapszhtreal,false,useinfomax,improc,doquiver,dowhsn,false,dosave,figtype);
 
 %% boxplots
 % open, pile

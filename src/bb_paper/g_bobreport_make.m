@@ -14,8 +14,8 @@ arena_boxes = 'imdb_2016-03-29_001';
 arena_plants = 'imdb_2017-06-06_001';
 
 %% quivers
-g_bb_quiver(arena_pile,1,testht,trainht,realsnapsel,useinfomax,improc,true,false,dosave,false);
-g_bb_quiver(arena_plants,1,testht,trainht,false,useinfomax,improc,true,false,dosave,false);
+g_bb_quiver(arena_pile,1,testht,trainht,realsnapsel,useinfomax,improc,true,false,false,dosave);
+g_bb_quiver(arena_plants,1,testht,trainht,false,useinfomax,improc,true,false,false,dosave);
 
 %% RIDFs
 % % old coords
