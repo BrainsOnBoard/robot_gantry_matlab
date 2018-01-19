@@ -57,9 +57,10 @@ forcegen = false;
 dosavefigdata = ~forcegen;
 
 res = 90;
-figsz = [18 20];
+figsz = [18 12];
 
-sprows = ceil(length(zht)/2);
+sprows = ceil(length(zht)/3);
+spcols = ceil(length(zht)/sprows);
 
 if isempty(improc)
     improcstr = '';
@@ -102,7 +103,7 @@ for i = 1:length(useinfomax)
                             tstr = sprintf('(route %d, res %d, ht %d, snapht %d, %s)', ...
                                 routenum, cres, zht(m), snapszht(k), methodstr);
                         else
-                            tstr = sprintf('Height: %d mm',zht(m)+50);
+                            tstr = sprintf('Test height: %d mm',zht(m)+50);
                         end
                         
                         if plotquiver
@@ -110,7 +111,7 @@ for i = 1:length(useinfomax)
                                 figure(1);clf
                             else
                                 figure(sub2ind([length(useinfomax),length(snapszht),max(routenums)],i,k,routenum))
-                                subplot(sprows,min(2,length(zht)),m)
+                                subplot(sprows,spcols,m)
                             end
                             hold on
                             
@@ -123,8 +124,6 @@ for i = 1:length(useinfomax)
                             anglequiver(p.xs(imxi(errsel)),p.ys(imyi(errsel)),heads(errsel),[],'g')
                             plot(snx,sny,'ro')
                             axis equal tight
-                            xlabel('x (mm)')
-                            ylabel('y (mm)')
                             xlim([0 p.lim(1)])
                             ylim([0 p.lim(2)])
                             if zht(m)==snapszht(k)
@@ -135,7 +134,16 @@ for i = 1:length(useinfomax)
                             andy_setbox
                             g_fig_setfont
                             
-                            if dosave && doseparateplots
+                            if ~doseparateplots
+                                if mod(m-1,spcols)==0
+                                    ylabel('y (mm)');
+                                else
+                                    set(gca,'YTick',[]);
+                                end
+                                if m > spcols
+                                    xlabel('x (mm)');
+                                end
+                            elseif dosave
                                 if useinfomax(i)
                                     algorithmstr = 'infomax';
                                 else
@@ -150,7 +158,7 @@ for i = 1:length(useinfomax)
                                 figure(2);clf
                             else
                                 figure(100+sub2ind([length(useinfomax),length(snapszht),max(routenums)],i,k,routenum))
-                                subplot(sprows,min(2,length(zht)),m)
+                                subplot(sprows,spcols,m)
                             end
                             
                             whsnim = makeim(imxi,imyi,whsn,length(p.xs),length(p.ys));
@@ -190,7 +198,16 @@ for i = 1:length(useinfomax)
                             
                             colorbar
                             
-                            if dosave && doseparateplots
+                            if ~doseparateplots
+                                if mod(m-1,spcols)==0
+                                    ylabel('y (mm)');
+                                else
+                                    set(gca,'YTick',[]);
+                                end
+                                if m > spcols
+                                    xlabel('x (mm)');
+                                end
+                            elseif dosave
                                 if isempty(improc)
                                     improcstr = '';
                                 else
