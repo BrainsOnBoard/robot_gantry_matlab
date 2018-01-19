@@ -110,6 +110,7 @@ domultiboxplots('infomax',shiftdim(errs(useinfomax,:,:,:,:,:),1))
                 if doseparateplots
                     g_fig_series_end(sprintf('boxplot_%s_%s%s_res%03d.pdf',flabel,improc,name,res))
                 else
+                    ymax = 15*ceil(ymax/15); % round to nearest 15
                     set(h, 'YLim', [0 min(90,ymax)]);
                     g_fig_save(sprintf('boxplot_%s_%s%s_res%03d',flabel,improc,name,res),figsz,figtype,[],[],false)
                 end
@@ -122,9 +123,9 @@ function ymax=doboxplot(errs,zht)
 ymax = 0;
 hold on
 for i = 1:numel(errs)
-    boxplot(errs{i},'Positions',i);
-    yl = ylim;
-    ymax = max(yl(2),ymax);
+    h = boxplot(errs{i},'Positions',i);
+    yupper = get(h(1),'YData'); % upper whisker
+    ymax = max(yupper(2),ymax);
 end
 
 xlim([0 i+1])
