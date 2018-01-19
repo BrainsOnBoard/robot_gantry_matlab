@@ -97,10 +97,9 @@ domultiboxplots('infomax',shiftdim(errs(useinfomax,:,:,:,:,:),1))
                 end
                 
                 ymax = max(ymax,doboxplot(cerrs(:,:,l,m,:),zht));
-                title(sprintf('Train height: %d mm',snapszht(l)+50))
+                title(sprintf('Training height: %d mm',snapszht(l)+50))
                 g_fig_setfont
-
-
+                
                 if dosave && doseparateplots
                     g_fig_save(sprintf('boxplot_%s_%s%s_res%03d_route%03d_snapszht%03d', ...
                         flabel,improc,name,res,routenums(m),snapszht(l)), ...
