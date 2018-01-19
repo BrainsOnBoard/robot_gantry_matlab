@@ -112,7 +112,7 @@ domultiboxplots('infomax',shiftdim(errs(useinfomax,:,:,:,:,:),1))
                     g_fig_series_end(sprintf('boxplot_%s_%s%s_res%03d.pdf',flabel,improc,name,res))
                 else
                     set(h, 'YLim', [0 min(90,ymax)]);
-                    g_fig_save(sprintf('boxplot_%s_%s%s_res%03d.pdf',flabel,improc,name,res),figsz,figtype,[],[],false)
+                    g_fig_save(sprintf('boxplot_%s_%s%s_res%03d',flabel,improc,name,res),figsz,figtype,[],[],false)
                 end
             end
         end
