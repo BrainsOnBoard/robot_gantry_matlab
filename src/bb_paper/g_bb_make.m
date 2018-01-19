@@ -2,27 +2,38 @@
 clear
 
 dosave = true;
-useinfomax = false; %[false true];
+useinfomax = [false true];
 improc = '';
-realsnapsel = 3;
+% realsnapsel = 3;
+snapszhtreal = 200;
 snapszhtall = 0:100:500;
+
+doquiver = true;
+dowhsn = false;
 
 arena_pile = 'imdb_2017-02-09_001';
 arena_boxes = 'imdb_2016-03-29_001';
+arena_plants = 'imdb_2017-06-06_001';
 
 %% quivers
 % open, pile
-g_bb_quiver(arena_pile,1,[],200,realsnapsel,useinfomax,improc,true,true,dosave,false);
+g_bb_quiver(arena_pile,1,[],snapszhtreal,false,useinfomax,improc,doquiver,dowhsn,dosave,false);
 
 % open, boxes
-g_bb_quiver(arena_boxes,3,[],200,false,useinfomax,improc,true,true,dosave,false);
+g_bb_quiver(arena_boxes,3,[],snapszhtreal,false,useinfomax,improc,doquiver,dowhsn,dosave,false);
+
+% plants
+g_bb_quiver(arena_plants,1,[],snapszhtreal,false,useinfomax,improc,doquiver,dowhsn,dosave,false);
 
 %% boxplots
 % open, pile
-g_bb_boxplot(arena_pile,1,[],snapszhtall,realsnapsel,useinfomax,improc,dosave,false);
+g_bb_boxplot(arena_pile,1,[],snapszhtall,false,useinfomax,improc,dosave,false);
 
 % open, boxes
 g_bb_boxplot(arena_boxes,3,[],snapszhtall,false,useinfomax,improc,dosave,false);
+
+% plants
+g_bb_boxplot(arena_plants,1,[],snapszhtall,false,useinfomax,improc,dosave,false);
 
 %% RIDFs
 % % old coords
