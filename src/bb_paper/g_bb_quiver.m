@@ -57,7 +57,7 @@ forcegen = false;
 dosavefigdata = ~forcegen;
 
 res = 90;
-figsz = [18 25];
+figsz = [18 20];
 
 sprows = ceil(length(zht)/2);
 
