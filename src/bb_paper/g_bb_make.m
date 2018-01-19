@@ -47,4 +47,4 @@ g_bb_boxplot(arena_plants,1,[],snapszhtall,false,useinfomax,improc,false,dosave,
 coords = [800 0; 2200 800; 800 100; 700 0; 700 100; 2200 900; 600 0; 1600 200; 800 200; 900 900];
 
 % open, pile
-g_bb_ridf(arena_pile,1,[],snapszhtall,false,improc,coords,dosave,true);
+g_bb_ridf(arena_pile,1,[],snapszhtall,false,improc,coords,dosave,true,figtype);

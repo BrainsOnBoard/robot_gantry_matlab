@@ -1,4 +1,4 @@
-function g_bb_ridf(shortwhd,routenum,zht,snapszht,userealsnaps,improc,coords,dosave,joinpdfs)
+function g_bb_ridf(shortwhd,routenum,zht,snapszht,userealsnaps,improc,coords,dosave,joinpdfs,figtype)
 close all
 
 if nargin < 1 || isempty(shortwhd)
@@ -34,6 +34,9 @@ if nargin < 8 || isempty(dosave)
 end
 if nargin < 9 || isempty(joinpdfs)
     joinpdfs = false;
+end
+if nargin < 10 || isempty(figtype)
+    figtype = 'pdf';
 end
 
 if userealsnaps && length(snapszht) > 1
@@ -98,12 +101,13 @@ if ~isempty(coords) % empty coords signals interactive mode
         plotridfs(xi,yi)
         if dosave
             g_fig_save(sprintf('ridf_%s_%s%sres%03d_route%03d_snapszht%s_x%04d_y%04d', ...
-                flabel,improcstr,'pm_',imsz(2),routenum,snapszhtstr,coords(i,1),coords(i,2)),figsz,[],[],[],joinpdfs);
+                flabel,improcstr,'pm_',imsz(2),routenum,snapszhtstr,coords(i,1),coords(i,2)), ...
+                figsz,figtype,[],[],joinpdfs);
         end
     end
     if joinpdfs
         g_fig_series_end(sprintf('ridf_%s_%s%sres%03d_route%03d_snapszht%s.pdf', ...
-            flabel,improcstr,'pm_',imsz(2),routenum,snapszhtstr),[30 30]);
+            flabel,improcstr,'pm_',imsz(2),routenum,snapszhtstr),[30 30],figtype);
     end
 else
     czhti = floor(round(length(zht))/2);
@@ -160,7 +164,7 @@ else
                 end
             case ' ' % save
                 g_fig_save(sprintf('ridf_%s_%s%sres%03d_route%03d_snapszht%s_x%04d_y%04d', ...
-                    flabel,improcstr,'pm_',imsz(2),routenum,snapszhtstr,coords(i,1),coords(i,2)),figsz);
+                    flabel,improcstr,'pm_',imsz(2),routenum,snapszhtstr,coords(i,1),coords(i,2)),figsz,figtype);
         end
     end
 end
