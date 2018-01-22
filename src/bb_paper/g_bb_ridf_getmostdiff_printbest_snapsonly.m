@@ -15,13 +15,13 @@ snapszhtall = 0:100:500;
 ind = snapszhtall==snapszht;
 [~,I] = sort(minima(:,end,ind)-minima(:,1,ind),'descend');
 
-fprintf('\n%% biggest diffs for snapszht=%d\n',snapszht)
+fprintf('\n%% biggest diffs for snapszht=%d (snaps only)\n',snapszht)
 printcoords(I);
 
 %% get biggest average diffs across snapszhts
 [~,I] = sort(mean(minima(:,end,:)-minima(:,1,:),3));
 
-disp('% biggest mean diffs across snapzhts')
+disp('% biggest mean diffs across snapzhts (snaps only)')
 printcoords(I);
 
     function printcoords(imind)
