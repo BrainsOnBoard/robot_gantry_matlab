@@ -210,7 +210,8 @@ end
             xlim([-180 180])
             set(gca,'XTick',-180:90:180)
             xlabel('Angle (deg)')
-            title(sprintf('x=%d, y=%d, snapszht=%dmm',gx,gy,snapszht(csnapszhti)+50))
+%             title(sprintf('x=%d, y=%d, snapszht=%dmm',gx,gy,snapszht(csnapszhti)+50))
+            title(sprintf('Training height: %d mm',snapszht(csnapszhti)+50))
             title(legend(num2str((zht+50)')),'Height (mm)')
             
             colormap gray
