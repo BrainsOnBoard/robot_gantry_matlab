@@ -107,7 +107,7 @@ if ~isempty(coords) % empty coords signals interactive mode
     end
     if joinpdfs
         g_fig_series_end(sprintf('ridf_%s_%s%sres%03d_route%03d_snapszht%s.pdf', ...
-            flabel,improcstr,'pm_',imsz(2),routenum,snapszhtstr),[30 30],figtype);
+            flabel,improcstr,'pm_',imsz(2),routenum,snapszhtstr),true,figtype);
     end
 else
     czhti = floor(round(length(zht))/2);
