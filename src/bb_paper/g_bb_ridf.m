@@ -198,6 +198,7 @@ end
 
                 cridfs(:,besti) = bestridfs{besti,csnapszhti}(cind,:);
 %                 snaps(besti) = bestsnap{besti,csnapszhti}(cind);
+%                 fprintf('best snap: %d\n',bestsnap{besti,csnapszhti}(cind));
             end
             
             ths = repmat(linspace(-180,180,size(cridfs,1)+1)',1,size(cridfs,2));
@@ -213,8 +214,6 @@ end
 %             title(sprintf('x=%d, y=%d, snapszht=%dmm',gx,gy,snapszht(csnapszhti)+50))
             title(sprintf('Training height: %d mm',snapszht(csnapszhti)+50))
             title(legend(num2str((zht+50)')),'Height (mm)')
-            
-            colormap gray
             
             g_fig_setfont
             andy_setbox

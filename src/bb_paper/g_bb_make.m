@@ -13,39 +13,39 @@ zht = 0:100:500;
 doquiver = true;
 dowhsn = false;
 
-arena_pile = 'imdb_2017-02-09_001';
-arena_boxes = 'imdb_2016-03-29_001';
-arena_plants = 'imdb_2017-06-06_001';
+imdb_pile = 'imdb_2017-02-09_001';
+imdb_boxes = 'imdb_2016-03-29_001';
+imdb_plants = 'imdb_2017-06-06_001';
 
 %% quivers 1
 % open, pile
-g_bb_quiver(arena_pile,1,[],snapszht1,false,useinfomax,improc,doquiver,dowhsn,false,dosave,figtype);
+g_bb_quiver(imdb_pile,1,zht,snapszht1,false,useinfomax,improc,doquiver,dowhsn,false,dosave,figtype);
 
 % % open, boxes
-% g_bb_quiver(arena_boxes,3,[],snapszht1,false,useinfomax,improc,doquiver,dowhsn,false,dosave,figtype);
+% g_bb_quiver(imdb_boxes,3,zht,snapszht1,false,useinfomax,improc,doquiver,dowhsn,false,dosave,figtype);
 
 % plants
-g_bb_quiver(arena_plants,1,[],snapszht1,false,useinfomax,improc,doquiver,dowhsn,false,dosave,figtype);
+g_bb_quiver(imdb_plants,1,zht,snapszht1,false,useinfomax,improc,doquiver,dowhsn,false,dosave,figtype);
 
 %% quivers 2
 % open, pile
-g_bb_quiver(arena_pile,1,[],snapszht2,false,useinfomax,improc,doquiver,dowhsn,false,dosave,figtype);
+g_bb_quiver(imdb_pile,1,zht,snapszht2,false,useinfomax,improc,doquiver,dowhsn,false,dosave,figtype);
 
 % % open, boxes
-% g_bb_quiver(arena_boxes,3,[],snapszht2,false,useinfomax,improc,doquiver,dowhsn,false,dosave,figtype);
+% g_bb_quiver(imdb_boxes,3,zht,snapszht2,false,useinfomax,improc,doquiver,dowhsn,false,dosave,figtype);
 
 % plants
-g_bb_quiver(arena_plants,1,[],snapszht2,false,useinfomax,improc,doquiver,dowhsn,false,dosave,figtype);
+g_bb_quiver(imdb_plants,1,zht,snapszht2,false,useinfomax,improc,doquiver,dowhsn,false,dosave,figtype);
 
 %% boxplots
 % open, pile
-g_bb_boxplot(arena_pile,1,[],zht,false,useinfomax,improc,false,dosave,figtype);
+g_bb_boxplot(imdb_pile,1,zht,zht,false,useinfomax,improc,false,dosave,figtype);
 
 % % open, boxes
-% g_bb_boxplot(arena_boxes,3,[],zht,false,useinfomax,improc,false,dosave,figtype);
+% g_bb_boxplot(imdb_boxes,3,zht,zht,false,useinfomax,improc,false,dosave,figtype);
 
 % plants
-g_bb_boxplot(arena_plants,1,[],zht,false,useinfomax,improc,false,dosave,figtype);
+g_bb_boxplot(imdb_plants,1,zht,zht,false,useinfomax,improc,false,dosave,figtype);
 
 %% RIDFs for pile
 % % old coords
@@ -58,7 +58,7 @@ g_bb_boxplot(arena_plants,1,[],zht,false,useinfomax,improc,false,dosave,figtype)
 % coords = [800 0; 2200 800; 800 100; 700 0; 700 100; 2200 900; 600 0; 1600 200; 800 200; 900 900];
 
 % % open, pile
-% g_bb_ridf(arena_pile,1,[],zht,false,improc,coords,dosave,true,figtype);
+% g_bb_ridf_examples(imdb_pile,1,zht,zht,false,improc,coords,dosave,true,figtype);
 
 %% RIDFS for plants world
 % % biggest diffs for snapszht=200 (snaps only)
@@ -67,4 +67,4 @@ g_bb_boxplot(arena_plants,1,[],zht,false,useinfomax,improc,false,dosave,figtype)
 % biggest mean diffs across snapzhts (snaps only)
 coords = [800 900; 700 1000; 700 900]; %; 600 1000; 900 900; 500 1100; 600 1100; 500 1200; 1600 800; 400 1200];
 
-g_bb_ridf(arena_plants,1,[],zht,false,improc,coords,dosave,true,figtype);
+g_bb_ridf_examples(imdb_plants,1,zht,zht,improc,coords,dosave,true,figtype);
