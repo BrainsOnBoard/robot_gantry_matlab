@@ -44,7 +44,7 @@ imfun = gantry_getimfun(improc);
 
 sprows = max(1,ceil(length(snapszht)/3));
 spcols = min(3,length(snapszht));
-figsz = [30 30];
+figsz = [18 15];
 
 if dosave
     figure(1)
