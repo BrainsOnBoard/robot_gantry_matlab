@@ -37,7 +37,7 @@ while true
     plot(x(~cfex),y(~cfex),'r+')
     plot(p.xs(curx),p.ys(cury),'bo','LineWidth',4,'MarkerSize',10)
     
-    title(sprintf('z = %g mm (%d, %d, %d)',p.zs(curz),curx,cury,curz))
+    title(sprintf('z = %g mm (%d, %d, %d)',p.zs(curz)+50,curx,cury,curz))
     
     try
         [gx,gy,gbut] = ginput(1);
