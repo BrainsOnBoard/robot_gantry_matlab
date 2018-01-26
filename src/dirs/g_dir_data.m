@@ -1,2 +1,2 @@
 function d=g_dir_data
-d = 'data';
+d = fullfile(mfiledir,'..','..','data');
