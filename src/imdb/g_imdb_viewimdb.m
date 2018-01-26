@@ -3,6 +3,8 @@ function g_imdb_viewimdb
 % cycled through with keypresses.
 
 [fex,p,whd] = g_imdb_imexist;
+[~,shortwhd] = fileparts(whd);
+figdir = g_dir_imdb_fig_viewimdb;
 
 [x,y] = ndgrid(p.xs,p.ys);
 
@@ -13,12 +15,15 @@ while true
     figure(5);clf
     subplot(2,1,2)
     if fex(curx,cury,curz)
-        fr = imread(fullfile(whd,sprintf('im_%03d_%03d_%03d.png',curx,cury,curz)));
+        cfn = fullfile(whd,sprintf('im_%03d_%03d_%03d.png',curx,cury,curz));
+        fr = imread(cfn);
         imagesc(fr)
         colormap gray
         axis equal tight
         grid on
         title('press "w" to increase height and "s" to decrease')
+    else
+        cfn = '';
     end
     
     subplot(2,1,1)
@@ -66,10 +71,21 @@ while true
                 if ~isempty(xadd)
                     curx = curx+xadd;
                 end
-            case 'w'+0
+            case 'w'
                 curz = min(length(p.zs),curz+1);
-            case 's'+0
+            case 's'
                 curz = max(1,curz-1);
+            case ' '
+                if isempty(cfn)
+                    break
+                end
+                if ~exist(figdir,'dir')
+                    mkdir(figdir);
+                end
+                outfn = fullfile(figdir,sprintf('%s_%03d_%03d_%03d.png', ...
+                        shortwhd,curx,cury,curz));
+                fprintf('Saving image to %s...\n',outfn);
+                copyfile(cfn,outfn);
         end
     end
 end
