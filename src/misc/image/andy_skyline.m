@@ -54,10 +54,9 @@ if ~exist(savedir,'dir')
     mkdir(savedir);
 end
 for j=1:length(s)
-    j
     fn=fullfile(whd,s(j).name);
-    fnew=fullfile(savedir,[s(j).name(1:end-3) 'mat']);
-    if(~exist(fnew,'file'))
+    fnew=fullfile(savedir,s(j).name(1:end-4));
+    if(~exist([fnew '.mat'],'file'))
         if(LoadAsMat)
             load(fn);
             if(exist('unw_im','var'))
@@ -90,7 +89,12 @@ for j=1:length(s)
         bina1=GetOneObjectBinary(bina);
         skyl=GetSkyLine(bina1);
         PlotIms(newim,[],bina,bina1,skyl);
-        save(fnew,'newim','bina','bina1','skyl','t')
+        close all
+        
+        newim(~bina1) = 255;
+        fprintf('Saving %s.*...\n',fnew);
+        save(fnew,'bina','bina1','skyl','t')
+        imwrite(newim,[fnew '.png']);
     else
 %         load(fnew);
 %         bina(end,:)=1;
@@ -188,7 +192,7 @@ bina1=double(bl==objnum);
 % % leave only the biggest object
 S=regionprops(bl,'Area');
 [~,objnum2]=max([S.Area]);
-check=[objnum objnum2]
+check=[objnum objnum2];
 
 m1=find(bina1(:,1)==1,1,'first');
 bina1(m1:end,1)=1;
