@@ -32,11 +32,12 @@
 % this is a fairly rough function as I am still using it so any problems
 % email me
 
-function SkyLine_Hand(s)
-
-if(nargin<1) 
-    s=dir('I*RSC.mat')
+function andy_skyline(whd,glob)
+if nargin < 2
+    glob = '*.png';
 end
+s = dir(fullfile(whd,glob));
+
 t=[];
 % opt=1;
 dontcheck=0;
@@ -47,58 +48,62 @@ else
     LoadAsMat=0;
 end
 
+[~,shortwhd] = fileparts(whd);
+savedir = fullfile(g_dir_imdb,['skyline_' shortwhd]);
+if ~exist(savedir,'dir')
+    mkdir(savedir);
+end
 for j=1:length(s)
     j
-    fn=s(j).name;
-    fnew=[fn(1:end-4) '_Binary.mat'];
-    if(~isfile(fnew))
+    fn=fullfile(whd,s(j).name);
+    fnew=fullfile(savedir,[s(j).name(1:end-3) 'mat']);
+    if(~exist(fnew,'file'))
         if(LoadAsMat)
-        load(fn);
-        if(exist('unw_im','var'))
-            opt=1;
+            load(fn);
+            if(exist('unw_im','var'))
+                opt=1;
+            else
+                opt=0;
+            end
+            if(opt==1)
+                imrgb=uint8(unw_im);
+            else
+                imrgb=[];
+            end
+            newim=unw_bw;
         else
-            opt=0;
-        end
-        if(opt==1)
-            imrgb=uint8(unw_im);
-        else
-            imrgb=[];
-        end
-        newim=unw_bw;
-        else
-            imrgb=imread(fn);
-            newim=rgb2gray(imrgb);
+            newim=imread(fn);
         end
         
-        % This bit goes through each file one-by-one and then lets you 
+        % This bit goes through each file one-by-one and then lets you
         % raise or lower the threshold by hand
-        % it can also allow you to get rid of esections of sky (eg due to 
+        % it can also allow you to get rid of esections of sky (eg due to
         % lens flare but I haven't written full instructions for this
-        [bina,t,skyl,dontcheck]=binaryimage(newim,imrgb,t,dontcheck,opt);
-
-        %         [newim,newimall,skyl]=eqheight(newim,newimall,170);% newim;
-        %         skylines(j,:)=skyl;
-        %         save skylinesHand.mat skylines
+        [bina,t,skyl,dontcheck]=binaryimage(newim,[],t,dontcheck,[]);
+        
+%         [newim,newimall,skyl]=eqheight(newim,newimall,170);% newim;
+%         skylines(j,:)=skyl;
+%         save skylinesHand.mat skylines
         
         % this bit gets a single object connected to the ground
-        % see help for this subfunction for how it works 
+        % see help for this subfunction for how it works
         bina1=GetOneObjectBinary(bina);
         skyl=GetSkyLine(bina1);
-        PlotIms(newim,imrgb,bina,bina1,skyl);
+        PlotIms(newim,[],bina,bina1,skyl);
         save(fnew,'newim','bina','bina1','skyl','t')
     else
 %         load(fnew);
 %         bina(end,:)=1;
 %         bina=bwfill(bina,'holes');
-%         if(j==1) 
+%         if(j==1)
 %             binag=bina;
 %             ig=double(newim).*double(bina)+170*double(~bina);
 %         end
 %             il=double(newim).*double(bina)+170*double(~bina);
-%         
-%            [mini(j),rim,imin,mind(j),dd(j,:)]=VisualCompass(ig,il);  
+%
+%            [mini(j),rim,imin,mind(j),dd(j,:)]=VisualCompass(ig,il);
 %   [mini2(j),rim2,imin2,mind2(j),dd2(j,:)]=VisualCompass(binag,bina);
-% 
+%
 %         wid=size(bina,2)
 %         for i=1:wid
 % %             skylines(j,i)=double(find([0;bina(:,i)]==0,1,'last'));
@@ -111,7 +116,6 @@ for j=1:length(s)
 %               d(j)=sum(sum((il-ig).^2));
 %       db(j)=sum(sum((bina-binag).^2));
 %      sd(j)=sum((skylines(j,:)-skylines(1,:)).^2);
-
     end
 end
 % plot(1:length(s),d./median(d),1:length(s),db./median(db),'r',1:length(s),sd./median(sd),'k- .')
@@ -135,16 +139,20 @@ else
 end
 hold on;plot(skyl,'r'); hold off
 axis image
+colormap gray
+
 subplot(3,1,2)
 nosky=double(im).*bina1;
 imagesc(nosky),
 hold on;plot(skyl,'r'); hold off
 axis image
+colormap gray
+
 subplot(3,1,3)
 imagesc(double(im).*bina),
 hold on;plot(skyl,'r'); hold off
 axis image
-
+colormap gray
 
 % this gets a skyline from a binary image. It returns a high and a low
 % skyline. The highest skyline is the highest point in each column which is
@@ -153,7 +161,12 @@ axis image
 function[skyl_hi,skyl_lo]= GetSkyLine(bina)
 for i=1:size(bina,2)
     skyl_lo(i)=double(find([0;bina(:,i)]==0,1,'last'));
-    skyl_hi(i)=double(find([bina(:,i)]==1,1,'first'));
+    hi = double(find([bina(:,i)]==1,1,'first'));
+    if isempty(hi)
+        skyl_hi(i) = 1;
+    else
+        skyl_hi(i) = hi;
+    end
 end
 
 % this bit gets a single object assumed to be connected to the ground. 
@@ -186,7 +199,7 @@ bina1=double(bwfill(bina1,'holes'));
 
 function[bina,t,skyl,dontcheck]=binaryimage(im,imrgb,t,dontcheck,rgbopt)
 
-if(rgbopt==1)
+if false %(rgbopt==1)
     d=imrgb(:,:,3);
     pim=imrgb;
 else
@@ -241,7 +254,11 @@ while 1
 %     axis image
     title(['threshold = ' int2str(t) '; up/down to increase/decrease; t set threshold'])
     xlabel('k keyboard; enter ok; c stop checking')
-    [~,~,b]=ginput(1);
+    try
+        [~,~,b]=ginput(1);
+    catch
+        break
+    end
     if(isempty(b)) 
         break;
     elseif(isequal(b,'c'))
