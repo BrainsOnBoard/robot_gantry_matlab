@@ -32,7 +32,10 @@
 % this is a fairly rough function as I am still using it so any problems
 % email me
 
-function andy_skyline(whd,glob)
+function andy_skyline(whd,glob,overwrite)
+if nargin < 3
+    overwrite = false;
+end
 if nargin < 2
     glob = '*.png';
 end
@@ -41,12 +44,6 @@ s = dir(fullfile(whd,glob));
 t=[];
 % opt=1;
 dontcheck=0;
-% skylines=zeros(length(s),360);
-if(isequal(s(1).name(end-2:end),'mat'))
-    LoadAsMat=1;
-else
-    LoadAsMat=0;
-end
 
 [~,shortwhd] = fileparts(whd);
 savedir = fullfile(g_dir_imdb,['skyline_' shortwhd]);
@@ -56,71 +53,39 @@ end
 for j=1:length(s)
     fn=fullfile(whd,s(j).name);
     fnew=fullfile(savedir,s(j).name(1:end-4));
-    if(~exist([fnew '.mat'],'file'))
-        if(LoadAsMat)
-            load(fn);
-            if(exist('unw_im','var'))
-                opt=1;
-            else
-                opt=0;
-            end
-            if(opt==1)
-                imrgb=uint8(unw_im);
-            else
-                imrgb=[];
-            end
-            newim=unw_bw;
+    alreadyexists = exist([fnew '.mat'],'file');
+    if alreadyexists
+        if overwrite
+            warning([fnew ' already processed, overwriting'])
         else
-            newim=imread(fn);
+            warning([fnew ' already processed -- skipping'])
+            continue
         end
-        
-        % This bit goes through each file one-by-one and then lets you
-        % raise or lower the threshold by hand
-        % it can also allow you to get rid of esections of sky (eg due to
-        % lens flare but I haven't written full instructions for this
-        [bina,t,skyl,dontcheck]=binaryimage(newim,[],t,dontcheck,[]);
-        
-%         [newim,newimall,skyl]=eqheight(newim,newimall,170);% newim;
-%         skylines(j,:)=skyl;
-%         save skylinesHand.mat skylines
-        
-        % this bit gets a single object connected to the ground
-        % see help for this subfunction for how it works
-        bina1=GetOneObjectBinary(bina);
-        skyl=GetSkyLine(bina1);
-        PlotIms(newim,[],bina,bina1,skyl);
-        close all
-        
-        newim(~bina1) = 255;
-        fprintf('Saving %s.*...\n',fnew);
-        save(fnew,'bina','bina1','skyl','t')
-        imwrite(newim,[fnew '.png']);
-    else
-%         load(fnew);
-%         bina(end,:)=1;
-%         bina=bwfill(bina,'holes');
-%         if(j==1)
-%             binag=bina;
-%             ig=double(newim).*double(bina)+170*double(~bina);
-%         end
-%             il=double(newim).*double(bina)+170*double(~bina);
-%
-%            [mini(j),rim,imin,mind(j),dd(j,:)]=VisualCompass(ig,il);
-%   [mini2(j),rim2,imin2,mind2(j),dd2(j,:)]=VisualCompass(binag,bina);
-%
-%         wid=size(bina,2)
-%         for i=1:wid
-% %             skylines(j,i)=double(find([0;bina(:,i)]==0,1,'last'));
-%             skylines(j,i)=double(find([bina(:,i)]==1,1,'first'));
-%         end
-%         imagesc(newimall),hold on;
-%         plot(skylines(j,:),'r')
-%         axis image
-%         hold off
-%               d(j)=sum(sum((il-ig).^2));
-%       db(j)=sum(sum((bina-binag).^2));
-%      sd(j)=sum((skylines(j,:)-skylines(1,:)).^2);
     end
+    
+    newim=imread(fn);
+
+    % This bit goes through each file one-by-one and then lets you
+    % raise or lower the threshold by hand
+    % it can also allow you to get rid of esections of sky (eg due to
+    % lens flare but I haven't written full instructions for this
+    [bina,t,skyl,dontcheck,quit]=binaryimage(newim,[],t,dontcheck,[]);
+    if quit
+        disp('Quitting')
+        return
+    end
+
+    % this bit gets a single object connected to the ground
+    % see help for this subfunction for how it works
+    bina1=GetOneObjectBinary(bina);
+    skyl=GetSkyLine(bina1);
+    PlotIms(newim,[],bina,bina1,skyl);
+    close all
+
+    newim(~bina1) = 255;
+    fprintf('Saving %s.*...\n',fnew);
+    save(fnew,'bina','bina1','skyl','t')
+    imwrite(newim,[fnew '.png']);
 end
 % plot(1:length(s),d./median(d),1:length(s),db./median(db),'r',1:length(s),sd./median(sd),'k- .')
 % goal=1;
@@ -201,8 +166,8 @@ bina1(m2:end,end)=1;
 bina1=double(bwfill(bina1,'holes'));
 
 
-function[bina,t,skyl,dontcheck]=binaryimage(im,imrgb,t,dontcheck,rgbopt)
-
+function[bina,t,skyl,dontcheck,quit]=binaryimage(im,imrgb,t,dontcheck,rgbopt)
+quit = false;
 if false %(rgbopt==1)
     d=imrgb(:,:,3);
     pim=imrgb;
@@ -210,127 +175,43 @@ else
     d=im;
     pim=im;
 end
-
-% v=1;
-% wid=size(im,2);
-% for i=1:wid
-%     sp=find(imrgb(:,i,3)<t,1,'first');
-%     while(isempty(sp))
-%         t=t+20;
-%         sp=find(imrgb(:,i,3)<t,1,'first');
-%     end
-%     i2(i)=find(d(sp:end,i)<=0,1,'first')+sp-1;
-% end
-% skyl=i2+1;
-if((nargin<2)||isempty(t)) 
-    t=round(median(d(:))); 
+if((nargin<2)||isempty(t))
+    t=round(median(d(:)));
 end
 while 1
-    %     for i=1:wid
-    %         sp=find(imrgb(:,i,2)>t,1,'first');
-    %         tm=t;
-    %         while(isempty(sp))
-    %             tm=tm-1;
-    %             sp=find(imrgb(:,i,2)>tm,1,'first');
-    %         end
-    %         sl(i)=sp;
-    %     end
-    %     sl=sl+2;
-    % hold on, plot(sl,'r','LineWidth',2),hold off
-%     bb=double(im<t);
-%     bb=bwareaopen(bb,4);
     bina=double(d<t);
     skyl=GetSkyLine(bina);
     if(dontcheck==1)
         return;
     end
-
+    
     bina1=GetOneObjectBinary(bina);
     skyl=GetSkyLine(bina1);
     PlotIms(im,imrgb,bina,bina1,skyl);
     
-%     subplot(2,1,1),imagesc(im),
-%     hold on;plot(skyl,'r'); hold off
-%     axis image
-%     subplot(2,1,2)
-%     imagesc(nosky),
-%     hold on;plot(skyl,'r'); hold off
-%     axis image
     title(['threshold = ' int2str(t) '; up/down to increase/decrease; t set threshold'])
     xlabel('k keyboard; enter ok; c stop checking')
     try
         [~,~,b]=ginput(1);
     catch
-        break
+        quit = true;
+        return
     end
-    if(isempty(b)) 
+    if(isempty(b))
         break;
     elseif(isequal(b,'c'))
-       dontcheck=1; 
-       break;
-    elseif(isequal(b,'t')) 
+        dontcheck=1;
+        break;
+    elseif(isequal(b,'t'))
         t=ForceNumericInput(['threshold = ' int2str(t) '; enter new one: '],0,1);
-    elseif(isequal(b,'k')) 
+    elseif(isequal(b,'k'))
         keyboard;
-%         [tempb,tempd]=RegionCol(bina,1,d);
-%   d=tempd;bina=tempb;
-    elseif(b==30) 
+    elseif(b==30)
         t=t+1;
-    elseif(b==31) 
+    elseif(b==31)
         t=t-1;
     end
 end
-
-
-% function[bina,t]=binaryimageRGB(newim,imrgb,t)
-% 
-% 
-% % for i=1:wid
-% %     sp=find(imrgb(:,i,3)<t,1,'first');
-% %     while(isempty(sp))
-% %         t=t+20;
-% %         sp=find(imrgb(:,i,3)<t,1,'first');
-% %     end
-% %     i2(i)=find(d(sp:end,i)<=0,1,'first')+sp-1;
-% % end
-% % skyl=i2+1;
-% if((nargin<3)||isempty(t)) 
-%     t=round(graythresh(d)*255); 
-% end;
-% while 1
-% 
-%     %     for i=1:wid
-%     %         sp=find(imrgb(:,i,2)>t,1,'first');
-%     %         tm=t;
-%     %         while(isempty(sp))
-%     %             tm=tm-1;
-%     %             sp=find(imrgb(:,i,2)>tm,1,'first');
-%     %         end
-%     %         sl(i)=sp;
-%     %     end
-%     %     sl=sl+2;
-%     % hold on, plot(sl,'r','LineWidth',2),hold off
-% %     bb=double(d<t);
-% %     bb=bwareaopen(bb,4);
-%     bina=double(d<t);
-% %     nosky=double(newim).*bina;
-%     bina1=GetOneObjectBinary(bina);
-%     skyl=GetSkyLine(bina1);
-%     PlotIms(newim,bina1,skyl);
-%     title(['threshold = ' int2str(t) '; up/down to increase/decrease; t set threshold'])
-%     xlabel('k keyboard; enter ok; c stop checking')
-%     [~,~,b]=ginput(1);
-%     if(isequal(b,'c')) break;
-%     elseif(isequal(b,'t')) 
-%         t=ForceNumericInput(['threshold = ' int2str(t) '; enter new one: '],0,1);
-%     elseif(isequal(b,'k')) 
-%         keyboard;
-% %         [tempb,tempd]=RegionCol(bina,1,d);
-% %   d=tempd;bina=tempb;
-%     elseif(b==30) t=t+1;
-%     elseif(b==31) t=t-1;
-%     end
-% end
 
 function[newd,newb]=RegionCol(d,c,b)
 
