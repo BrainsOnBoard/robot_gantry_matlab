@@ -39,7 +39,7 @@ end
 if nargin < 3 || isempty(imfun)
     imfun = @deal;
 end
-if nargin < 2 || isempty(imfun)
+if nargin < 2 || isempty(glob)
     glob = '*.png';
 end
 if nargin < 1 || isempty(shortwhd)
