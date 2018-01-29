@@ -32,12 +32,18 @@
 % this is a fairly rough function as I am still using it so any problems
 % email me
 
-function andy_skyline(whd,glob,overwrite)
-if nargin < 3
+function andy_skyline(whd,glob,imfun,overwrite)
+if nargin < 4
     overwrite = false;
 end
-if nargin < 2
+if nargin < 3 || isempty(imfun)
+    imfun = @deal;
+end
+if nargin < 2 || isempty(imfun)
     glob = '*.png';
+end
+if nargin < 1 || isempty(whd)
+    whd = g_imdb_choosedb;
 end
 s = dir(fullfile(whd,glob));
 
@@ -63,7 +69,7 @@ for j=1:length(s)
         end
     end
     
-    newim=imread(fn);
+    newim = imfun(imread(fn));
 
     % This bit goes through each file one-by-one and then lets you
     % raise or lower the threshold by hand
@@ -87,19 +93,8 @@ for j=1:length(s)
     save(fnew,'bina','bina1','skyl','t')
     imwrite(newim,[fnew '.png']);
 end
-% plot(1:length(s),d./median(d),1:length(s),db./median(db),'r',1:length(s),sd./median(sd),'k- .')
-% goal=1;
-% [rca,r,sk,bi]=RotCA(skylines,goal,mini,mini2);
-% figure(2),
-% plot(1:length(s),r,1:length(s),bi,'r',1:length(s),sk,'k- .')
-% title(['# good = ' int2str(rca)])
-% save resultstemp
-% keyboard
 
 function PlotIms(im,imrgb,bina,bina1,skyl)
-% for i=1:size(im,3)
-%     nosky(:,:,i)=double(im(:,:,i)).*bina;
-% end
 subplot(3,1,1),
 if(isempty(imrgb))
     imagesc(im),
@@ -154,7 +149,7 @@ bl=bwlabel(bina);
 objnum=bl(end,1);
 bina1=double(bl==objnum);
 
-% % leave only the biggest object
+% leave only the biggest object
 S=regionprops(bl,'Area');
 [~,objnum2]=max([S.Area]);
 check=[objnum objnum2];
