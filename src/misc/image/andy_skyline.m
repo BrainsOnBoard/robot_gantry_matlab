@@ -244,6 +244,10 @@ while 1
             t=t+1;
         case 31 % down
             t=t-1;
+        case 'w'
+            t=t+5;
+        case 's'
+            t=t-5;
     end
 end
 
