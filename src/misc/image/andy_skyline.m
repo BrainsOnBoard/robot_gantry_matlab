@@ -98,7 +98,12 @@ while j < length(s)
     skyl=GetSkyLine(bina1);
     PlotIms(newim,[],bina,bina1,skyl,s(j).name,alreadyexists);
 
-    newim(~bina1) = 255;
+    if isa(newim,'double')
+        white = 1;
+    else
+        white = 255;
+    end
+    newim(~bina1) = white;
     fprintf('Saving %s.*...\n',fnew);
     save(fnew,'bina','bina1','skyl','t')
     imwrite(newim,[fnew '.png']);
