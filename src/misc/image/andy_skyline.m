@@ -58,7 +58,6 @@ if ~exist(savedir,'dir')
     mkdir(savedir);
 end
 for j=1:length(s)
-    fn=fullfile(whd,s(j).name);
     fnew=fullfile(savedir,s(j).name(1:end-4));
     alreadyexists = exist([fnew '.mat'],'file');
     if alreadyexists
@@ -70,13 +69,13 @@ for j=1:length(s)
         end
     end
     
-    newim = imfun(imread(fn));
+    newim = imfun(imread(fullfile(whd,s(j).name)));
 
     % This bit goes through each file one-by-one and then lets you
     % raise or lower the threshold by hand
     % it can also allow you to get rid of esections of sky (eg due to
     % lens flare but I haven't written full instructions for this
-    [bina,t,skyl,dontcheck,quit]=binaryimage(newim,[],t,dontcheck,[]);
+    [bina,t,skyl,dontcheck,quit]=binaryimage(newim,[],t,dontcheck,[],s(j).name);
     if quit
         disp('Quitting')
         return
@@ -86,7 +85,7 @@ for j=1:length(s)
     % see help for this subfunction for how it works
     bina1=GetOneObjectBinary(bina);
     skyl=GetSkyLine(bina1);
-    PlotIms(newim,[],bina,bina1,skyl);
+    PlotIms(newim,[],bina,bina1,skyl,s(j).name);
 
     newim(~bina1) = 255;
     fprintf('Saving %s.*...\n',fnew);
@@ -94,7 +93,7 @@ for j=1:length(s)
     imwrite(newim,[fnew '.png']);
 end
 
-function PlotIms(im,imrgb,bina,bina1,skyl)
+function PlotIms(im,imrgb,bina,bina1,skyl,fn)
 subplot(3,1,1),
 if(isempty(imrgb))
     imagesc(im),
@@ -104,6 +103,7 @@ end
 hold on;plot(skyl,'r'); hold off
 axis image
 colormap gray
+title(fn,'Interpreter','none')
 
 subplot(3,1,2)
 nosky=double(im).*bina1;
@@ -161,7 +161,7 @@ bina1(m2:end,end)=1;
 bina1=double(bwfill(bina1,'holes'));
 
 
-function[bina,t,skyl,dontcheck,quit]=binaryimage(im,imrgb,t,dontcheck,rgbopt)
+function[bina,t,skyl,dontcheck,quit]=binaryimage(im,imrgb,t,dontcheck,rgbopt,fn)
 quit = false;
 if false %(rgbopt==1)
     d=imrgb(:,:,3);
@@ -182,7 +182,7 @@ while 1
     
     bina1=GetOneObjectBinary(bina);
     skyl=GetSkyLine(bina1);
-    PlotIms(im,imrgb,bina,bina1,skyl);
+    PlotIms(im,imrgb,bina,bina1,skyl,fn);
     
     title(['threshold = ' int2str(t) '; up/down to increase/decrease; t set threshold'])
     xlabel('k keyboard; enter ok; c stop checking')
