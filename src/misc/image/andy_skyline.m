@@ -209,7 +209,7 @@ while 1
     title(['threshold = ' int2str(t) '; up/down to increase/decrease; t set threshold'])
     xlabel('k keyboard; enter ok; c stop checking')
     try
-        [~,~,b]=ginput(1);
+        [x,y,b]=ginput(1);
     catch
         quit = true;
         return
@@ -218,6 +218,10 @@ while 1
         return
     end
     switch b
+        case 1 % left click
+            x = max(1,min(size(im,2),round(x)));
+            y = max(1,min(size(im,1),round(y)));
+            t = im(y,x);
         case ' '
             return
         case 'c'
