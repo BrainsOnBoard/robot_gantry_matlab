@@ -32,7 +32,7 @@
 % this is a fairly rough function as I am still using it so any problems
 % email me
 
-function andy_skyline(whd,glob,imfun,overwrite)
+function andy_skyline(shortwhd,glob,imfun,overwrite)
 if nargin < 4
     overwrite = false;
 end
@@ -42,8 +42,10 @@ end
 if nargin < 2 || isempty(imfun)
     glob = '*.png';
 end
-if nargin < 1 || isempty(whd)
-    whd = g_imdb_choosedb;
+if nargin < 1 || isempty(shortwhd)
+    [whd,shortwhd] = g_imdb_choosedb;
+else
+    whd = fullfile(g_dir_imdb,shortwhd);
 end
 s = dir(fullfile(whd,glob));
 
@@ -51,7 +53,6 @@ t=[];
 % opt=1;
 dontcheck=0;
 
-[~,shortwhd] = fileparts(whd);
 savedir = fullfile(g_dir_imdb,['skyline_' shortwhd]);
 if ~exist(savedir,'dir')
     mkdir(savedir);
