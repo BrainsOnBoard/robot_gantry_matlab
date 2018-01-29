@@ -76,12 +76,14 @@ while j < length(s)
     end
     
     newim = imfun(imread(fullfile(whd,s(j).name)));
+    
+    fntitle = sprintf('%s %d/%d',s(j).name,j,length(s));
 
     % This bit goes through each file one-by-one and then lets you
     % raise or lower the threshold by hand
     % it can also allow you to get rid of esections of sky (eg due to
     % lens flare but I haven't written full instructions for this
-    [bina,t,skyl,dontcheck,skip,quit]=binaryimage(newim,[],t,dontcheck,[],s(j).name,alreadyexists);
+    [bina,t,skyl,dontcheck,skip,quit]=binaryimage(newim,[],t,dontcheck,[],fntitle,alreadyexists);
     if quit
         disp('Quitting')
         quit = true;
@@ -96,7 +98,7 @@ while j < length(s)
     % see help for this subfunction for how it works
     bina1=GetOneObjectBinary(bina);
     skyl=GetSkyLine(bina1);
-    PlotIms(newim,[],bina,bina1,skyl,s(j).name,alreadyexists);
+    PlotIms(newim,[],bina,bina1,skyl,fntitle,alreadyexists);
 
     if isa(newim,'double')
         white = 1;
