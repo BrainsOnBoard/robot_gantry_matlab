@@ -87,7 +87,6 @@ for j=1:length(s)
     bina1=GetOneObjectBinary(bina);
     skyl=GetSkyLine(bina1);
     PlotIms(newim,[],bina,bina1,skyl);
-    close all
 
     newim(~bina1) = 255;
     fprintf('Saving %s.*...\n',fnew);
@@ -197,6 +196,7 @@ while 1
         break;
     elseif(isequal(b,'c'))
         dontcheck=1;
+        close all
         break;
     elseif(isequal(b,'t'))
         t=ForceNumericInput(['threshold = ' int2str(t) '; enter new one: '],0,1);
