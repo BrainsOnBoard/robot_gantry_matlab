@@ -60,14 +60,17 @@ if ~exist(savedir,'dir')
 end
 
 j = 1;
+skip = 0;
 while j < length(s)
     fnew=fullfile(savedir,s(j).name(1:end-4));
     alreadyexists = exist([fnew '.mat'],'file');
     if alreadyexists
-        if overwrite
+        if overwrite || skip~=0
             warning([fnew ' already processed, overwriting'])
+            load(fnew,'t');
         else
             warning([fnew ' already processed -- skipping'])
+            j = j+1;
             continue
         end
     end
