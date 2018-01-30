@@ -1,8 +1,12 @@
-function g_imdb_addlabel
+function g_imdb_addlabel(fprefix)
 % adds a label to describe an image database (e.g. what was in the arena,
 % etc.)
 
-[whd,shortdn] = g_imdb_choosedb;
+if ~nargin
+    fprefix = '';
+end
+
+[whd,shortdn] = g_imdb_choosedb(fprefix);
 if ~iscell(whd)
     whd = {whd};
     shortdn = {shortdn};

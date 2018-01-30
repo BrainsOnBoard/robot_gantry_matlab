@@ -1,11 +1,15 @@
-function [whd,shortwhd,label]=g_imdb_choosedb
-% function [whd,shortwhd,label]=g_imdb_choosedb
+function [whd,shortwhd,label]=g_imdb_choosedb(fprefix)
+% function [whd,shortwhd,label]=g_imdb_choosedb(fprefix)
 %
 % gets the directory name (and label) for an image database chosen by the
 % user
 
+if ~nargin
+    fprefix = '';
+end
+
 ddir = g_dir_imdb;
-d = dir(fullfile(ddir,'imdb_*'));
+d = dir(fullfile(ddir,[fprefix 'imdb_*']));
 
 if isempty(d)
     error('no image databases found');
