@@ -61,13 +61,16 @@ end
 
 j = 1;
 skip = 0;
+x1 = [];
+x2 = [];
 while j < length(s)
     fnew=fullfile(savedir,s(j).name(1:end-4));
     alreadyexists = exist([fnew '.mat'],'file');
     if alreadyexists
-        if overwrite || skip~=0
+        x1set = varsinmatfile(fnew,'x1');
+        if ~x1set || skip~=0 || overwrite
             warning([fnew ' already processed, overwriting'])
-            load(fnew,'t');
+            load(fnew);
         else
             warning([fnew ' already processed -- skipping'])
             j = j+1;
@@ -78,12 +81,15 @@ while j < length(s)
     newim = imfun(imread(fullfile(whd,s(j).name)));
     
     fntitle = sprintf('%s %d/%d',s(j).name,j,length(s));
+    if alreadyexists && ~x1set
+        fntitle = [fntitle ' (x not set)'];
+    end
 
     % This bit goes through each file one-by-one and then lets you
     % raise or lower the threshold by hand
     % it can also allow you to get rid of esections of sky (eg due to
     % lens flare but I haven't written full instructions for this
-    [bina,t,skyl,dontcheck,skip,quit]=binaryimage(newim,[],t,dontcheck,[],fntitle,alreadyexists);
+    [bina,t,skyl,x1,x2,dontcheck,skip,quit]=binaryimage(newim,t,x1,x2,dontcheck,fntitle,alreadyexists);
     if quit
         disp('Quitting')
         quit = true;
@@ -98,7 +104,7 @@ while j < length(s)
     % see help for this subfunction for how it works
     bina1=GetOneObjectBinary(bina);
     skyl=GetSkyLine(bina1);
-    PlotIms(newim,[],bina,bina1,skyl,fntitle,alreadyexists);
+    PlotIms(newim,bina,bina1,skyl,fntitle,alreadyexists);
 
     if isa(newim,'double')
         white = 1;
@@ -108,19 +114,15 @@ while j < length(s)
     sel = bsxfun(@lt,(1:size(newim,1))',skyl);
     newim(sel) = white;
     fprintf('Saving %s.*...\n',fnew);
-    save(fnew,'bina','bina1','skyl','t')
+    save(fnew,'bina','bina1','skyl','t','x1','x2')
     imwrite(newim,[fnew '.png']);
     
     j = j+1;
 end
 
-function PlotIms(im,imrgb,bina,bina1,skyl,fn,alreadyexists)
+function PlotIms(im,bina,bina1,skyl,fn,alreadyexists)
 subplot(3,1,1),
-if(isempty(imrgb))
-    imagesc(im),
-else
-    imagesc(imrgb)
-end
+imagesc(im),
 hold on;plot(skyl,'r'); hold off
 axis image
 colormap gray
@@ -185,34 +187,43 @@ bina1(m2:end,end)=1;
 bina1=double(bwfill(bina1,'holes'));
 
 
-function[bina,t,skyl,dontcheck,skip,quit]=binaryimage(im,imrgb,t,dontcheck,rgbopt,fn,alreadyexists)
+function[bina,t,skyl,x1,x2,dontcheck,skip,quit]=binaryimage(im,t,x1,x2,dontcheck,fn,alreadyexists)
 quit = false;
 skip = 0;
-if false %(rgbopt==1)
-    d=imrgb(:,:,3);
-    pim=imrgb;
-else
-    d=im;
-    pim=im;
-end
+d=im;
 if((nargin<2)||isempty(t))
     t=round(median(d(:)));
+end
+if isempty(x1)
+    x1 = 1;
+    x2 = size(im,2);
 end
 while 1
     bina=double(d<t);
     skyl=GetSkyLine(bina);
     if(dontcheck==1)
-        return;
+        return
     end
     
     bina1=GetOneObjectBinary(bina);
     skyl=GetSkyLine(bina1);
-    PlotIms(im,imrgb,bina,bina1,skyl,fn,alreadyexists);
+    % only consider objects within this x range
+    if x1 <= x2
+        xx = x1+size(im,2);
+    else
+        xx = 1;
+    end
+    skyl(1+mod(x2-1:xx-2,size(im,2))) = size(im,1);
+    PlotIms(im,bina,bina1,skyl,fn,alreadyexists);
     
     title(['threshold = ' int2str(t) '; up/down to increase/decrease; t set threshold'])
     xlabel('k keyboard; enter ok; c stop checking')
+    
+    subplot(3,1,1)
+    hold on
+    plot([x1 x1],[1 size(im,1)],'g',[x2 x2],[1 size(im,1)],'g');
     try
-        [x,y,b]=ginput(1);
+        [xx,~,b]=ginput(1);
     catch
         quit = true;
         return
@@ -222,9 +233,17 @@ while 1
     end
     switch b
         case 1 % left click
-            x = max(1,min(size(im,2),round(x)));
-            y = max(1,min(size(im,1),round(y)));
-            t = im(y,x);
+            xx = max(1,min(size(im,2),round(xx)));
+            title(sprintf('Starting at %d, click on end',xx));
+            b2 = NaN;
+            while b2~=1
+                [xx2,~,b2] = ginput(1);
+                if isempty(b2)
+                    continue
+                end
+            end
+            x1 = xx;
+            x2 = max(1,min(size(im,2),round(xx2)));
         case ' '
             return
         case 'c'
@@ -249,157 +268,5 @@ while 1
             t=t+5;
         case 's'
             t=t-5;
-    end
-end
-
-function[newd,newb]=RegionCol(d,c,b)
-
-figure(2)
-imagesc(d);
-newd=d;newb=b;
-[x,y]=ginput;
-x=round([x;x(1)]);
-y=round([y;y(1)]);
-gs=diff(y)./diff(x);
-ps=[];
-for i=1:(length(x)-1)
-    if(x(i)==x(i+1)) ps=[ps;x(i:i+1) y(i:i+1)];
-    else
-       if(x(i)<x(i+1)) xs=[0:x(i+1)-x(i)]';
-       else xs=[0:-1:x(i+1)-x(i)]';
-       end
-       ys=round(gs(i)*xs);
-       ps=[ps;xs+x(i) ys+y(i)];
-    end
-end
-
-[h,w]=size(d);
-x1=max(1,min(x));
-x2=min(w,max(x));
-for xp=x1:x2
-    is=find(ps(:,1)==xp);
-    ymin=max(1,min(ps(is,2)));
-    ymax=min(w,max(ps(is,2)));
-    newd(ymin:ymax,xp)=c;
-    newb(ymin:ymax,xp)=mod(c+1,2)*255;
-end
-imagesc(newd)
-
-    
-
-
-function[rca,es1,ys,es2]=RotCA(skylines,goal,mini,mini2,Tol)
-if(nargin<5) Tol=45; end;
-
-[ys,is]=VisCompSkylines(skylines,goal);
-s=find(abs(ys)<=Tol);
-[es1,ns]=min([mini-1;361-mini]);ms=find(ns==2);es1(ms)=es1(ms)*-1;
-r=find(abs(es1)<=Tol);
-[es2,ns]=min([mini2-1;361-mini2]);ms=find(ns==2);es2(ms)=es2(ms)*-1;
-o=find(abs(es2)<=Tol);
-rca=[length(r) length(s) length(o)];
-
-function[il,il2,skyls]=eqheight(newim,imrgb,skyc)
-
-v=1;
-wid=size(newim,2);
-d=double(imrgb(:,:,3)-imrgb(:,:,2));
-
-for i=1:wid
-    t=120;
-    sp=find(imrgb(:,i,3)<t,1,'first');
-    while(isempty(sp))
-        t=t+20;
-        sp=find(imrgb(:,i,3)<t,1,'first');
-    end
-    i2(i)=find(d(sp:end,i)<=0,1,'first')+sp-1;
-end
-skyl=i2+1;%v(2)-v(1)-i2;
-%skyline
-sms=round(medfilt1(skyl,25));
-bads=find(abs(sms-skyl)>100);
-skyls=skyl;
-skyls(bads)=sms(bads);
-if(v>1) skyls=medfilt1(skyls,v); end;
-%
-
-[skyl,t]=AdjustThreshold(imrgb);
-skyls=AdjustSkyl(skyl,imrgb,v)
-
-if(nargin<3)
-    skym=newim(1:min(skyls),:);
-    skyc=median(double(skym(:)));
-end
-
-il=double(newim);
-il2=il;
-for k=1:wid il(1:skyls(k),k)=skyc; end
-
-for k=1:wid
-    il2(1:skyls(k),k)=1;%skyc;
-    il2(skyls(k)+1:end,k)=0;
-end
-figure(1),imagesc(imrgb), hold on,
-plot(1:wid,skyls,'r','LineWidth',2),hold off
-axis image
-figure(2),imagesc(il2),hold on
-plot(1:wid,skyls,'k','LineWidth',2),hold off
-
-
-function[sl,t]=AdjustThreshold(imrgb,t)
-
-v=1;
-wid=size(imrgb,2);
-d=double(imrgb(:,:,3)-imrgb(:,:,2));
-
-% for i=1:wid
-%     sp=find(imrgb(:,i,3)<t,1,'first');
-%     while(isempty(sp))
-%         t=t+20;
-%         sp=find(imrgb(:,i,3)<t,1,'first');
-%     end
-%     i2(i)=find(d(sp:end,i)<=0,1,'first')+sp-1;
-% end
-% skyl=i2+1;
-if(nargin<2) t=max(max((imrgb(:,:,2)))); end;
-while 1
-    for i=1:wid
-        sp=find(imrgb(:,i,2)>t,1,'first');
-        tm=t;
-        while(isempty(sp))
-            tm=tm-1;
-            sp=find(imrgb(:,i,2)>tm,1,'first');
-        end
-        sl(i)=sp;
-    end
-    sl=sl+2;
-    figure(1),imagesc(imrgb), hold on,
-    plot(sl,'r','LineWidth',2),hold off
-    axis image
-    title(['threshold = ' int2str(t) '; up to increase, down to decrease; # to set; c to end'])
-    [x,y,b]=ginput(1);
-    if(isequal(b,'c')) break;
-    elseif(b==30) t=t+1;
-    elseif(b==31) t=t-1;
-    end
-end
-
-function[sl]=AdjustSkyl(sl,imrgb,v)
-w=size(imrgb,2);
-while 1
-    figure(1),imagesc(imrgb), hold on,
-    plot(sl,'r','LineWidth',2),hold off
-    axis image
-    title('c to end or click 2 points and sky will be joined linearly')
-    [x,y,b]=ginput(2);
-    if(isequal(char(b(1)),'c')) break;
-    elseif(length(x)==2)
-        x=max([1;1],round(x));
-        x=min([w;w],round(x));
-        y=round(y);
-        a1=y(1);% newi(x(1));
-        a2=y(2);% newi(x(2));
-        sl(x(1):x(2))=round(a1+(a2-a1)/(x(2)-x(1))*[0:(x(2)-x(1))]);
-        if(v>1) sl=round(medfilt1(sl,v)); end
     end
 end
