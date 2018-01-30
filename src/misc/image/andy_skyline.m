@@ -105,7 +105,8 @@ while j < length(s)
     else
         white = 255;
     end
-    newim(~bina1) = white;
+    sel = bsxfun(@lt,(1:size(newim,1))',skyl);
+    newim(sel) = white;
     fprintf('Saving %s.*...\n',fnew);
     save(fnew,'bina','bina1','skyl','t')
     imwrite(newim,[fnew '.png']);
