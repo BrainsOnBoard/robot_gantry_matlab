@@ -235,16 +235,22 @@ while 1
     switch b
         case 1 % left click
             xx = max(1,min(size(im,2),round(xx)));
-            title(sprintf('Starting at %d, click on end',xx));
-            b2 = NaN;
-            while b2~=1
-                [xx2,~,b2] = ginput(1);
-                if isempty(b2)
-                    continue
+            if isempty(x1)
+                title(sprintf('Starting at %d, click on end',xx));
+                b2 = NaN;
+                while b2~=1
+                    [xx2,~,b2] = ginput(1);
+                    if isempty(b2)
+                        continue
+                    end
                 end
+                x1 = xx;
+                x2 = max(1,min(size(im,2),round(xx2)));
+            elseif abs(x1-xx) <= abs(x2-xx)
+                x1 = xx;
+            else
+                x2 = xx;
             end
-            x1 = xx;
-            x2 = max(1,min(size(im,2),round(xx2)));
         case 8 % backspace
             x1 = [];
             x2 = [];
