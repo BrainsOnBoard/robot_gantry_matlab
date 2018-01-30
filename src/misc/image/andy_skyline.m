@@ -54,9 +54,15 @@ t=[];
 % opt=1;
 dontcheck=0;
 
-savedir = fullfile(g_dir_imdb,['skyline_' shortwhd]);
-if ~exist(savedir,'dir')
-    mkdir(savedir);
+fgsavedir = fullfile(g_dir_imdb,['skyline_' shortwhd]);
+if ~exist(fgsavedir,'dir')
+    mkdir(fgsavedir);
+    copyfile(fullfile(whd,'im_params.mat'),fgsavedir);
+end
+bgsavedir = fullfile(g_dir_imdb,['skylinebg_' shortwhd]);
+if ~exist(bgsavedir,'dir')
+    mkdir(bgsavedir);
+    copyfile(fullfile(whd,'im_params.mat'),bgsavedir);
 end
 
 j = 1;
@@ -64,7 +70,7 @@ skip = 0;
 x1 = [];
 x2 = [];
 while j < length(s)
-    fnew=fullfile(savedir,s(j).name(1:end-4));
+    fnew=fullfile(fgsavedir,s(j).name(1:end-4));
     alreadyexists = exist([fnew '.mat'],'file');
     if alreadyexists
         x1set = varsinmatfile(fnew,'x1');
@@ -113,10 +119,14 @@ while j < length(s)
         white = 255;
     end
     sel = bsxfun(@lt,(1:size(newim,1))',skyl);
+    newim2 = newim;
     newim(sel) = white;
     fprintf('Saving %s.*...\n',fnew);
     save(fnew,'bina','bina1','skyl','t','x1','x2')
     imwrite(newim,[fnew '.png']);
+    
+    newim2(~sel) = white;
+    imwrite(newim2,fullfile(bgsavedir,[s(j).name(1:end-4) '.png']));
     
     j = j+1;
 end
