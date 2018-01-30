@@ -106,6 +106,7 @@ while j < length(s)
     skyl=GetSkyLine(bina1);
     PlotIms(newim,bina,bina1,skyl,fntitle,alreadyexists);
 
+    skyl=g_bb_cap_skyl(skyl,x1,x2,size(newim,1));
     if isa(newim,'double')
         white = 1;
     else
@@ -201,25 +202,20 @@ while 1
         return
     end
     
+    wd = size(im,2);
     bina1=GetOneObjectBinary(bina);
     skyl=GetSkyLine(bina1);
     % only consider objects within this x range
     if ~isempty(x1)
-        xx2 = x2;
-        if xx2 <= x1
-            xx2 = xx2+size(im,2);
-        end
-        sel = true(size(skyl));
-        sel(1+mod(x1:xx2,size(im,2))) = false;
-        skyl(sel) = size(im,1);
+        skyl = g_bb_cap_skyl(skyl,x1,x2,size(im,1));
     end
     PlotIms(im,bina,bina1,skyl,fn,alreadyexists);
     
     title(['threshold = ' int2str(t) '; up/down to increase/decrease; t set threshold'])
     xlabel('k keyboard; enter ok; c stop checking')
     
+    subplot(3,1,1)
     if ~isempty(x1)
-        subplot(3,1,1)
         hold on
         plot([x1 x1],[1 size(im,1)],'g',[x2 x2],[1 size(im,1)],'g');
     end
@@ -234,7 +230,7 @@ while 1
     end
     switch b
         case 1 % left click
-            xx = max(1,min(size(im,2),round(xx)));
+            xx = max(1,min(wd,round(xx)));
             if isempty(x1)
                 title(sprintf('Starting at %d, click on end',xx));
                 b2 = NaN;
@@ -245,12 +241,24 @@ while 1
                     end
                 end
                 x1 = xx;
-                x2 = max(1,min(size(im,2),round(xx2)));
-            elseif abs(x1-xx) <= abs(x2-xx)
+                x2 = max(1,min(wd,round(xx2)));
+            elseif abs(azdiff(x1,xx,wd)) <= abs(azdiff(x2,xx,wd))
                 x1 = xx;
             else
                 x2 = xx;
             end
+        case 3 % right click
+            xx = max(1,min(wd,round(xx)));
+            df = azdiff(xx,[x1 x2],wd);
+            [~,I] = min(abs(df));
+            x1 = normaz(x1+df(I),wd);
+            x2 = normaz(x2+df(I),wd);
+        case 'a'
+            x1 = normaz(x1+5,wd);
+            x2 = normaz(x2-5,wd);
+        case 'd'
+            x1 = normaz(x1-5,wd);
+            x2 = normaz(x2+5,wd);
         case 8 % backspace
             x1 = [];
             x2 = [];
@@ -280,3 +288,6 @@ while 1
             t=t-5;
     end
 end
+
+function d=azdiff(a,b,wd)
+d = round(circ_dist(a*2*pi/wd,b*2*pi/wd)*wd/(2*pi));
