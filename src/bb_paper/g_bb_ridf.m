@@ -65,8 +65,9 @@ for i = 1:length(zht)
         bestsnap{i,j} = whsn;
         bestridfs{i,j} = NaN(length(imxi),imsz(2));
         for k = 1:size(ridfs,1)
-            % RIDFs will be shifted by snth(whsn(k)); centre on 0° instead
-            cridf = circshift(ridfs(k,:,whsn(k)),-round(snth(whsn(k)) * size(ridfs,2) / (2*pi)),2);
+%             % RIDFs will be shifted by snth(whsn(k)); centre on 0° instead
+%             cridf = circshift(ridfs(k,:,whsn(k)),-round(snth(whsn(k)) * size(ridfs,2) / (2*pi)),2);
+            cridf = ridfs(k,:,whsn(k));
             bestridfs{i,j}(k,:) = cridf / prod(imsz);
         end
     end
