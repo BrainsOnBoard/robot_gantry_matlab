@@ -1,5 +1,5 @@
-function g_bb_ridf_examples(shortwhd,routenum,zht,snapszht,improc,coords,dosave,joinpdfs,figtype)
-close all
+function g_bb_ridf_examples(shortwhd,routenum,zht,snapszht,improc,coords,dosave,joinpdfs,figtype,figno)
+% close all
 
 if nargin < 1 || isempty(shortwhd)
     shortwhd='imdb_2017-02-09_001';  % open, pile
@@ -35,6 +35,9 @@ end
 if nargin < 9 || isempty(figtype)
     figtype = 'pdf';
 end
+if nargin < 10 || isempty(figno)
+    figno = 1;
+end
 
 whd = fullfile(g_dir_imdb,shortwhd);
 load(fullfile(whd,'im_params.mat'),'p')
@@ -47,15 +50,16 @@ spcols = min(3,length(snapszht));
 figsz = [18 15];
 
 if dosave
-    figure(1)
+    figure(figno)
     if joinpdfs
         g_fig_series_start
     end
 end
 for i = 1:size(coords,1)
-    fprintf('Figure %d: [%d %d]\n',i,coords(i,:))
+    cfigno = i+(figno-1)*100;
+    fprintf('Figure %d: [%d %d]\n',cfigno,coords(i,:))
     if ~dosave
-        figure(i)
+        figure(cfigno)
     end
     clf
     hold on
@@ -64,7 +68,14 @@ for i = 1:size(coords,1)
     for j = 1:length(snapszht)
         ims = NaN([imsz,length(zht)]);
         for k = 1:length(zht)
-            ims(:,:,k) = g_imdb_getprocim(whd,1+coords(i,1)/p.imsep,1+coords(i,2)/p.imsep,find(zht(k)==p.zs),imfun,imsz(2));
+            xi = 1+coords(i,1)/p.imsep;
+            yi = 1+coords(i,2)/p.imsep;
+            zi = find(zht(k)==p.zs);
+            fr = g_imdb_getprocim(whd,xi,yi,zi,imfun,imsz(2));
+            if isempty(fr)
+                error('could not get im %d,%d,%d',xi,yi,zi);
+            end
+            ims(:,:,k) = fr;
         end
         [~,~,~,ridfs] = ridfheadmulti(ims(:,:,zht==snapszht(j)),ims);
         ridfs = ridfs / prod(imsz);
@@ -80,7 +91,12 @@ for i = 1:size(coords,1)
         set(gca,'XTick',-180:90:180)
         xlabel('Angle (deg)')
         title(sprintf('Training height: %d mm',snapszht(j)+50))
-        title(legend(num2str((zht+50)')),'Height (mm)')
+        
+%         if j==(sprows*spcols)
+%             leg = legend(num2str((zht+50)'));
+%             set(leg,'Location','SouthEast');
+%             title(leg,'Height (mm)')
+%         end
 
         g_fig_setfont
         andy_setbox

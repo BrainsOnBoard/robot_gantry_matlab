@@ -32,8 +32,11 @@
 % this is a fairly rough function as I am still using it so any problems
 % email me
 
-function quit=andy_skyline(shortwhd,glob,imfun,overwrite)
+function quit=andy_skyline(shortwhd,glob,imfun,overwrite,checkmode)
 quit = false;
+if nargin < 5
+    checkmode = false;
+end
 if nargin < 4
     overwrite = false;
 end
@@ -78,7 +81,9 @@ while j < length(s)
             warning([fnew ' already processed, overwriting'])
             load(fnew);
         else
-            warning([fnew ' already processed -- skipping'])
+            if ~checkmode
+                warning([fnew ' already processed -- skipping'])
+            end
             j = j+1;
             continue
         end
