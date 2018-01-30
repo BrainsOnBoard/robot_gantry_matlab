@@ -194,10 +194,6 @@ d=im;
 if((nargin<2)||isempty(t))
     t=round(median(d(:)));
 end
-if isempty(x1)
-    x1 = 1;
-    x2 = size(im,2);
-end
 while 1
     bina=double(d<t);
     skyl=GetSkyLine(bina);
@@ -208,20 +204,25 @@ while 1
     bina1=GetOneObjectBinary(bina);
     skyl=GetSkyLine(bina1);
     % only consider objects within this x range
-    if x1 <= x2
-        xx = x1+size(im,2);
-    else
-        xx = 1;
+    if ~isempty(x1)
+        xx2 = x2;
+        if xx2 <= x1
+            xx2 = xx2+size(im,2);
+        end
+        sel = true(size(skyl));
+        sel(1+mod(x1:xx2,size(im,2))) = false;
+        skyl(sel) = size(im,1);
     end
-    skyl(1+mod(x2-1:xx-2,size(im,2))) = size(im,1);
     PlotIms(im,bina,bina1,skyl,fn,alreadyexists);
     
     title(['threshold = ' int2str(t) '; up/down to increase/decrease; t set threshold'])
     xlabel('k keyboard; enter ok; c stop checking')
     
-    subplot(3,1,1)
-    hold on
-    plot([x1 x1],[1 size(im,1)],'g',[x2 x2],[1 size(im,1)],'g');
+    if ~isempty(x1)
+        subplot(3,1,1)
+        hold on
+        plot([x1 x1],[1 size(im,1)],'g',[x2 x2],[1 size(im,1)],'g');
+    end
     try
         [xx,~,b]=ginput(1);
     catch
@@ -244,6 +245,9 @@ while 1
             end
             x1 = xx;
             x2 = max(1,min(size(im,2),round(xx2)));
+        case 8 % backspace
+            x1 = [];
+            x2 = [];
         case ' '
             return
         case 'c'
