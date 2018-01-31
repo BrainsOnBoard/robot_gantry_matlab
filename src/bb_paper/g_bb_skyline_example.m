@@ -30,13 +30,15 @@ imdb_plants = 'green_imdb_2017-06-06_001';
 % worst-matching positions - max error (corridor)
 badcoords = [1500 800; 1600 800; 1600 900; 1500 900; 1400 900; 1300 800; 1300 900; 1400 800; 900 900; 1000 900];
 
+shiftridfs = false;
+
 % goodcoords = [800 900; 700 1000; 700 900; 600 1000; 900 900; 500 1100; 600 1100; 500 1200; 1600 800; 400 1200];
 if getskyline(imdb_plants,badcoords)
     return
 end
-g_bb_ridf(imdb_plants,1,zht,zht,false,improc,badcoords,dosave,true,figtype);
-g_bb_ridf(['skyline_' imdb_plants],1,zht,zht,false,improc,badcoords,dosave,true,figtype);
-g_bb_ridf(['skylinebg_' imdb_plants],1,zht,zht,false,improc,badcoords,dosave,true,figtype);
+g_bb_ridf(imdb_plants,1,zht,zht,false,improc,badcoords,shiftridfs,dosave,true,figtype);
+g_bb_ridf(['skyline_' imdb_plants],1,zht,zht,false,improc,badcoords,shiftridfs,dosave,true,figtype);
+g_bb_ridf(['skylinebg_' imdb_plants],1,zht,zht,false,improc,badcoords,shiftridfs,dosave,true,figtype);
 
 function ret=getskyline(imdb,coords)
 slimdb = fullfile(g_dir_imdb,['skyline_' imdb]);

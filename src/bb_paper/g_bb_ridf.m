@@ -1,4 +1,4 @@
-function g_bb_ridf(shortwhd,routenum,zht,snapszht,userealsnaps,improc,coords,dosave,joinpdfs,figtype)
+function g_bb_ridf(shortwhd,routenum,zht,snapszht,userealsnaps,improc,coords,shiftridfs,dosave,joinpdfs,figtype)
 close all
 
 if nargin < 1 || isempty(shortwhd)
@@ -29,13 +29,16 @@ end
 if nargin < 7
     coords = [];
 end
-if nargin < 8 || isempty(dosave)
+if nargin < 8 || isempty(shiftridfs)
+    shiftridfs = true;
+end
+if nargin < 9 || isempty(dosave)
     dosave = false;
 end
-if nargin < 9 || isempty(joinpdfs)
+if nargin < 10 || isempty(joinpdfs)
     joinpdfs = false;
 end
-if nargin < 10 || isempty(figtype)
+if nargin < 11 || isempty(figtype)
     figtype = 'pdf';
 end
 
@@ -65,9 +68,12 @@ for i = 1:length(zht)
         bestsnap{i,j} = whsn;
         bestridfs{i,j} = NaN(length(imxi),imsz(2));
         for k = 1:size(ridfs,1)
-%             % RIDFs will be shifted by snth(whsn(k)); centre on 0° instead
-%             cridf = circshift(ridfs(k,:,whsn(k)),-round(snth(whsn(k)) * size(ridfs,2) / (2*pi)),2);
-            cridf = ridfs(k,:,whsn(k));
+            % RIDFs will be shifted by snth(whsn(k)); centre on 0° instead
+            if shiftridfs
+                cridf = circshift(ridfs(k,:,whsn(k)),-round(snth(whsn(k)) * size(ridfs,2) / (2*pi)),2);
+            else
+                cridf = ridfs(k,:,whsn(k));
+            end
             bestridfs{i,j}(k,:) = cridf / prod(imsz);
         end
     end
