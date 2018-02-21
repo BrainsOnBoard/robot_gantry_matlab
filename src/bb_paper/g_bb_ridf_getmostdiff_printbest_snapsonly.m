@@ -19,7 +19,7 @@ fprintf('\n%% biggest diffs for snapszht=%d (snaps only)\n',snapszht)
 printcoords(I);
 
 %% get biggest average diffs across snapszhts
-[~,I] = sort(mean(minima(:,end,:)-minima(:,1,:),3));
+[~,I] = sort(mean(max(0,minima(:,end,:)-minima(:,1,:)),3),'descend');
 
 disp('% biggest mean diffs across snapzhts (snaps only)')
 printcoords(I);
