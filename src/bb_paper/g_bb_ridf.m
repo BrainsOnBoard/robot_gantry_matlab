@@ -1,4 +1,4 @@
-function g_bb_ridf(shortwhd,routenum,zht,snapszht,userealsnaps,improc,coords,shiftridfs,dosave,joinpdfs,figtype)
+function g_bb_ridf(shortwhd,routenum,zht,snapszht,userealsnaps,improc,coords,shiftridfs,dosave,joinpdfs,figtype,doautoridf)
 close all
 
 if nargin < 1 || isempty(shortwhd)
@@ -41,6 +41,9 @@ end
 if nargin < 11 || isempty(figtype)
     figtype = 'pdf';
 end
+if nargin < 12
+    doautoridf = false;
+end
 
 if userealsnaps && length(snapszht) > 1
     % this may change...
@@ -60,19 +63,33 @@ figsz = [30 30];
 [bestsnap,bestridfs,imxyi] = deal(cell(length(zht),length(snapszht)));
 for i = 1:length(zht)
     for j = 1:length(snapszht)
-        [imxi,imyi,~,whsn,~,~,~,~,~,snth,~,p,~,~,ridfs] = g_imdb_route_getdata( ...
+        [imxi,imyi,~,whsn,~,~,~,snx,sny,snth,~,p,~,~,ridfs] = g_imdb_route_getdata( ...
             shortwhd,routenum,imsz(2),zht(i),false,improc,forcegen,[], ...
             userealsnaps,snapszht(j));
 
-        imxyi{i,j} = [imxi, imyi];
+        if doautoridf
+            [ind,sni] = deal(NaN(size(coords,1),1));
+            icoords = NaN(size(coords));
+            for k = 1:size(coords,1)
+                sni(k) = find(snx==coords(k,1) & sny==coords(k,2));
+                icoords(k,:) = [find(coords(k,1)==p.xs), find(coords(k,2)==p.ys)];
+                ind(k) = find(icoords(k,1)==imxi & icoords(k,2)==imyi);
+            end
+            whsn = sni;
+            imxyi{i,j} = icoords;
+        else
+            ind = 1:length(whsn);
+            imxyi{i,j} = [imxi, imyi];
+        end
         bestsnap{i,j} = whsn;
-        bestridfs{i,j} = NaN(length(imxi),imsz(2));
-        for k = 1:size(ridfs,1)
-            % RIDFs will be shifted by snth(whsn(k)); centre on 0° instead
+        
+        bestridfs{i,j} = NaN(length(whsn),imsz(2));
+        for k = 1:length(ind)
+            % RIDFs will be shifted by snth(whsn(k)); centre on 0? instead
             if shiftridfs
-                cridf = circshift(ridfs(k,:,whsn(k)),-round(snth(whsn(k)) * size(ridfs,2) / (2*pi)),2);
+                cridf = circshift(ridfs(ind(k),:,whsn(k)),-round(snth(whsn(k)) * size(ridfs,2) / (2*pi)),2);
             else
-                cridf = ridfs(k,:,whsn(k));
+                cridf = ridfs(ind(k),:,whsn(k));
             end
             bestridfs{i,j}(k,:) = cridf / prod(imsz);
         end
@@ -196,16 +213,30 @@ end
             % get RIDF for best match
             cridfs = NaN(imsz(2),length(zht));
 %             snaps = NaN(length(zht),1);
-            for besti = 1:length(zht)
-                cind = find(all(bsxfun(@eq,imxyi{besti,csnapszhti},[xi yi]),2),1);
-                if isempty(cind)
-                    warning('no match found')
-                    return
-                end
+            if doautoridf
+                for besti = 1:length(zht)
+                    cind = find(all(bsxfun(@eq,imxyi{besti,csnapszhti},[xi yi]),2),1);
+                    if isempty(cind)
+                        warning('no match found')
+                        return
+                    end
 
-                cridfs(:,besti) = bestridfs{besti,csnapszhti}(cind,:);
-%                 snaps(besti) = bestsnap{besti,csnapszhti}(cind);
-%                 fprintf('best snap: %d\n',bestsnap{besti,csnapszhti}(cind));
+                    cridfs(:,besti) = bestridfs{besti,csnapszhti}(cind,:);
+    %                 snaps(besti) = bestsnap{besti,csnapszhti}(cind);
+    %                 fprintf('best snap: %d\n',bestsnap{besti,csnapszhti}(cind));
+                end
+            else
+                for besti = 1:length(zht)
+                    cind = find(all(bsxfun(@eq,imxyi{besti,csnapszhti},[xi yi]),2),1);
+                    if isempty(cind)
+                        warning('no match found')
+                        return
+                    end
+
+                    cridfs(:,besti) = bestridfs{besti,csnapszhti}(cind,:);
+    %                 snaps(besti) = bestsnap{besti,csnapszhti}(cind);
+    %                 fprintf('best snap: %d\n',bestsnap{besti,csnapszhti}(cind));
+                end
             end
             
             ths = repmat(linspace(-180,180,size(cridfs,1)+1)',1,size(cridfs,2));
@@ -219,7 +250,7 @@ end
             set(gca,'XTick',-180:90:180)
             xlabel('Angle (deg)')
 %             title(sprintf('x=%d, y=%d, snapszht=%dmm',gx,gy,snapszht(csnapszhti)+50))
-            title(sprintf('Training height: %d mm',snapszht(csnapszhti)+50))
+            title(sprintf('(%d, %d) Training height: %d mm',gx,gy,snapszht(csnapszhti)+50))
             title(legend(num2str((zht+50)')),'Height (mm)')
             
             g_fig_setfont
