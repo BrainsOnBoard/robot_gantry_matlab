@@ -63,7 +63,7 @@ for czi = zi(:)'
         save(cachefn,'heads','idf');
     end
     
-    ptitle = sprintf('improc = %s, res = %d, height = %d mm',char(improc), res, p.zs(czi));
+    ptitle = sprintf('improc = %s, res = %d, height = %d mm',char(improc),res,p.zs(czi));
     
     figure(numel(zi)+czi);clf
     surf(p.xs,p.ys,idf)

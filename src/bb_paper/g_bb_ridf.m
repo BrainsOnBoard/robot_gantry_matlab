@@ -16,7 +16,7 @@ else
     zht = sort(zht);
 end
 if nargin < 4 || isempty(snapszht)
-    snapszht = 200; % +50mm
+    snapszht = 0:100:500; % +50mm
 else
     snapszht = sort(snapszht);
 end
@@ -204,7 +204,7 @@ end
         
         spcols = min(2,length(snapszht));
         ymax = 0;
-        if joinpdfs
+        if joinpdfs || isempty(coords)
             figure(2);clf
         else
             figure
