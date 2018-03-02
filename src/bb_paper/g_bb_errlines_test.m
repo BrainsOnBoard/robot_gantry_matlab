@@ -21,5 +21,5 @@ imdb_plants = 'imdb_2017-06-06_001';
 % open, pile
 g_bb_errlines(imdb_pile,1,zht,zht,false,useinfomax,improc,false,dosave,figtype);
 
-% % plants
-% g_bb_errlines(imdb_plants,1,zht,zht,false,useinfomax,improc,false,dosave,figtype);
+% plants
+g_bb_errlines(imdb_plants,1,zht,zht,false,useinfomax,improc,false,dosave,figtype);
