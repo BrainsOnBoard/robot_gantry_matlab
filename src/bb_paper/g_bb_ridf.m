@@ -1,6 +1,5 @@
 function g_bb_ridf(shortwhd,routenum,zht,snapszht,userealsnaps,improc, ...
-    coords,shiftridfs,dosave,joinpdfs,figtype,doautoridf,dointeractive, ...
-    inttitle)
+    coords,shiftridfs,dosave,joinpdfs,figtype,doautoridf,dointeractive)
 if nargin < 1 || isempty(shortwhd)
     [~,shortwhd] = g_imdb_choosedb;
 end
@@ -180,12 +179,20 @@ if dointeractive
         if length(snapszht) > 1
             error('can only have 1 snapszht')
         end
-            
-        % only one set of coords is supported for now
-        xi = find(p.xs==coords(:,1));
-        yi = find(p.ys==coords(:,2));
         
-        plotforbestworst(xi,yi)
+        for i = 1:size(coords,1)
+            xi = find(p.xs==coords(i,1));
+            yi = find(p.ys==coords(i,2));
+            plotforbestworst(xi,yi)
+            
+            try
+                ginput(1);
+            catch ex
+                if strcmp(ex.identifier,'MATLAB:ginput:FigureDeletionPause')
+                    break
+                end
+            end
+        end
     end
 else
     if joinpdfs
@@ -236,9 +243,6 @@ end
             snyi = find(p.ys==sny(snapi(posi)));
             snap = g_imdb_getim(whd,snxi,snyi,csnzhti);
             imshow(snap)
-            if zhtcnt==1
-                title(inttitle)
-            end
             
             alsubplot(zhtcnt+1,3)
             imagesc(im2double(im)-im2double(snap))

@@ -20,18 +20,6 @@ getbest = false;
 snapsonly = false;
 dat = g_bb_getbestworst(shortwhd,zht,snapszht,snapsonly,getbest,ncoords);
 
-for i = 1:ncoords
-    inttitle = sprintf('(%d,%d) err: %.2fdeg',dat.coords(i,1), ...
-        dat.coords(i,2),dat.errs(i));
-    g_bb_ridf(shortwhd,routenum,zht,snapszht,userealsnaps,improc, ...
-        dat.coords(i,:),shiftridfs,dosave,joinpdfs,figtype, ...
-        doautoridf,dointeractive,inttitle)
-    
-    try
-        ginput(1);
-    catch ex
-        if strcmp(ex.identifier,'MATLAB:ginput:FigureDeletionPause')
-            break
-        end
-    end
-end
+g_bb_ridf(shortwhd,routenum,zht,snapszht,userealsnaps,improc, ...
+    dat.coords,shiftridfs,dosave,joinpdfs,figtype, ...
+    doautoridf,dointeractive)
