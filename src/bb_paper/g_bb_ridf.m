@@ -181,7 +181,7 @@ if dointeractive
             error('can only have 1 snapszht')
         end
         
-        czhtcnt = 1;
+        czhtcnt = find(zht==snapszht);
         ccoordi = 1;
         while true
             xi = find(p.xs==coords(ccoordi,1));
@@ -249,43 +249,41 @@ end
 
     function plotforbestworst(xi,yi,zhtcnt,head)
         csnzhti = 1;
+        imfun = gantry_getimfun(improc);
         
         [zhti,~] = find(bsxfun(@eq,p.zs',zht));
         whd = fullfile(g_dir_imdb,shortwhd);
         
         figure(1);clf
-        alsubplot(5,1,1,1)
+        alsubplot(4,1,1,1)
         plotridf(xi,yi,csnzhti)
         
         alsubplot(2,1)
-        im = g_imdb_getim(whd,xi,yi,zhti(zhtcnt));
-        imshow(im)
+        [im,rawim] = g_imdb_getprocim(whd,xi,yi,zhti(zhtcnt),imfun,imsz(2));
+        rrawim = circshift(rawim,round(head*size(rawim,2)/(2*pi)),2);
+        imshow(rrawim)
         title(sprintf('Test height: %dmm',zht(zhtcnt)+50))
-        
-        alsubplot(3,1)
-        rot = round(head*imsz(2)/(2*pi)); 
-        rotim = circshift(im,rot,2);
-        imshow(rotim)
 
-        alsubplot(4,1)
+        alsubplot(3,1)
         snapi = bestsnap{zhtcnt,csnzhti};
         csnapi = snapi(imxi==xi & imyi==yi);
         csnx = snx(csnapi);
         csny = sny(csnapi);
         snxi = find(p.xs==csnx);
         snyi = find(p.ys==csny);
-        snap = g_imdb_getim(whd,snxi,snyi,csnzhti);
-        
-        csnth = snth(csnapi);
-        snrot = round(csnth*imsz(2)/(2*pi));
-        rotsnap = circshift(snap,snrot,2);
-        
-        imshow(rotsnap)
+        snzi = find(p.zs==snapszht(csnzhti));
+        [snap,rawsnap] = g_imdb_getprocim(whd,snxi,snyi,snzi,imfun,imsz(2));
+        rrawsnap = circshift(rawsnap,round(head*size(rawsnap,2)/(2*pi)),2);
+        imshow(rrawsnap)
         dist = hypot(p.ys(yi)-csny,p.xs(xi)-csnx);
         title(sprintf('Snap num: %d @%gmm',csnapi,dist))
         
-        alsubplot(5,1)
-        imagesc(im2double(rotim)-im2double(rotsnap))
+%         csnth = snth(csnapi);
+%         snrot = round(csnth*imsz(2)/(2*pi));
+%         rotsnap = circshift(snap,snrot,2);
+        
+        alsubplot(4,1)
+        imagesc(im2double(rrawim)-im2double(rrawsnap))
         axis equal tight
         colorbar
     end
@@ -365,6 +363,8 @@ end
     end
 
     function showdiffim(xi,yi)
+        warning('snapshots are broken in this function (wrong zi)')
+        
         whd = fullfile(g_dir_imdb,shortwhd);
         
         % get the image for the clicked position
