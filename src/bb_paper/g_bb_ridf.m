@@ -58,6 +58,8 @@ figsz = [30 30];
 %% load RIDFs
 % extract best-matching snaps and RIDFs and put into cell array (because
 % the dimensions differ)
+% TODO: there's something here that I need to have more of a look at: how
+% dimensions of bestridfs and bestsnap match up with heights
 [bestsnap,bestridfs,imxyi] = deal(cell(length(zht),length(snapszht)));
 for i = 1:length(zht)
     for j = 1:length(snapszht)
@@ -144,7 +146,10 @@ if dointeractive
                     [~,xi] = min(abs(p.xs-x));
                     [~,yi] = min(abs(p.ys-y));
 
-                    plotridfs(xi,yi)
+                    plotmultiridfs(xi,yi)
+                    
+                    figure(3);clf
+                    alsubplot(3,1,1,1)
                     showdiffim(xi,yi)
                 case 'w' % zht up
                     if czhti < length(zht)
@@ -176,12 +181,15 @@ if dointeractive
         xi = find(p.xs==coords(:,1));
         yi = find(p.ys==coords(:,2));
         
-        % FIX
         czhti = 1;
         csnzhti = 1;
         
-        plotridfs(xi,yi)
-%         showdiffim(xi,yi)
+        figure(1);clf
+        alsubplot(4,1,1,1)
+        showdiffim(xi,yi)
+        
+        alsubplot(4,1)
+        plotridf(xi,yi,csnzhti) % TODO: something with height; see todo above
     end
 else
     if joinpdfs
@@ -192,7 +200,7 @@ else
         xi = find(p.xs==coords(i,1));
         yi = find(p.ys==coords(i,2));
         
-        plotridfs(xi,yi)
+        plotmultiridfs(xi,yi)
         if dosave
             g_fig_save(sprintf('ridf_%s_%s%sres%03d_route%03d_snapszht%s_x%04d_y%04d', ...
                 flabel,improcstr,'pm_',imsz(2),routenum,snapszhtstr,coords(i,1),coords(i,2)), ...
@@ -209,7 +217,7 @@ end
         g_bb_quiver(shortwhd,routenum,zht(czhti),snapszht(csnzhti),userealsnaps,false,improc,true,false);
     end
 
-    function plotridfs(xi,yi)
+    function plotmultiridfs(xi,yi)
         gx = p.xs(xi);
         gy = p.ys(yi);
         fprintf('selecting point (%d,%d)\n',gx,gy)
@@ -222,51 +230,8 @@ end
             figure
         end
         for csnapszhti = 1:length(snapszht)
-            % get RIDF for best match
-            cridfs = NaN(imsz(2),length(zht));
-%             snaps = NaN(length(zht),1);
-            if doautoridf
-                for besti = 1:length(zht)
-                    cind = find(all(bsxfun(@eq,imxyi{besti,csnapszhti},[xi yi]),2),1);
-                    if isempty(cind)
-                        warning('no match found')
-                        return
-                    end
-
-                    cridfs(:,besti) = bestridfs{besti,csnapszhti}(cind,:);
-    %                 snaps(besti) = bestsnap{besti,csnapszhti}(cind);
-    %                 fprintf('best snap: %d\n',bestsnap{besti,csnapszhti}(cind));
-                end
-            else
-                for besti = 1:length(zht)
-                    cind = find(all(bsxfun(@eq,imxyi{besti,csnapszhti},[xi yi]),2),1);
-                    if isempty(cind)
-                        warning('no match found')
-                        return
-                    end
-
-                    cridfs(:,besti) = bestridfs{besti,csnapszhti}(cind,:);
-    %                 snaps(besti) = bestsnap{besti,csnapszhti}(cind);
-    %                 fprintf('best snap: %d\n',bestsnap{besti,csnapszhti}(cind));
-                end
-            end
-            
-            ths = repmat(linspace(-180,180,size(cridfs,1)+1)',1,size(cridfs,2));
-            cridfs = circshift(cridfs,floor(size(cridfs,1)/2));
-            cridfs(end+1,:) = cridfs(1,:);
-            
             subplot(sprows,spcols,csnapszhti)
-            h=plot(ths,cridfs);
-            h(csnapszhti).LineStyle='--';
-            xlim([-180 180])
-            set(gca,'XTick',-180:90:180)
-            xlabel('Angle (deg)')
-%             title(sprintf('x=%d, y=%d, snapszht=%dmm',gx,gy,snapszht(csnapszhti)+50))
-            title(sprintf('(%d, %d) Training height: %d mm',gx,gy,snapszht(csnapszhti)+50))
-            title(legend(num2str((zht+50)')),'Height (mm)')
-            
-            g_fig_setfont
-            andy_setbox
+            plotridf(xi,yi,csnapszhti)
             
             yl = ylim;
             ymax = max(yl(2),ymax);
@@ -275,6 +240,56 @@ end
             subplot(sprows,spcols,csnapszhti)
             ylim([0 ymax])
         end
+    end
+
+    function plotridf(xi,yi,csnapszhti)
+        gx = p.xs(xi);
+        gy = p.ys(yi);
+        
+        % get RIDF for best match
+        cridfs = NaN(imsz(2),length(zht));
+%         snaps = NaN(length(zht),1);
+        if doautoridf
+            for besti = 1:length(zht)
+                cind = find(all(bsxfun(@eq,imxyi{besti,csnapszhti},[xi yi]),2),1);
+                if isempty(cind)
+                    warning('no match found')
+                    return
+                end
+
+                cridfs(:,besti) = bestridfs{besti,csnapszhti}(cind,:);
+%                 snaps(besti) = bestsnap{besti,csnapszhti}(cind);
+%                 fprintf('best snap: %d\n',bestsnap{besti,csnapszhti}(cind));
+            end
+        else
+            for besti = 1:length(zht)
+                cind = find(all(bsxfun(@eq,imxyi{besti,csnapszhti},[xi yi]),2),1);
+                if isempty(cind)
+                    warning('no match found')
+                    return
+                end
+
+                cridfs(:,besti) = bestridfs{besti,csnapszhti}(cind,:);
+%                 snaps(besti) = bestsnap{besti,csnapszhti}(cind);
+%                 fprintf('best snap: %d\n',bestsnap{besti,csnapszhti}(cind));
+            end
+        end
+
+        ths = repmat(linspace(-180,180,size(cridfs,1)+1)',1,size(cridfs,2));
+        cridfs = circshift(cridfs,floor(size(cridfs,1)/2));
+        cridfs(end+1,:) = cridfs(1,:);
+
+        h=plot(ths,cridfs);
+        h(csnapszhti).LineStyle='--';
+        xlim([-180 180])
+        set(gca,'XTick',-180:90:180)
+        xlabel('Angle (deg)')
+%             title(sprintf('x=%d, y=%d, snapszht=%dmm',gx,gy,snapszht(csnapszhti)+50))
+        title(sprintf('(%d, %d) Training height: %d mm',gx,gy,snapszht(csnapszhti)+50))
+        title(legend(num2str((zht+50)')),'Height (mm)')
+
+        g_fig_setfont
+        andy_setbox
     end
 
     function showdiffim(xi,yi)
@@ -290,8 +305,6 @@ end
         snyi = find(p.ys==sny(snapi(posi)));
         snap = g_imdb_getim(whd,snxi,snyi,csnzhti);
         
-        figure(3);clf
-        alsubplot(3,1,1,1)
         imshow(im)
         title('current view')
         

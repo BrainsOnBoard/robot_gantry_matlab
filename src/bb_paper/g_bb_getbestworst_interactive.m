@@ -18,12 +18,15 @@ dointeractive = true;
 % get worst mean coords
 getbest = false;
 snapsonly = false;
-worstcoords = g_bb_getbestworst(shortwhd,zht,snapszht,snapsonly,getbest,ncoords);
+[worstcoords,worsterrs] = g_bb_getbestworst(shortwhd,zht,snapszht, ...
+    snapsonly,getbest,ncoords);
 
 for i = 1:ncoords
     g_bb_ridf(shortwhd,routenum,zht,snapszht,userealsnaps,improc, ...
         worstcoords(i,:),shiftridfs,dosave,joinpdfs,figtype, ...
         doautoridf,dointeractive)
+    title(sprintf('(%d,%d) err: %.2fdeg',worstcoords(i,1),worstcoords(i,2), ...
+        worsterrs(i)))
     
     try
         ginput(1);
