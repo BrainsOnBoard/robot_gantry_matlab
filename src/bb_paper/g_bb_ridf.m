@@ -1,6 +1,6 @@
 function g_bb_ridf(shortwhd,routenum,zht,snapszht,userealsnaps,improc, ...
     coords,shiftridfs,dosave,joinpdfs,figtype,doautoridf,dointeractive, ...
-    headings,errs)
+    headings,errs,allerrs)
 if nargin < 1 || isempty(shortwhd)
     [~,shortwhd] = g_imdb_choosedb;
 end
@@ -262,8 +262,8 @@ end
         [im,rawim] = g_imdb_getprocim(whd,xi,yi,zhti(zhtcnt),imfun,imsz(2));
         rrawim = circshift(rawim,round(head*size(rawim,2)/(2*pi)),2);
         imshow(rrawim)
-        title(sprintf('Test height: %dmm; mean err: %.2fdeg', ...
-            zht(zhtcnt)+50,errs(ccoordi)))
+        title(sprintf('Test height: %dmm; err: %.2fdeg; mean err: %.2fdeg', ...
+            zht(zhtcnt)+50,allerrs(ccoordi,zhtcnt),errs(ccoordi)))
 
         alsubplot(3,1)
         snapi = bestsnap{zhtcnt,csnzhti};
