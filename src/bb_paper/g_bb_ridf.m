@@ -1,5 +1,6 @@
 function g_bb_ridf(shortwhd,routenum,zht,snapszht,userealsnaps,improc, ...
-    coords,shiftridfs,dosave,joinpdfs,figtype,doautoridf,dointeractive)
+    coords,shiftridfs,dosave,joinpdfs,figtype,doautoridf,dointeractive, ...
+    headings)
 if nargin < 1 || isempty(shortwhd)
     [~,shortwhd] = g_imdb_choosedb;
 end
@@ -185,7 +186,7 @@ if dointeractive
         while true
             xi = find(p.xs==coords(ccoordi,1));
             yi = find(p.ys==coords(ccoordi,2));
-            plotforbestworst(xi,yi,czhtcnt)
+            plotforbestworst(xi,yi,czhtcnt,headings(ccoordi,czhtcnt))
             title(sprintf('Coord %d/%d',ccoordi,size(coords,1)))
             
             try
@@ -246,22 +247,27 @@ end
             userealsnaps,false,improc,true,false);
     end
 
-    function plotforbestworst(xi,yi,zhtcnt)
+    function plotforbestworst(xi,yi,zhtcnt,head)
         csnzhti = 1;
         
         [zhti,~] = find(bsxfun(@eq,p.zs',zht));
         whd = fullfile(g_dir_imdb,shortwhd);
         
         figure(1);clf
-        alsubplot(4,1,1,1)
+        alsubplot(5,1,1,1)
         plotridf(xi,yi,csnzhti)
         
         alsubplot(2,1)
         im = g_imdb_getim(whd,xi,yi,zhti(zhtcnt));
         imshow(im)
         title(sprintf('Test height: %dmm',zht(zhtcnt)+50))
-
+        
         alsubplot(3,1)
+        rot = round(head*imsz(2)/(2*pi)); 
+        rotim = circshift(im,rot,2);
+        imshow(rotim)
+
+        alsubplot(4,1)
         snapi = bestsnap{zhtcnt,csnzhti};
         csnapi = snapi(imxi==xi & imyi==yi);
         csnx = snx(csnapi);
@@ -269,12 +275,17 @@ end
         snxi = find(p.xs==csnx);
         snyi = find(p.ys==csny);
         snap = g_imdb_getim(whd,snxi,snyi,csnzhti);
-        imshow(snap)
+        
+        csnth = snth(csnapi);
+        snrot = round(csnth*imsz(2)/(2*pi));
+        rotsnap = circshift(snap,snrot,2);
+        
+        imshow(rotsnap)
         dist = hypot(p.ys(yi)-csny,p.xs(xi)-csnx);
         title(sprintf('Snap num: %d @%gmm',csnapi,dist))
-
-        alsubplot(4,1)
-        imagesc(im2double(im)-im2double(snap))
+        
+        alsubplot(5,1)
+        imagesc(im2double(rotim)-im2double(rotsnap))
         axis equal tight
         colorbar
     end
