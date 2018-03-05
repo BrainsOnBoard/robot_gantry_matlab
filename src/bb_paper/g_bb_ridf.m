@@ -212,6 +212,8 @@ if dointeractive
                         if czhtcnt > 1
                             czhtcnt = czhtcnt-1;
                         end
+                    case 'r' % reset
+                        ccoordi = 1;
                 end
             catch ex
                 if strcmp(ex.identifier,'MATLAB:ginput:FigureDeletionPause')
