@@ -1,4 +1,6 @@
-function g_bb_ridf(shortwhd,routenum,zht,snapszht,userealsnaps,improc,coords,shiftridfs,dosave,joinpdfs,figtype,doautoridf,dointeractive)
+function g_bb_ridf(shortwhd,routenum,zht,snapszht,userealsnaps,improc, ...
+    coords,shiftridfs,dosave,joinpdfs,figtype,doautoridf,dointeractive, ...
+    inttitle)
 if nargin < 1 || isempty(shortwhd)
     [~,shortwhd] = g_imdb_choosedb;
 end
@@ -175,19 +177,15 @@ if dointeractive
             end
         end
     else
+        if length(snapszht) > 1
+            error('can only have 1 snapszht')
+        end
+            
         % only one set of coords is supported for now
         xi = find(p.xs==coords(:,1));
         yi = find(p.ys==coords(:,2));
         
-        czhti = 1;
-        csnzhti = 1;
-        
-        figure(1);clf
-        alsubplot(4,1,1,1)
-        showdiffim(xi,yi)
-        
-        alsubplot(4,1)
-        plotridf(xi,yi,csnzhti) % TODO: something with height; see todo above
+        plotforbestworst(xi,yi)
     end
 else
     if joinpdfs
@@ -212,9 +210,43 @@ else
 end
 
     function showquiver
-        g_bb_quiver(shortwhd,routenum,zht(czhti),snapszht(csnzhti),userealsnaps,false,improc,true,false);
+        g_bb_quiver(shortwhd,routenum,zht(czhti),snapszht(csnzhti), ...
+            userealsnaps,false,improc,true,false);
     end
 
+    function plotforbestworst(xi,yi)
+        csnzhti = 1;
+        
+        [zhti,~] = find(bsxfun(@eq,p.zs',zht));
+        whd = fullfile(g_dir_imdb,shortwhd);
+        
+        figure(1);clf
+        alsubplot(1+length(zhti),3,1,1:3)
+        plotridf(xi,yi,csnzhti)
+        
+        for zhtcnt = 1:length(zhti)
+            alsubplot(zhtcnt+1,1)
+            im = g_imdb_getim(whd,xi,yi,zhti(zhtcnt));
+            imshow(im)
+            
+            alsubplot(zhtcnt+1,2)
+            snapi = bestsnap{zhtcnt,csnzhti};
+            posi = find(imxi==xi & imyi==yi);
+            snxi = find(p.xs==snx(snapi(posi)));
+            snyi = find(p.ys==sny(snapi(posi)));
+            snap = g_imdb_getim(whd,snxi,snyi,csnzhti);
+            imshow(snap)
+            if zhtcnt==1
+                title(inttitle)
+            end
+            
+            alsubplot(zhtcnt+1,3)
+            imagesc(im2double(im)-im2double(snap))
+            axis equal tight
+            colorbar
+        end
+    end
+    
     function plotmultiridfs(xi,yi)
         gx = p.xs(xi);
         gy = p.ys(yi);
