@@ -294,8 +294,8 @@ end
         colorbar
         
         figure(2);clf
-        plot(p.xs(imxi),p.ys(imyi),'b.',p.xs(xi),p.ys(yi),'gx', ...
-            csnx,csny,'ro')
+        plot(p.xs(imxi),p.ys(imyi),'b.',snx,sny,'g.', ...
+            p.xs(xi),p.ys(yi),'kd',csnx,csny,'ro')
         
         figure(1)
     end
