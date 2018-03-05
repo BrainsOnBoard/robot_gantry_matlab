@@ -32,6 +32,10 @@ else
     wt = snapweighting;
 end
 
+if ~isa(im,'double') || ~isa(imref,'double')
+    error('im and imref must both be doubles')
+end
+
 rots = linspace(0,size(im,2),nth+1);
 rots = round(rots(1:end-1));
 
