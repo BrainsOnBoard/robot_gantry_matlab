@@ -18,7 +18,7 @@ dointeractive = true;
 % get worst mean coords
 getbest = false;
 snapsonly = false;
-dat = g_bb_getbestworst(shortwhd,zht,snapszht,snapsonly,getbest,ncoords);
+[~,dat] = g_bb_getbestworst(shortwhd,zht,snapszht,snapsonly,getbest,ncoords);
 
 g_bb_ridf(shortwhd,routenum,zht,snapszht,userealsnaps,improc, ...
     dat.coords,shiftridfs,dosave,joinpdfs,figtype, ...

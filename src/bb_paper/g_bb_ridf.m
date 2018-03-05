@@ -269,7 +269,7 @@ end
         [im,rawim] = g_imdb_getprocim(whd,xi,yi,zhti(zhtcnt),imfun,imsz(2));
         rrawim = circshift(rawim,round(head*size(rawim,2)/(2*pi)),2);
         imshow(rrawim)
-        title(sprintf('Test height: %dmm; err: %.2fdeg; mean err: %.2fdeg', ...
+        title(sprintf('Test height: %dmm; err: %.2fdeg; overall err: %.2fdeg', ...
             zht(zhtcnt)+50,allerrs(ccoordi,zhtcnt),errs(ccoordi)))
 
         alsubplot(3,1)
