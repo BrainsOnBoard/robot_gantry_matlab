@@ -32,7 +32,13 @@ shiftridfs = false;
 % worst-matching positions - max error (corridor)
 badcoords = [1500 800; 1600 800; 1600 900; 1500 900; 1400 900; 1300 800; 1300 900; 1400 800; 900 900; 1000 900];
 
-goodcoords = [800 900; 700 1000; 700 900; 600 1000; 900 900; 500 1100; 600 1100; 500 1200; 1600 800; 400 1200];
+% % best-matching positions - mean error
+% goodcoords = [400 1300; 500 1300; 200 1400; 300 1400; 400 1400; 100 1500; 200 1500; 600 1100; 700 1100; 400 1200];
+
+% best-matching positions - min error
+goodcoords = [700 1000; 200 1300; 400 1300; 500 1300; 100 1400; 200 1400; 300 1400; 400 1400; 500 1400; 0 1500];
+
+% goodcoords = [800 900; 700 1000; 700 900; 600 1000; 900 900; 500 1100; 600 1100; 500 1200; 1600 800; 400 1200];
 
 coords = goodcoords;
 if getskyline(imdb_plants,coords)

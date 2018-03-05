@@ -61,10 +61,18 @@ g_bb_boxplot(imdb_plants,1,zht,zht,false,useinfomax,improc,false,dosave,figtype)
 % g_bb_ridf_examples(imdb_pile,1,zht,zht,false,improc,coords,dosave,true,figtype);
 
 %% RIDFS for plants world
-% % biggest diffs for snapszht=200 (snaps only)
-% coords = [400 1300; 200 1400; 200 1500; 300 1300; 300 1400; 1200 900; 1400 900; 1300 900; 100 1500; 1000 900];
+% % worst-matching positions - mean error
+% badcoords = [600 900; 1500 900; 1600 800; 1600 900; 1500 800; 1100 800; 700 700; 1200 900; 1100 900; 1400 900];
 
-% biggest mean diffs across snapzhts (snaps only)
-coords = [800 900; 700 1000; 700 900]; %; 600 1000; 900 900; 500 1100; 600 1100; 500 1200; 1600 800; 400 1200];
+% worst-matching positions - max error
+badcoords = [1500 800; 1600 800; 1600 900; 1500 900; 1400 900; 1300 800; 1300 900; 1400 800; 900 900; 1000 900];
+
+% % best-matching positions - mean error
+% goodcoords = [400 1300; 500 1300; 200 1400; 300 1400; 400 1400; 100 1500; 200 1500; 600 1100; 700 1100; 400 1200];
+
+% best-matching positions - min error
+goodcoords = [700 1000; 200 1300; 400 1300; 500 1300; 100 1400; 200 1400; 300 1400; 400 1400; 500 1400; 0 1500];
+
+coords = goodcoords;
 
 g_bb_ridf_examples(imdb_plants,1,zht,zht,improc,coords,dosave,true,figtype);
