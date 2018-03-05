@@ -180,13 +180,38 @@ if dointeractive
             error('can only have 1 snapszht')
         end
         
-        for i = 1:size(coords,1)
-            xi = find(p.xs==coords(i,1));
-            yi = find(p.ys==coords(i,2));
-            plotforbestworst(xi,yi)
+        czhtcnt = 1;
+        ccoordi = 1;
+        while true
+            xi = find(p.xs==coords(ccoordi,1));
+            yi = find(p.ys==coords(ccoordi,2));
+            plotforbestworst(xi,yi,czhtcnt)
+            title(sprintf('Coord %d/%d',ccoordi,size(coords,1)))
             
             try
-                ginput(1);
+                [~,~,but] = ginput(1);
+                if isempty(but)
+                    break
+                end
+                
+                switch but
+                    case 'a'
+                        if ccoordi > 1
+                            ccoordi = ccoordi-1;
+                        end
+                    case {'d',1}
+                        if ccoordi < size(coords,1)
+                            ccoordi = ccoordi+1;
+                        end
+                    case 'w'
+                        if czhtcnt < length(zht)
+                            czhtcnt = czhtcnt+1;
+                        end
+                    case 's'
+                        if czhtcnt > 1
+                            czhtcnt = czhtcnt-1;
+                        end
+                end
             catch ex
                 if strcmp(ex.identifier,'MATLAB:ginput:FigureDeletionPause')
                     break
@@ -221,34 +246,37 @@ end
             userealsnaps,false,improc,true,false);
     end
 
-    function plotforbestworst(xi,yi)
+    function plotforbestworst(xi,yi,zhtcnt)
         csnzhti = 1;
         
         [zhti,~] = find(bsxfun(@eq,p.zs',zht));
         whd = fullfile(g_dir_imdb,shortwhd);
         
         figure(1);clf
-        alsubplot(1+length(zhti),3,1,1:3)
+        alsubplot(4,1,1,1)
         plotridf(xi,yi,csnzhti)
         
-        for zhtcnt = 1:length(zhti)
-            alsubplot(zhtcnt+1,1)
-            im = g_imdb_getim(whd,xi,yi,zhti(zhtcnt));
-            imshow(im)
-            
-            alsubplot(zhtcnt+1,2)
-            snapi = bestsnap{zhtcnt,csnzhti};
-            posi = find(imxi==xi & imyi==yi);
-            snxi = find(p.xs==snx(snapi(posi)));
-            snyi = find(p.ys==sny(snapi(posi)));
-            snap = g_imdb_getim(whd,snxi,snyi,csnzhti);
-            imshow(snap)
-            
-            alsubplot(zhtcnt+1,3)
-            imagesc(im2double(im)-im2double(snap))
-            axis equal tight
-            colorbar
-        end
+        alsubplot(2,1)
+        im = g_imdb_getim(whd,xi,yi,zhti(zhtcnt));
+        imshow(im)
+        title(sprintf('Test height: %dmm',zht(zhtcnt)+50))
+
+        alsubplot(3,1)
+        snapi = bestsnap{zhtcnt,csnzhti};
+        csnapi = snapi(imxi==xi & imyi==yi);
+        csnx = snx(csnapi);
+        csny = sny(csnapi);
+        snxi = find(p.xs==csnx);
+        snyi = find(p.ys==csny);
+        snap = g_imdb_getim(whd,snxi,snyi,csnzhti);
+        imshow(snap)
+        dist = hypot(p.ys(yi)-csny,p.xs(xi)-csnx);
+        title(sprintf('Snap num: %d @%gmm',csnapi,dist))
+
+        alsubplot(4,1)
+        imagesc(im2double(im)-im2double(snap))
+        axis equal tight
+        colorbar
     end
     
     function plotmultiridfs(xi,yi)
