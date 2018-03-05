@@ -15,15 +15,16 @@ figtype = [];
 doautoridf = false;
 dointeractive = true;
 
-% worst mean coords
+% get worst mean coords
 getbest = false;
 snapsonly = false;
-worstcoords = g_bb_getbestworst(shortwhd,snapsonly,getbest,ncoords);
+worstcoords = g_bb_getbestworst(shortwhd,zht,snapszht,snapsonly,getbest,ncoords);
 
 for i = 1:ncoords
     g_bb_ridf(shortwhd,routenum,zht,snapszht,userealsnaps,improc, ...
         worstcoords(i,:),shiftridfs,dosave,joinpdfs,figtype, ...
         doautoridf,dointeractive)
+    
     try
         ginput(1);
     catch ex

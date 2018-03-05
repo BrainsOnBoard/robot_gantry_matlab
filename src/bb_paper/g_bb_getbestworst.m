@@ -1,14 +1,20 @@
-function [mcoords,mean_vals,extreme_coords,extreme_vals]=g_bb_getbestworst(shortwhd,snapsonly,getbest,ncoords)
+function [mcoords,mean_vals,extreme_coords,extreme_vals]=g_bb_getbestworst(shortwhd,zht,snapszht,snapsonly,getbest,ncoords)
 if nargin < 1 || isempty(shortwhd)
     [~,shortwhd] = g_imdb_choosedb;
 end
-if nargin < 2 || isempty(snapsonly)
+if nargin < 2 || isempty(zht)
+    zht = 0:100:500;
+end
+if nargin < 3 || isempty(snapszht)
+    snapszht = 200;
+end
+if nargin < 4 || isempty(snapsonly)
     snapsonly = false;
 end
-if nargin < 3 || isempty(getbest)
+if nargin < 5 || isempty(getbest)
     getbest = true;
 end
-if nargin < 4 || isempty(ncoords)
+if nargin < 6 || isempty(ncoords)
     ncoords = 10;
 end
 
@@ -18,13 +24,11 @@ if isempty(routenum)
 end
 
 improc = '';
-snapszht = 200;
-snapszhtall = 0:100:500;
 
-errs = cell(1,length(snapszhtall));
-for i = 1:length(snapszhtall)
+errs = cell(1,length(zht));
+for i = 1:length(zht)
     [imxi,imyi,~,~,allerrs,~,~,~,~,~,errsel,p,~,~,~,snapszht,snxi,snyi] = g_imdb_route_getdata( ...
-        shortwhd,routenum,90,snapszhtall(i),false,improc,false,[], ...
+        shortwhd,routenum,90,zht(i),false,improc,false,[], ...
         false,snapszht);
     
     if snapsonly
