@@ -1,4 +1,4 @@
-function alsubplot(a,b,row,col)
+function ax=alsubplot(a,b,row,col)
 persistent spsz
 
 if nargin==3
@@ -29,4 +29,8 @@ end
 if any(col < 1) || any(col > b) || any(row < 1) || any(row > a)
     error('invalid row or col')
 end
-subplot(a,b,sub2ind([b a],col,row));
+ax=subplot(a,b,sub2ind([b a],col,row));
+
+if ~nargout
+    clear ax
+end

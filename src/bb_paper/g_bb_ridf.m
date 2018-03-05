@@ -181,6 +181,11 @@ if dointeractive
             error('can only have 1 snapszht')
         end
         
+        % make colormap
+        up = linspace(0,1,32)';
+        down = up(end:-1:1);
+        redblue = [up,up,ones(32,1);ones(32,1),down,down];
+        
         czhtcnt = find(zht==snapszht);
         ccoordi = 1;
         while true
@@ -281,8 +286,10 @@ end
         dist = hypot(p.ys(yi)-csny,p.xs(xi)-csnx);
         title(sprintf('Snap num: %d @%gmm',csnapi,dist))
         
-        alsubplot(4,1)
+        ax=alsubplot(4,1);
         imagesc(im2double(rrawim)-im2double(rrawsnap))
+        caxis([-1 1])
+        colormap(ax,redblue)
         axis equal tight
         colorbar
         
