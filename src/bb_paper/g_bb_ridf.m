@@ -1,6 +1,4 @@
 function g_bb_ridf(shortwhd,routenum,zht,snapszht,userealsnaps,improc,coords,shiftridfs,dosave,joinpdfs,figtype,doautoridf,dointeractive)
-close all
-
 if nargin < 1 || isempty(shortwhd)
     [~,shortwhd] = g_imdb_choosedb;
 end
