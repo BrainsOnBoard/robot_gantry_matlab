@@ -1,13 +1,16 @@
-function g_bb_getbestworst(fprefix,snapsonly,getbest)
+function [mcoords,mean_vals,extreme_coords,extreme_vals]=g_bb_getbestworst(fprefix,snapsonly,getbest,ncoords)
 [~,shortwhd] = g_imdb_choosedb;
 if nargin && ~isempty(fprefix)
     shortwhd = [fprefix shortwhd];
 end
-if nargin < 2
+if nargin < 2 || isempty(snapsonly)
     snapsonly = false;
 end
-if nargin < 3
+if nargin < 3 || isempty(getbest)
     getbest = true;
+end
+if nargin < 4 || isempty(ncoords)
+    ncoords = 10;
 end
 
 routenum = input('Enter route number [1]: ');
@@ -18,7 +21,6 @@ end
 improc = '';
 snapszht = 200;
 snapszhtall = 0:100:500;
-ncoords = 10;
 
 errs = cell(1,length(snapszhtall));
 for i = 1:length(snapszhtall)
@@ -43,6 +45,12 @@ if getbest
     sorttype = 'ascend';
 else
     sorttype = 'descend';
+end
+
+maxncoords = length(xyi);
+if ncoords > maxncoords
+    warning('ncoords > number of available points; capping at %d', maxncoords)
+    ncoords = maxncoords;
 end
 
 merrs = mean(errs,2);
@@ -112,3 +120,7 @@ for i = 2:length(maxI)
     fprintf('; %d %d',extreme_coords(i,:))
 end
 fprintf('];\n\n');
+
+if ~nargout
+    clear mcoords mean_vals extreme_coords extreme_vals
+end
