@@ -1,4 +1,4 @@
-function [mcoords,mean_vals,extreme_coords,extreme_vals]=g_bb_getbestworst(shortwhd,zht,snapszht,snapsonly,getbest,ncoords)
+function [meandat,extremedat]=g_bb_getbestworst(shortwhd,zht,snapszht,snapsonly,getbest,ncoords)
 if nargin < 1 || isempty(shortwhd)
     [~,shortwhd] = g_imdb_choosedb;
 end
@@ -57,25 +57,25 @@ if ncoords > maxncoords
 end
 
 merrs = mean(errs,2);
-[mean_vals,mI] = sort(merrs,sorttype);
+[meandat.errs,mI] = sort(merrs,sorttype);
 mI = mI(1:ncoords);
-mean_vals = mean_vals(1:ncoords);
+meandat.errs = meandat.errs(1:ncoords);
 
 if getbest
     extreme_errs = min(errs,[],2);
 else
     extreme_errs = max(errs,[],2);
 end
-[extreme_vals,maxI] = sort(extreme_errs,sorttype);
+[extremedat.errs,maxI] = sort(extreme_errs,sorttype);
 maxI = maxI(1:ncoords);
-extreme_vals = extreme_vals(1:ncoords);
+extremedat.errs = extremedat.errs(1:ncoords);
 
 if getbest
     disp('Best mean errors:')
 else
     disp('Worst mean errors:')
 end
-fprintf('%g, ',mean_vals)
+fprintf('%g, ',meandat.errs)
 fprintf('\n')
 
 if getbest
@@ -83,10 +83,10 @@ if getbest
 else
     disp('Worst max errors:')
 end
-fprintf('%g, ',extreme_vals)
+fprintf('%g, ',extremedat.errs)
 fprintf('\n')
 
-mcoords = [p.xs(imxi(xyi(mI)))' p.ys(imyi(xyi(mI)))'];
+meandat.coords = [p.xs(imxi(xyi(mI)))' p.ys(imyi(xyi(mI)))'];
 if getbest
     fprintf('\n%% best-matching positions - mean error')
 else
@@ -96,16 +96,16 @@ if snapsonly
     fprintf(', snaps only')
 end
 if getbest
-    fprintf('\ngoodcoords = [%d %d', mcoords(1,:))
+    fprintf('\ngoodcoords = [%d %d', meandat.coords(1,:))
 else
-    fprintf('\nbadcoords = [%d %d', mcoords(1,:))
+    fprintf('\nbadcoords = [%d %d', meandat.coords(1,:))
 end
 for i = 2:length(mI)
-    fprintf('; %d %d',mcoords(i,:))
+    fprintf('; %d %d',meandat.coords(i,:))
 end
 fprintf('];\n');
 
-extreme_coords = [p.xs(imxi(xyi(maxI)))' p.ys(imyi(xyi(maxI)))'];
+extremedat.coords = [p.xs(imxi(xyi(maxI)))' p.ys(imyi(xyi(maxI)))'];
 if getbest
     fprintf('\n%% best-matching positions - min error')
 else
@@ -115,15 +115,15 @@ if snapsonly
     fprintf(', snaps only')
 end
 if getbest
-    fprintf('\ngoodcoords = [%d %d', extreme_coords(1,:))
+    fprintf('\ngoodcoords = [%d %d', extremedat.coords(1,:))
 else
-    fprintf('\nbadcoords = [%d %d', extreme_coords(1,:))
+    fprintf('\nbadcoords = [%d %d', extremedat.coords(1,:))
 end
 for i = 2:length(maxI)
-    fprintf('; %d %d',extreme_coords(i,:))
+    fprintf('; %d %d',extremedat.coords(i,:))
 end
 fprintf('];\n\n');
 
 if ~nargout
-    clear mcoords mean_vals extreme_coords extreme_vals
+    clear meandat extremedat
 end
