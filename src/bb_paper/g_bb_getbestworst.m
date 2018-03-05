@@ -25,24 +25,25 @@ end
 
 improc = '';
 
-errs = cell(1,length(zht));
+[errs,headings] = deal(cell(1,length(zht)));
 for i = 1:length(zht)
-    [imxi,imyi,~,~,allerrs,~,~,~,~,~,errsel,p,~,~,~,snapszht,snxi,snyi] = g_imdb_route_getdata( ...
+    [imxi,imyi,heads,~,allerrs,~,~,~,~,~,errsel,p,~,~,~,snapszht,snxi,snyi] = g_imdb_route_getdata( ...
         shortwhd,routenum,90,zht(i),false,improc,false,[], ...
         false,snapszht);
     
     if snapsonly
         % only interested in snapshot positions
         [xyi,~] = find(bsxfun(@eq,snxi',imxi) & bsxfun(@eq,snyi',imyi));
-        errs{i} = allerrs(xyi);
     else
         % get errors from "error corridor"
         xyi = find(errsel);
 %         xyi = 1:length(imxi);
-        errs{i} = allerrs(xyi);
     end
+    errs{i} = allerrs(xyi);
+    headings{i} = heads(xyi);
 end
 errs = cell2mat(errs);
+headings = cell2mat(headings);
 
 if getbest
     sorttype = 'ascend';
@@ -60,6 +61,7 @@ merrs = mean(errs,2);
 [meandat.errs,mI] = sort(merrs,sorttype);
 mI = mI(1:ncoords);
 meandat.errs = meandat.errs(1:ncoords);
+meandat.headings = headings(mI,:);
 
 if getbest
     extreme_errs = min(errs,[],2);
@@ -69,6 +71,7 @@ end
 [extremedat.errs,maxI] = sort(extreme_errs,sorttype);
 maxI = maxI(1:ncoords);
 extremedat.errs = extremedat.errs(1:ncoords);
+extremedat.headings = headings(mI,:);
 
 if getbest
     disp('Best mean errors:')
