@@ -26,4 +26,7 @@ elseif numel(col)==1 && numel(row)>1
     col = col*ones(size(row));
 end
 
+if any(col < 1) || any(col > b) || any(row < 1) || any(row > a)
+    error('invalid row or col')
+end
 subplot(a,b,sub2ind([b a],col,row));
