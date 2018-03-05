@@ -281,14 +281,16 @@ end
         dist = hypot(p.ys(yi)-csny,p.xs(xi)-csnx);
         title(sprintf('Snap num: %d @%gmm',csnapi,dist))
         
-%         csnth = snth(csnapi);
-%         snrot = round(csnth*imsz(2)/(2*pi));
-%         rotsnap = circshift(snap,snrot,2);
-        
         alsubplot(4,1)
         imagesc(im2double(rrawim)-im2double(rrawsnap))
         axis equal tight
         colorbar
+        
+        figure(2);clf
+        plot(p.xs(imxi),p.ys(imyi),'b.',p.xs(xi),p.ys(yi),'gx', ...
+            csnx,csny,'ro')
+        
+        figure(1)
     end
     
     function plotmultiridfs(xi,yi)
