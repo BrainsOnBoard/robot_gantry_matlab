@@ -1,7 +1,6 @@
-function [mcoords,mean_vals,extreme_coords,extreme_vals]=g_bb_getbestworst(fprefix,snapsonly,getbest,ncoords)
-[~,shortwhd] = g_imdb_choosedb;
-if nargin && ~isempty(fprefix)
-    shortwhd = [fprefix shortwhd];
+function [mcoords,mean_vals,extreme_coords,extreme_vals]=g_bb_getbestworst(shortwhd,snapsonly,getbest,ncoords)
+if nargin < 1 || isempty(shortwhd)
+    [~,shortwhd] = g_imdb_choosedb;
 end
 if nargin < 2 || isempty(snapsonly)
     snapsonly = false;

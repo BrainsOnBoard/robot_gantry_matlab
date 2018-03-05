@@ -1,4 +1,4 @@
-function g_bb_ridf(shortwhd,routenum,zht,snapszht,userealsnaps,improc,coords,shiftridfs,dosave,joinpdfs,figtype,doautoridf)
+function g_bb_ridf(shortwhd,routenum,zht,snapszht,userealsnaps,improc,coords,shiftridfs,dosave,joinpdfs,figtype,doautoridf,dointeractive)
 close all
 
 if nargin < 1 || isempty(shortwhd)
@@ -38,8 +38,11 @@ end
 if nargin < 11 || isempty(figtype)
     figtype = 'pdf';
 end
-if nargin < 12
+if nargin < 12 || isempty(doautoridf)
     doautoridf = false;
+end
+if nargin < 13 || isempty(dointeractive)
+    dointeractive = isempty(coords);
 end
 
 if userealsnaps && length(snapszht) > 1
@@ -110,7 +113,79 @@ flabel = g_imdb_getlabel(fullfile(g_dir_imdb,shortwhd));
 sprows = ceil(length(snapszht)/2);
 snapszhtstr = numjoin(snapszht);
 
-if ~isempty(coords) % empty coords signals interactive mode
+if dointeractive
+    if isempty(coords)
+        czhti = floor(round(length(zht))/2);
+        csnzhti = floor(round(length(snapszht))/2);
+
+        % show quiver plot to click on
+        showquiver
+
+        while true % loop until user quits
+            figure(1)
+            try
+                [x,y,but] = ginput(1);
+            catch ex
+                if strcmp(ex.identifier,'MATLAB:ginput:FigureDeletionPause')
+                    break
+                end
+                rethrow(ex)
+            end
+            if isempty(but)
+                break
+            end
+
+            switch but
+                case 1 % left mouse button
+                    if x < 0 || x > p.lim(1) || y < 0 || y > p.lim(2)
+                        disp('Invalid point selected')
+                        break
+                    end
+
+                    % get nearest point on grid to click
+                    [~,xi] = min(abs(p.xs-x));
+                    [~,yi] = min(abs(p.ys-y));
+
+                    plotridfs(xi,yi)
+                    showdiffim(xi,yi)
+                case 'w' % zht up
+                    if czhti < length(zht)
+                        czhti = czhti+1;
+                        showquiver
+                    end
+                case 's' % zht down
+                    if czhti > 1
+                        czhti = czhti-1;
+                        showquiver
+                    end
+                case 'q' % snapszht up
+                    if csnzhti < length(snapszht)
+                        csnzhti = csnzhti+1;
+                        showquiver
+                    end
+                case 'a' % snapszht down
+                    if csnzhti > 1
+                        csnzhti = csnzhti-1;
+                        showquiver
+                    end
+                case ' ' % save
+                    g_fig_save(sprintf('ridf_%s_%s%sres%03d_route%03d_snapszht%s_x%04d_y%04d', ...
+                        flabel,improcstr,'pm_',imsz(2),routenum,snapszhtstr,coords(i,1),coords(i,2)),figsz,figtype);
+            end
+        end
+    else
+        % only one set of coords is supported for now
+        xi = find(p.xs==coords(:,1));
+        yi = find(p.ys==coords(:,2));
+        
+        % FIX
+        czhti = 1;
+        csnzhti = 1;
+        
+        plotridfs(xi,yi)
+%         showdiffim(xi,yi)
+    end
+else
     if joinpdfs
         g_fig_series_start
     end
@@ -129,65 +204,6 @@ if ~isempty(coords) % empty coords signals interactive mode
     if joinpdfs
         g_fig_series_end(sprintf('ridf_%s_%s%sres%03d_route%03d_snapszht%s.pdf', ...
             flabel,improcstr,'pm_',imsz(2),routenum,snapszhtstr),true,figtype);
-    end
-else
-    czhti = floor(round(length(zht))/2);
-    csnzhti = floor(round(length(snapszht))/2);
-    
-    % show quiver plot to click on
-    showquiver
-    
-    while true % loop until user quits
-        figure(1)
-        try
-            [x,y,but] = ginput(1);
-        catch ex
-            if strcmp(ex.identifier,'MATLAB:ginput:FigureDeletionPause')
-                break
-            end
-            rethrow(ex)
-        end
-        if isempty(but)
-            break
-        end
-        
-        switch but
-            case 1 % left mouse button
-                if x < 0 || x > p.lim(1) || y < 0 || y > p.lim(2)
-                    disp('Invalid point selected')
-                    break
-                end
-
-                % get nearest point on grid to click
-                [~,xi] = min(abs(p.xs-x));
-                [~,yi] = min(abs(p.ys-y));
-
-                plotridfs(xi,yi)
-                showdiffim(xi,yi)
-            case 'w' % zht up
-                if czhti < length(zht)
-                    czhti = czhti+1;
-                    showquiver
-                end
-            case 's' % zht down
-                if czhti > 1
-                    czhti = czhti-1;
-                    showquiver
-                end
-            case 'q' % snapszht up
-                if csnzhti < length(snapszht)
-                    csnzhti = csnzhti+1;
-                    showquiver
-                end
-            case 'a' % snapszht down
-                if csnzhti > 1
-                    csnzhti = csnzhti-1;
-                    showquiver
-                end
-            case ' ' % save
-                g_fig_save(sprintf('ridf_%s_%s%sres%03d_route%03d_snapszht%s_x%04d_y%04d', ...
-                    flabel,improcstr,'pm_',imsz(2),routenum,snapszhtstr,coords(i,1),coords(i,2)),figsz,figtype);
-        end
     end
 end
 
