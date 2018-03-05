@@ -61,6 +61,7 @@ merrs = mean(errs,2);
 [meandat.errs,mI] = sort(merrs,sorttype);
 mI = mI(1:ncoords);
 meandat.errs = meandat.errs(1:ncoords);
+meandat.allerrs = errs(mI,:);
 meandat.headings = headings(mI,:);
 
 if getbest
@@ -71,7 +72,8 @@ end
 [extremedat.errs,maxI] = sort(extreme_errs,sorttype);
 maxI = maxI(1:ncoords);
 extremedat.errs = extremedat.errs(1:ncoords);
-extremedat.headings = headings(mI,:);
+extremedat.allerrs = errs(maxI,:);
+extremedat.headings = headings(maxI,:);
 
 if getbest
     disp('Best mean errors:')
