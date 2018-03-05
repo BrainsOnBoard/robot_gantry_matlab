@@ -2,10 +2,7 @@ function g_bb_ridf(shortwhd,routenum,zht,snapszht,userealsnaps,improc,coords,shi
 close all
 
 if nargin < 1 || isempty(shortwhd)
-    shortwhd='imdb_2017-02-09_001';  % open, pile
-%     shortwhd='imdb_2016-03-29_001'; % open, boxes
-%     shortwhd='imdb_2016-02-08_003'; % closed, boxes (z=250mm)
-%     shortwhd='imdb_2017-06-06_001'; % closed, plants
+    [~,shortwhd] = g_imdb_choosedb;
 end
 if nargin < 2 || isempty(routenum)
     routenum = 1;
@@ -166,6 +163,7 @@ else
                 [~,yi] = min(abs(p.ys-y));
 
                 plotridfs(xi,yi)
+                showdiffim(xi,yi)
             case 'w' % zht up
                 if czhti < length(zht)
                     czhti = czhti+1;
@@ -263,5 +261,34 @@ end
             subplot(sprows,spcols,csnapszhti)
             ylim([0 ymax])
         end
+    end
+
+    function showdiffim(xi,yi)
+        whd = fullfile(g_dir_imdb,shortwhd);
+        
+        % get the image for the clicked position
+        im = g_imdb_getim(whd,xi,yi,czhti);
+        
+        % get best-matching snap for this position
+        snapi = bestsnap{czhti,csnzhti};
+        posi = find(imxi==xi & imyi==yi);
+        snxi = find(p.xs==snx(snapi(posi)));
+        snyi = find(p.ys==sny(snapi(posi)));
+        snap = g_imdb_getim(whd,snxi,snyi,csnzhti);
+        
+        figure(3);clf
+        alsubplot(3,1,1,1)
+        imshow(im)
+        title('current view')
+        
+        alsubplot(2,1)
+        imshow(snap)
+        title('best-matching snapshot')
+        
+        alsubplot(3,1)
+        imagesc(im2double(im)-im2double(snap))
+        title('difference')
+        axis equal tight
+        colorbar
     end
 end
