@@ -58,8 +58,6 @@ figsz = [30 30];
 %% load RIDFs
 % extract best-matching snaps and RIDFs and put into cell array (because
 % the dimensions differ)
-% TODO: there's something here that I need to have more of a look at: how
-% dimensions of bestridfs and bestsnap match up with heights
 [bestsnap,bestridfs,imxyi] = deal(cell(length(zht),length(snapszht)));
 for i = 1:length(zht)
     for j = 1:length(snapszht)
@@ -249,7 +247,7 @@ end
         % get RIDF for best match
         cridfs = NaN(imsz(2),length(zht));
 %         snaps = NaN(length(zht),1);
-        if doautoridf
+        if doautoridf % why are these two bits identical?
             for besti = 1:length(zht)
                 cind = find(all(bsxfun(@eq,imxyi{besti,csnapszhti},[xi yi]),2),1);
                 if isempty(cind)
@@ -280,11 +278,10 @@ end
         cridfs(end+1,:) = cridfs(1,:);
 
         h=plot(ths,cridfs);
-        h(csnapszhti).LineStyle='--';
+        h(zht==snapszht(csnapszhti)).LineStyle='--';
         xlim([-180 180])
         set(gca,'XTick',-180:90:180)
         xlabel('Angle (deg)')
-%             title(sprintf('x=%d, y=%d, snapszht=%dmm',gx,gy,snapszht(csnapszhti)+50))
         title(sprintf('(%d, %d) Training height: %d mm',gx,gy,snapszht(csnapszhti)+50))
         title(legend(num2str((zht+50)')),'Height (mm)')
 
