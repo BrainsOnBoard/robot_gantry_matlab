@@ -12,8 +12,7 @@ if docache
     dname = fullfile(g_dir_cache_procim,shortwhd,char(imfun),num2str(res));
     imfn = fullfile(dname,sprintf('im_%03d_%03d_%03d.mat',xi,yi,zi));
     if exist(imfn,'file')
-        p=load(imfn,'im');
-        procim = p.im;
+        load(imfn,'procim');
         if nargout > 1
             im = g_imdb_getim(whd,xi,yi,zi);
         end
@@ -27,15 +26,14 @@ if isempty(im)
     return
 end
 
-if res ~= 720;
+if res ~= 720
     procim = imresize(im,round([res*size(im,1)/size(im,2), res]),'bilinear');
 end
 procim = im2double(imfun(procim));
-
 
 if docache
     if ~exist(dname,'dir')
         mkdir(dname)
     end
-    save(imfn,'im');
+    save(imfn,'procim');
 end
