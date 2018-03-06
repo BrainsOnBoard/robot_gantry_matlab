@@ -238,6 +238,9 @@ if dointeractive
                         figfn = fullfile(figdir,sprintf('n%03d_%03d_%03d_%03d', ...
                             ccoordi,xi,yi,find(p.zs==zht(czhtcnt))));
                         g_fig_save(figfn,[15 20],figtype,figtype,[],false);
+                    case 27 % esc
+                        close all
+                        break
                 end
             catch ex
                 if strcmp(ex.identifier,'MATLAB:ginput:FigureDeletionPause')
