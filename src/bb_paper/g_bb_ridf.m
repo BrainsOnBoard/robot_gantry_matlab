@@ -51,6 +51,7 @@ if userealsnaps && length(snapszht) > 1
 end
 
 forcegen = false;
+ncoords = size(coords,1);
 
 imsz = [7 90];
 % whd = fullfile(g_dir_imdb,shortwhd);
@@ -68,9 +69,9 @@ for i = 1:length(zht)
             userealsnaps,snapszht(j));
 
         if doautoridf
-            [ind,sni] = deal(NaN(size(coords,1),1));
+            [ind,sni] = deal(NaN(ncoords,1));
             icoords = NaN(size(coords));
-            for k = 1:size(coords,1)
+            for k = 1:ncoords
                 sni(k) = find(snx==coords(k,1) & sny==coords(k,2));
                 icoords(k,:) = [find(coords(k,1)==p.xs), find(coords(k,2)==p.ys)];
                 ind(k) = find(icoords(k,1)==imxi & icoords(k,2)==imyi);
@@ -186,13 +187,16 @@ if dointeractive
         down = up(end:-1:1);
         redblue = [up,up,ones(32,1);ones(32,1),down,down];
         
+        figdir = fullfile('ridf_interactive',shortwhd);
+        
         czhtcnt = find(zht==snapszht);
         ccoordi = 1;
         while true
-            xi = find(p.xs==coords(ccoordi,1));
-            yi = find(p.ys==coords(ccoordi,2));
+            ccoords = coords(ccoordi,:);
+            xi = find(p.xs==ccoords(1));
+            yi = find(p.ys==ccoords(2));
             plotforbestworst(xi,yi,czhtcnt,headings(ccoordi,czhtcnt))
-            title(sprintf('Coord %d/%d',ccoordi,size(coords,1)))
+            title(sprintf('Coord %d/%d',ccoordi,ncoords))
             
             try
                 [~,~,but] = ginput(1);
@@ -206,7 +210,7 @@ if dointeractive
                             ccoordi = ccoordi-1;
                         end
                     case {'d',1}
-                        if ccoordi < size(coords,1)
+                        if ccoordi < ncoords
                             ccoordi = ccoordi+1;
                         end
                     case 'w'
@@ -219,6 +223,14 @@ if dointeractive
                         end
                     case 'r' % reset
                         ccoordi = 1;
+                    case ' ' % save
+                        if ~exist(['figures/' figdir],'dir')
+                            mkdir(['figures/' figdir])
+                        end
+                        
+                        figfn = fullfile(figdir,sprintf('n%03d_%03d_%03d_%03d', ...
+                            ccoordi,xi,yi,find(p.zs==zht(czhtcnt))));
+                        g_fig_save(figfn,[15 20],figtype,figtype,[],false);
                 end
             catch ex
                 if strcmp(ex.identifier,'MATLAB:ginput:FigureDeletionPause')
@@ -231,7 +243,7 @@ else
     if joinpdfs
         g_fig_series_start
     end
-    for i = 1:size(coords,1)
+    for i = 1:ncoords
         % get corresponding grid coords
         xi = find(p.xs==coords(i,1));
         yi = find(p.ys==coords(i,2));
