@@ -187,7 +187,28 @@ if dointeractive
         down = up(end:-1:1);
         redblue = [up,up,ones(32,1);ones(32,1),down,down];
         
-        figdir = fullfile('ridf_interactive',shortwhd);
+        figdir = fullfile('ridf_bestworst',shortwhd);
+        if dosave
+            g_fig_series_start
+            showpos = true;
+            for ccoordi = 1:ncoords
+                for czhtcnt = 1:length(zht)
+                    ccoords = coords(ccoordi,:);
+                    chead = headings(ccoordi,czhtcnt);
+                    xi = find(p.xs==ccoords(1));
+                    yi = find(p.ys==ccoords(2));
+                    plotforbestworst(xi,yi,czhtcnt,chead,showpos,false)
+                    title(sprintf('Coord %d/%d',ccoordi,ncoords))
+                    savebestworstfig(figdir,czhtcnt,showpos,false)
+                    plotforbestworst(xi,yi,czhtcnt,chead,showpos,true)
+                    title(sprintf('Coord %d/%d',ccoordi,ncoords))
+                    savebestworstfig(figdir,czhtcnt,showpos,true)
+                end
+            end
+            g_fig_series_end(['ridf_bestworst_' shortwhd '.' figtype], ...
+                [],figtype)
+            return
+        end
         
         czhtcnt = find(zht==snapszht);
         ccoordi = 1;
@@ -231,16 +252,7 @@ if dointeractive
                     case 'r' % reset
                         ccoordi = 1;
                     case ' ' % save
-                        if ~exist(['figures/' figdir],'dir')
-                            mkdir(['figures/' figdir])
-                        end
-                        
-                        figfn = fullfile(figdir,sprintf('n%03d_%03d_%03d_%03d', ...
-                            ccoordi,xi,yi,find(p.zs==zht(czhtcnt))));
-                        if shownearest
-                            figfn = [figfn '_nearest'];
-                        end
-                        g_fig_save(figfn,[15 15],figtype,figtype,[],false);
+                        savebestworstfig(figdir,czhtcnt,showpos,shownearest);
                     case 27 % esc
                         close all
                         break
@@ -277,6 +289,20 @@ end
     function showquiver
         g_bb_quiver(shortwhd,routenum,zht(czhti),snapszht(csnzhti), ...
             userealsnaps,false,improc,true,false);
+    end
+
+    function savebestworstfig(figdir,czhtcnt,showpos,shownearest)
+        if ~exist(['figures/' figdir],'dir')
+            mkdir(['figures/' figdir])
+        end
+
+        figfn = fullfile(figdir,sprintf('n%03d_%03d_%03d_%03d', ...
+            ccoordi,xi,yi,find(p.zs==zht(czhtcnt))));
+        if shownearest
+            figfn = [figfn '_nearest'];
+        end
+        figfn = [figfn '.' figtype];
+        g_fig_save(figfn,[(showpos+1)*15 15],figtype,figtype,[],false);
     end
 
     function plotforbestworst(xi,yi,zhtcnt,head,showpos,shownearest)

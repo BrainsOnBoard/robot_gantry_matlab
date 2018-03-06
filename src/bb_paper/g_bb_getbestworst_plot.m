@@ -1,4 +1,4 @@
-function g_bb_getbestworst_interactive
+function g_bb_getbestworst_plot
 ncoords = 20;
 
 [~,shortwhd] = g_imdb_choosedb;
@@ -9,7 +9,7 @@ snapszht = 200;
 userealsnaps = false;
 improc = '';
 shiftridfs = false;
-dosave = false;
+dosave = true;
 joinpdfs = [];
 figtype = [];
 doautoridf = false;
