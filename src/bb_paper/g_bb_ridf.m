@@ -192,12 +192,13 @@ if dointeractive
         czhtcnt = find(zht==snapszht);
         ccoordi = 1;
         showpos = false;
+        shownearest = false;
         while true
             ccoords = coords(ccoordi,:);
             xi = find(p.xs==ccoords(1));
             yi = find(p.ys==ccoords(2));
             plotforbestworst(xi,yi,czhtcnt,headings(ccoordi,czhtcnt), ...
-                showpos)
+                showpos,shownearest)
             title(sprintf('Coord %d/%d',ccoordi,ncoords))
             
             try
@@ -225,6 +226,8 @@ if dointeractive
                         end
                     case 'p' % show/hide positions
                         showpos = ~showpos;
+                    case 'n' % show/hide nearest snap
+                        shownearest = ~shownearest;
                     case 'r' % reset
                         ccoordi = 1;
                     case ' ' % save
@@ -234,6 +237,9 @@ if dointeractive
                         
                         figfn = fullfile(figdir,sprintf('n%03d_%03d_%03d_%03d', ...
                             ccoordi,xi,yi,find(p.zs==zht(czhtcnt))));
+                        if shownearest
+                            figfn = [figfn '_nearest'];
+                        end
                         g_fig_save(figfn,[15 20],figtype,figtype,[],false);
                     case 27 % esc
                         close all
@@ -273,9 +279,12 @@ end
             userealsnaps,false,improc,true,false);
     end
 
-    function plotforbestworst(xi,yi,zhtcnt,head,showpos)
+    function plotforbestworst(xi,yi,zhtcnt,head,showpos,shownearest)
         csnzhti = 1;
         imfun = gantry_getimfun(improc);
+        
+        % nearest snap (Euclidean distance)
+        [~,nearsnapi] = min(hypot(sny-p.ys(yi),snx-p.xs(xi)));
         
         [zhti,~] = find(bsxfun(@eq,p.zs',zht));
         whd = fullfile(g_dir_imdb,shortwhd);
@@ -290,10 +299,14 @@ end
         imshow(rrawim)
         title(sprintf('Test height: %dmm; err: %.2fdeg; overall err: %.2fdeg', ...
             zht(zhtcnt)+50,allerrs(ccoordi,zhtcnt),errs(ccoordi)))
-
+        
         alsubplot(3,1)
         snapi = bestsnap{zhtcnt,csnzhti};
-        csnapi = snapi(imxi==xi & imyi==yi);
+        if shownearest
+            csnapi = nearsnapi;
+        else
+            csnapi = snapi(imxi==xi & imyi==yi);
+        end
         csnx = snx(csnapi);
         csny = sny(csnapi);
         snxi = find(p.xs==csnx);
@@ -303,7 +316,14 @@ end
         rrawsnap = circshift(rawsnap,round(head*size(rawsnap,2)/(2*pi)),2);
         imshow(rrawsnap)
         dist = hypot(p.ys(yi)-csny,p.xs(xi)-csnx);
-        title(sprintf('Snap num: %d @%gmm',csnapi,dist))
+        if shownearest
+            h=title(sprintf('Nearest snap num: %d @%gmm',csnapi,dist));
+        else
+            h=title(sprintf('Snap num: %d @%gmm',csnapi,dist));
+        end
+        if csnapi==nearsnapi
+            set(h,'Color','b');
+        end
         
         ax=alsubplot(4,1);
         imagesc(im2double(rrawim)-im2double(rrawsnap))
@@ -313,12 +333,10 @@ end
         colorbar
         
         if showpos
-            % nearest snap (Euclidean distance)
-            [~,I] = min(hypot(sny-p.ys(yi),snx-p.xs(xi)));
-            
             alsubplot(1:4,2);
             plot(p.xs(imxi),p.ys(imyi),'b.',snx,sny,'g.', ...
-                p.xs(xi),p.ys(yi),'kd',snx(I),sny(I),'ko',csnx,csny,'ro')
+                p.xs(xi),p.ys(yi),'kd',snx(nearsnapi),sny(nearsnapi), ...
+                'ko',csnx,csny,'ro')
         end
     end
     
