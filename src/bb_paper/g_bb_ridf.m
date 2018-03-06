@@ -316,9 +316,12 @@ end
         colorbar
         
         if showpos
+            % nearest snap (Euclidean distance)
+            [~,I] = min(hypot(sny-p.ys(yi),snx-p.xs(xi)));
+            
             figure(2);clf
             plot(p.xs(imxi),p.ys(imyi),'b.',snx,sny,'g.', ...
-                p.xs(xi),p.ys(yi),'kd',csnx,csny,'ro')
+                p.xs(xi),p.ys(yi),'kd',snx(I),sny(I),'ko',csnx,csny,'ro')
 
             figure(1)
         end
