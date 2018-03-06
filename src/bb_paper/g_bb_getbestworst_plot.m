@@ -5,7 +5,7 @@ ncoords = 20;
 routenum = 1;
 
 zht = 0:100:500;
-snapszht = 200;
+snapszht = 0;
 userealsnaps = false;
 improc = '';
 shiftridfs = false;
