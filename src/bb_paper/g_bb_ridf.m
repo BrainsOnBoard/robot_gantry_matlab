@@ -240,7 +240,7 @@ if dointeractive
                         if shownearest
                             figfn = [figfn '_nearest'];
                         end
-                        g_fig_save(figfn,[15 20],figtype,figtype,[],false);
+                        g_fig_save(figfn,[15 15],figtype,figtype,[],false);
                     case 27 % esc
                         close all
                         break
@@ -290,17 +290,17 @@ end
         whd = fullfile(g_dir_imdb,shortwhd);
         
         figure(1);clf
-        alsubplot(4,1+showpos,1,1)
+        alsubplot(5,1+showpos,1:2,1)
         plotridf(xi,yi,csnzhti)
         
-        alsubplot(2,1)
+        alsubplot(3,1)
         [im,rawim] = g_imdb_getprocim(whd,xi,yi,zhti(zhtcnt),imfun,imsz(2));
         rrawim = circshift(rawim,round(head*size(rawim,2)/(2*pi)),2);
         imshow(rrawim)
         title(sprintf('Test height: %dmm; err: %.2fdeg; overall err: %.2fdeg', ...
             zht(zhtcnt)+50,allerrs(ccoordi,zhtcnt),errs(ccoordi)))
         
-        alsubplot(3,1)
+        alsubplot(4,1)
         snapi = bestsnap{zhtcnt,csnzhti};
         if shownearest
             csnapi = nearsnapi;
@@ -325,7 +325,7 @@ end
             set(h,'Color','b');
         end
         
-        ax=alsubplot(4,1);
+        ax=alsubplot(5,1);
         imagesc(im2double(rrawim)-im2double(rrawsnap))
         caxis([-1 1])
         colormap(ax,redblue)
@@ -333,7 +333,7 @@ end
         colorbar
         
         if showpos
-            alsubplot(1:4,2);
+            alsubplot(1:5,2);
             plot(p.xs(imxi),p.ys(imyi),'b.',snx,sny,'g.', ...
                 p.xs(xi),p.ys(yi),'kd',snx(nearsnapi),sny(nearsnapi), ...
                 'ko',csnx,csny,'ro')
