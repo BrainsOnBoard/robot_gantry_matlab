@@ -308,7 +308,7 @@ end
         alsubplot(5,1+showpos,1:2,1)
         if shownearest
             [rhead,minval,whsn,diffs] = ridfheadmulti(im,snap);
-            diffs = circshift(diffs,floor(imsz(2)/2));
+            diffs = circshift(diffs,round((imsz(2)/2)*(1+snth(csnapi)/pi)));
             diffs = diffs / prod(imsz);
             diffs(end+1) = diffs(1);
             plot(linspace(-180,180,imsz(2)+1),diffs)
