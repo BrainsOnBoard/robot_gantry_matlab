@@ -205,8 +205,8 @@ if dointeractive
                     savebestworstfig(figdir,czhtcnt,showpos,true)
                 end
             end
-            g_fig_series_end(['ridf_bestworst_' shortwhd '.' figtype], ...
-                [],figtype)
+            g_fig_series_end(sprintf('ridf_bestworst_@%d_%s.%s',snapszht, ...
+                shortwhd,figtype),[],figtype)
             return
         end
         
