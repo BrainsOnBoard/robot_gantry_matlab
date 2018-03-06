@@ -381,30 +381,16 @@ end
         % get RIDF for best match
         cridfs = NaN(imsz(2),length(zht));
 %         snaps = NaN(length(zht),1);
-        if doautoridf % why are these two bits identical?
-            for besti = 1:length(zht)
-                cind = find(all(bsxfun(@eq,imxyi{besti,csnapszhti},[xi yi]),2),1);
-                if isempty(cind)
-                    warning('no match found')
-                    return
-                end
-
-                cridfs(:,besti) = bestridfs{besti,csnapszhti}(cind,:);
-%                 snaps(besti) = bestsnap{besti,csnapszhti}(cind);
-%                 fprintf('best snap: %d\n',bestsnap{besti,csnapszhti}(cind));
+        for besti = 1:length(zht)
+            cind = find(all(bsxfun(@eq,imxyi{besti,csnapszhti},[xi yi]),2),1);
+            if isempty(cind)
+                warning('no match found')
+                return
             end
-        else
-            for besti = 1:length(zht)
-                cind = find(all(bsxfun(@eq,imxyi{besti,csnapszhti},[xi yi]),2),1);
-                if isempty(cind)
-                    warning('no match found')
-                    return
-                end
 
-                cridfs(:,besti) = bestridfs{besti,csnapszhti}(cind,:);
-%                 snaps(besti) = bestsnap{besti,csnapszhti}(cind);
-%                 fprintf('best snap: %d\n',bestsnap{besti,csnapszhti}(cind));
-            end
+            cridfs(:,besti) = bestridfs{besti,csnapszhti}(cind,:);
+%             snaps(besti) = bestsnap{besti,csnapszhti}(cind);
+%             fprintf('best snap: %d\n',bestsnap{besti,csnapszhti}(cind));
         end
 
         ths = repmat(linspace(-180,180,size(cridfs,1)+1)',1,size(cridfs,2));
