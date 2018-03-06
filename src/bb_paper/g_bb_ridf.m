@@ -401,7 +401,7 @@ end
         h(zht==snapszht(csnapszhti)).LineStyle='--';
         xlim([-180 180])
         set(gca,'XTick',-180:90:180)
-        xlabel('Angle (deg)')
+%         xlabel('Angle (deg)')
         title(sprintf('(%d, %d) Training height: %d mm',gx,gy,snapszht(csnapszhti)+50))
         title(legend(num2str((zht+50)')),'Height (mm)')
 
