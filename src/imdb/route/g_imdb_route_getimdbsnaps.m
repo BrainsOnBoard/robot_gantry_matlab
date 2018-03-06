@@ -20,8 +20,6 @@ sny = (pxsny-1)*imsep;
 [~,I] = sort(nearest);
 snx = snx(I);
 sny = sny(I);
-% snth = atan2(diff(sny),diff(snx));
-% snth(end+1) = snth(end);
 snth = truesnth(nearest(I));
 pxsnx = pxsnx(I);
 pxsny = pxsny(I);
@@ -34,23 +32,17 @@ pxsny = pxsny(I);
 
 sz = round([res*58/720, res]);
 snaps = NaN([sz, length(pxsnx)]);
-sninds = round(snth*720/(2*pi));
+sninds = round(snth*res/(2*pi));
 snvalids = true(length(pxsnx),1);
 for i = 1:length(pxsnx)
-    csnap = g_imdb_getim(whd,pxsnx(i),pxsny(i),zi);
+    csnap = g_imdb_getprocim(whd,pxsnx(i),pxsny(i),zi,imfun,res);
     if isempty(csnap)
         warning('im: %s (%d,%d,%d) does not exist',shortwhd,pxsnx(i),pxsny(i),zi);
         snvalids(i) = false;
         continue
     end
     
-    snaps(:,:,i) = im2double(imfun(imresize(circshift(csnap,sninds(i),2),sz,'bilinear')));
-    
-%     im1 = im2double(csnap);
-%     im2 = im2double(circshift(csnap,sninds(i),2));
-%     [head,~,cwhsn,cridfs] = ridfheadmulti(im2double(imfun(imresize(csnap,sz,'bilinear'))),snaps(:,:,i),'wta',[],length(sninds),[],true);
-%     [head,~,cwhsn,cridfs] = ridfheadmulti(im1,im2,'wta',[],size(im1,2),[],true);
-%     keyboard
+    snaps(:,:,i) = circshift(csnap,sninds(i),2);
 end
 
 snaps = snaps(:,:,snvalids);
