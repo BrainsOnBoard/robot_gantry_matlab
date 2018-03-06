@@ -227,40 +227,40 @@ if dointeractive
                 if isempty(but)
                     break
                 end
-                
-                switch but
-                    case 'a'
-                        if ccoordi > 1
-                            ccoordi = ccoordi-1;
-                        end
-                    case {'d',1}
-                        if ccoordi < ncoords
-                            ccoordi = ccoordi+1;
-                        end
-                    case 'w'
-                        if czhtcnt < length(zht)
-                            czhtcnt = czhtcnt+1;
-                        end
-                    case 's'
-                        if czhtcnt > 1
-                            czhtcnt = czhtcnt-1;
-                        end
-                    case 'p' % show/hide positions
-                        showpos = ~showpos;
-                    case 'n' % show/hide nearest snap
-                        shownearest = ~shownearest;
-                    case 'r' % reset
-                        ccoordi = 1;
-                    case ' ' % save
-                        savebestworstfig(figdir,czhtcnt,showpos,shownearest);
-                    case 27 % esc
-                        close all
-                        break
-                end
             catch ex
                 if strcmp(ex.identifier,'MATLAB:ginput:FigureDeletionPause')
                     break
                 end
+            end
+            
+            switch but
+                case 'a'
+                    if ccoordi > 1
+                        ccoordi = ccoordi-1;
+                    end
+                case {'d',1}
+                    if ccoordi < ncoords
+                        ccoordi = ccoordi+1;
+                    end
+                case 'w'
+                    if czhtcnt < length(zht)
+                        czhtcnt = czhtcnt+1;
+                    end
+                case 's'
+                    if czhtcnt > 1
+                        czhtcnt = czhtcnt-1;
+                    end
+                case 'p' % show/hide positions
+                    showpos = ~showpos;
+                case 'n' % show/hide nearest snap
+                    shownearest = ~shownearest;
+                case 'r' % reset
+                    ccoordi = 1;
+                case ' ' % save
+                    savebestworstfig(figdir,czhtcnt,showpos,shownearest);
+                case 27 % esc
+                    close all
+                    break
             end
         end
     end
@@ -313,6 +313,7 @@ end
         whd = fullfile(g_dir_imdb,shortwhd);
         [im,rawim] = g_imdb_getprocim(whd,xi,yi,zhti(zhtcnt),imfun,imsz(2));
         rrawim = circshift(rawim,round(head*size(rawim,2)/(2*pi)),2);
+        rim = circshift(im,round(head*imsz(2)/(2*pi)),2);
         
         % nearest snap (Euclidean distance)
         [~,nearsnapi] = min(hypot(sny-p.ys(yi),snx-p.xs(xi)));
@@ -330,9 +331,10 @@ end
         snzi = find(p.zs==snapszht(csnzhti));
         [snap,rawsnap] = g_imdb_getprocim(whd,snxi,snyi,snzi,imfun,imsz(2));
         rrawsnap = circshift(rawsnap,round(snth(csnapi)*size(rawsnap,2)/(2*pi)),2);
+        rsnap = circshift(snap,round(snth(csnapi)*imsz(2)/(2*pi)),2);
         
         figure(1);clf
-        alsubplot(5,1+showpos,1:2,1)
+        alsubplot(6,1+showpos,1:2,1)
         if shownearest
             [rhead,minval,whsn,diffs] = ridfheadmulti(im,snap);
             diffs = circshift(diffs,round((imsz(2)/2)*(1+snth(csnapi)/pi)));
@@ -340,8 +342,9 @@ end
             diffs(end+1) = diffs(1);
             plot(linspace(-180,180,imsz(2)+1),diffs)
             xlim([-180 180]);
+            minval = minval / prod(imsz);
         else
-            plotridf(xi,yi,csnzhti)
+            minval = plotridf(xi,yi,csnzhti);
         end
         
         alsubplot(3,1)
@@ -362,10 +365,21 @@ end
         end
         
         ax=alsubplot(5,1);
-        imagesc(im2double(rrawim)-im2double(rrawsnap))
+        diffimhi = im2double(rrawim)-im2double(rrawsnap);
+        imagesc(diffimhi)
+        pxdiff = minval*prod(imsz);
+        title(sprintf('min diff: %.3f (=%.2fpx)',minval,pxdiff))
         caxis([-1 1])
         colormap(ax,redblue)
-        axis equal tight
+        axis equal tight off
+        colorbar
+        
+        ax2=alsubplot(6,1);
+        diffimlo = im2double(rim)-im2double(rsnap);
+        imagesc(diffimlo)
+        caxis([-1 1])
+        colormap(ax2,redblue)
+        axis equal tight off
         colorbar
         
         if showpos
@@ -391,7 +405,7 @@ end
         end
         for csnapszhti = 1:length(snapszht)
             subplot(sprows,spcols,csnapszhti)
-            plotridf(xi,yi,csnapszhti)
+            plotridf(xi,yi,csnapszhti);
             
             yl = ylim;
             ymax = max(yl(2),ymax);
@@ -402,7 +416,7 @@ end
         end
     end
 
-    function plotridf(xi,yi,csnapszhti)
+    function minval=plotridf(xi,yi,csnapszhti)
         gx = p.xs(xi);
         gy = p.ys(yi);
         
@@ -426,7 +440,8 @@ end
         cridfs(end+1,:) = cridfs(1,:);
 
         h=plot(ths,cridfs);
-        h(zht==snapszht(csnapszhti)).LineStyle='--';
+        czi = zht==snapszht(csnapszhti);
+        h(czi).LineStyle='--';
         xlim([-180 180])
         set(gca,'XTick',-180:90:180)
 %         xlabel('Angle (deg)')
@@ -435,6 +450,8 @@ end
 
         g_fig_setfont
         andy_setbox
+        
+        minval = min(cridfs(:,czi));
     end
 
     function showdiffim(xi,yi)
