@@ -191,11 +191,13 @@ if dointeractive
         
         czhtcnt = find(zht==snapszht);
         ccoordi = 1;
+        showpos = false;
         while true
             ccoords = coords(ccoordi,:);
             xi = find(p.xs==ccoords(1));
             yi = find(p.ys==ccoords(2));
-            plotforbestworst(xi,yi,czhtcnt,headings(ccoordi,czhtcnt))
+            plotforbestworst(xi,yi,czhtcnt,headings(ccoordi,czhtcnt), ...
+                showpos)
             title(sprintf('Coord %d/%d',ccoordi,ncoords))
             
             try
@@ -220,6 +222,11 @@ if dointeractive
                     case 's'
                         if czhtcnt > 1
                             czhtcnt = czhtcnt-1;
+                        end
+                    case 'p' % show/hide positions
+                        showpos = ~showpos;
+                        if ~showpos
+                            close 2
                         end
                     case 'r' % reset
                         ccoordi = 1;
@@ -266,7 +273,7 @@ end
             userealsnaps,false,improc,true,false);
     end
 
-    function plotforbestworst(xi,yi,zhtcnt,head)
+    function plotforbestworst(xi,yi,zhtcnt,head,showpos)
         csnzhti = 1;
         imfun = gantry_getimfun(improc);
         
@@ -305,11 +312,13 @@ end
         axis equal tight
         colorbar
         
-        figure(2);clf
-        plot(p.xs(imxi),p.ys(imyi),'b.',snx,sny,'g.', ...
-            p.xs(xi),p.ys(yi),'kd',csnx,csny,'ro')
-        
-        figure(1)
+        if showpos
+            figure(2);clf
+            plot(p.xs(imxi),p.ys(imyi),'b.',snx,sny,'g.', ...
+                p.xs(xi),p.ys(yi),'kd',csnx,csny,'ro')
+
+            figure(1)
+        end
     end
     
     function plotmultiridfs(xi,yi)
