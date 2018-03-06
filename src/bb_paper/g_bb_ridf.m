@@ -283,24 +283,13 @@ end
         csnzhti = 1;
         imfun = gantry_getimfun(improc);
         
-        % nearest snap (Euclidean distance)
-        [~,nearsnapi] = min(hypot(sny-p.ys(yi),snx-p.xs(xi)));
-        
         [zhti,~] = find(bsxfun(@eq,p.zs',zht));
         whd = fullfile(g_dir_imdb,shortwhd);
-        
-        figure(1);clf
-        alsubplot(5,1+showpos,1:2,1)
-        plotridf(xi,yi,csnzhti)
-        
-        alsubplot(3,1)
         [im,rawim] = g_imdb_getprocim(whd,xi,yi,zhti(zhtcnt),imfun,imsz(2));
         rrawim = circshift(rawim,round(head*size(rawim,2)/(2*pi)),2);
-        imshow(rrawim)
-        title(sprintf('Test height: %dmm; err: %.2fdeg; overall err: %.2fdeg', ...
-            zht(zhtcnt)+50,allerrs(ccoordi,zhtcnt),errs(ccoordi)))
         
-        alsubplot(4,1)
+        % nearest snap (Euclidean distance)
+        [~,nearsnapi] = min(hypot(sny-p.ys(yi),snx-p.xs(xi)));
         snapi = bestsnap{zhtcnt,csnzhti};
         if shownearest
             csnapi = nearsnapi;
@@ -314,6 +303,26 @@ end
         snzi = find(p.zs==snapszht(csnzhti));
         [snap,rawsnap] = g_imdb_getprocim(whd,snxi,snyi,snzi,imfun,imsz(2));
         rrawsnap = circshift(rawsnap,round(head*size(rawsnap,2)/(2*pi)),2);
+        
+        figure(1);clf
+        alsubplot(5,1+showpos,1:2,1)
+        if shownearest
+            [rhead,minval,whsn,diffs] = ridfheadmulti(im,snap);
+            diffs = circshift(diffs,floor(imsz(2)/2));
+            diffs = diffs / prod(imsz);
+            diffs(end+1) = diffs(1);
+            plot(linspace(-180,180,imsz(2)+1),diffs)
+            xlim([-180 180]);
+        else
+            plotridf(xi,yi,csnzhti)
+        end
+        
+        alsubplot(3,1)
+        imshow(rrawim)
+        title(sprintf('Test height: %dmm; err: %.2fdeg; overall err: %.2fdeg', ...
+            zht(zhtcnt)+50,allerrs(ccoordi,zhtcnt),errs(ccoordi)))
+        
+        alsubplot(4,1)
         imshow(rrawsnap)
         dist = hypot(p.ys(yi)-csny,p.xs(xi)-csnx);
         if shownearest
