@@ -1,4 +1,4 @@
-function cnt=g_fig_save(ofname,sz,ext,type,r,addprefix)
+function cnt=g_fig_save(ofname,sz,ext,type,dpi,addprefix)
 %function cnt=g_fig_save(ofname,sz,ext,type,r,addprefix)
 
 global LASTFIGS
@@ -6,8 +6,8 @@ global LASTFIGS
 if nargin < 6
     addprefix = true;
 end
-if nargin < 5 || isempty(r)
-    r = 300;
+if nargin < 5 || isempty(dpi)
+    dpi = 300;
 end
 if nargin < 3 || isempty(ext)
     type = 'pdf';
@@ -51,7 +51,7 @@ else
 end
 
 fprintf('Saving figure to %s...\n',fname);
-print(['-d' type],sprintf('-r%d',r),fname);
+print(['-d' type],sprintf('-r%d',dpi),fname);
 
 if isempty(LASTFIGS)
     LASTFIGS = { fname };
