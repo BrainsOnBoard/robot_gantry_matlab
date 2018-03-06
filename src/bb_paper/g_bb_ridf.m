@@ -291,10 +291,11 @@ end
         % nearest snap (Euclidean distance)
         [~,nearsnapi] = min(hypot(sny-p.ys(yi),snx-p.xs(xi)));
         snapi = bestsnap{zhtcnt,csnzhti};
+        chosensnapi = snapi(imxi==xi & imyi==yi);
         if shownearest
             csnapi = nearsnapi;
         else
-            csnapi = snapi(imxi==xi & imyi==yi);
+            csnapi = chosensnapi;
         end
         csnx = snx(csnapi);
         csny = sny(csnapi);
@@ -344,8 +345,9 @@ end
         if showpos
             alsubplot(1:5,2);
             plot(p.xs(imxi),p.ys(imyi),'b.',snx,sny,'g.', ...
-                p.xs(xi),p.ys(yi),'kd',snx(nearsnapi),sny(nearsnapi), ...
-                'ko',csnx,csny,'ro')
+                p.xs(xi),p.ys(yi),'kd', ...
+                snx(nearsnapi),sny(nearsnapi),'ko', ...
+                snx(chosensnapi),sny(chosensnapi),'ro')
         end
     end
     
