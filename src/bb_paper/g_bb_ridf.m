@@ -225,9 +225,6 @@ if dointeractive
                         end
                     case 'p' % show/hide positions
                         showpos = ~showpos;
-                        if ~showpos
-                            close 2
-                        end
                     case 'r' % reset
                         ccoordi = 1;
                     case ' ' % save
@@ -284,7 +281,7 @@ end
         whd = fullfile(g_dir_imdb,shortwhd);
         
         figure(1);clf
-        alsubplot(4,1,1,1)
+        alsubplot(4,1+showpos,1,1)
         plotridf(xi,yi,csnzhti)
         
         alsubplot(2,1)
@@ -319,11 +316,9 @@ end
             % nearest snap (Euclidean distance)
             [~,I] = min(hypot(sny-p.ys(yi),snx-p.xs(xi)));
             
-            figure(2);clf
+            alsubplot(1:4,2);
             plot(p.xs(imxi),p.ys(imyi),'b.',snx,sny,'g.', ...
                 p.xs(xi),p.ys(yi),'kd',snx(I),sny(I),'ko',csnx,csny,'ro')
-
-            figure(1)
         end
     end
     
