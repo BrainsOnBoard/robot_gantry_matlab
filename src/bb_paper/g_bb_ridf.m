@@ -329,7 +329,7 @@ end
         snyi = find(p.ys==csny);
         snzi = find(p.zs==snapszht(csnzhti));
         [snap,rawsnap] = g_imdb_getprocim(whd,snxi,snyi,snzi,imfun,imsz(2));
-        rrawsnap = circshift(rawsnap,round(head*size(rawsnap,2)/(2*pi)),2);
+        rrawsnap = circshift(rawsnap,round(snth(csnapi)*size(rawsnap,2)/(2*pi)),2);
         
         figure(1);clf
         alsubplot(5,1+showpos,1:2,1)
