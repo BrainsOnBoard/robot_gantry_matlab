@@ -484,9 +484,11 @@ function plotforbestworst(xi,yi,zhtcnt,head,showpos,shownearest,improc, ...
 
     ax2=alsubplot(6,1);
     diffimlo = im2double(rim)-im2double(rsnap);
-    diffval = mean2(abs(diffimlo));
-    if abs(minval-diffval) <= 1e-5
-        warning('assertion failed (coord #%d)',ccoordi)
+    minval2 = mean2(abs(diffimlo));
+    diffval = minval2-minval;
+    if abs(diffval) >= 1e-5
+        warning('assertion failed (coord: %d; nearest: %d; zht: %.2f; diff: %g)', ...
+            ccoordi,shownearest,zht(zhtcnt)+50,diffval)
     end
     imagesc(diffimlo)
     caxis([-1 1])
