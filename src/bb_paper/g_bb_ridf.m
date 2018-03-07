@@ -342,7 +342,7 @@ end
             xlim([-180 180]);
             minval = minval / prod(imsz);
         else
-            minval = plotridf(xi,yi,csnzhti);
+            minval = plotridf(xi,yi,csnzhti,p,imxyi,bestridfs,zht,snapszht);
         end
         rrawim = circshift(rawim,round(head*size(rawim,2)/(2*pi)),2);
         rim = circshift(im,round(head*imsz(2)/(2*pi)),2);
@@ -409,7 +409,7 @@ end
         end
         for csnapszhti = 1:length(snapszht)
             subplot(sprows,spcols,csnapszhti)
-            plotridf(xi,yi,csnapszhti);
+            plotridf(xi,yi,csnapszhti,p,imxyi,bestridfs,zht,snapszht);
             
             yl = ylim;
             ymax = max(yl(2),ymax);
@@ -418,44 +418,6 @@ end
             subplot(sprows,spcols,csnapszhti)
             ylim([0 ymax])
         end
-    end
-
-    function minval=plotridf(xi,yi,csnapszhti)
-        gx = p.xs(xi);
-        gy = p.ys(yi);
-        
-        % get RIDF for best match
-        cridfs = NaN(imsz(2),length(zht));
-%         snaps = NaN(length(zht),1);
-        for besti = 1:length(zht)
-            cind = find(all(bsxfun(@eq,imxyi{besti,csnapszhti},[xi yi]),2),1);
-            if isempty(cind)
-                warning('no match found')
-                return
-            end
-
-            cridfs(:,besti) = bestridfs{besti,csnapszhti}(cind,:);
-%             snaps(besti) = bestsnap{besti,csnapszhti}(cind);
-%             fprintf('best snap: %d\n',bestsnap{besti,csnapszhti}(cind));
-        end
-
-        ths = repmat(linspace(-180,180,size(cridfs,1)+1)',1,size(cridfs,2));
-        cridfs = circshift(cridfs,floor(size(cridfs,1)/2));
-        cridfs(end+1,:) = cridfs(1,:);
-
-        h=plot(ths,cridfs);
-        czi = zht==snapszht(csnapszhti);
-        h(czi).LineStyle='--';
-        xlim([-180 180])
-        set(gca,'XTick',-180:90:180)
-%         xlabel('Angle (deg)')
-        title(sprintf('(%d, %d) Training height: %d mm',gx,gy,snapszht(csnapszhti)+50))
-        title(legend(num2str((zht+50)')),'Height (mm)')
-
-        g_fig_setfont
-        andy_setbox
-        
-        minval = min(cridfs(:,czi));
     end
 
     function showdiffim(xi,yi)
@@ -486,4 +448,42 @@ end
         axis equal tight
         colorbar
     end
+end
+
+function minval=plotridf(xi,yi,csnapszhti,p,imxyi,bestridfs,zht,snapszht)
+    gx = p.xs(xi);
+    gy = p.ys(yi);
+
+    % get RIDF for best match
+    cridfs = NaN(size(bestridfs{1},2),length(zht));
+%         snaps = NaN(length(zht),1);
+    for besti = 1:length(zht)
+        cind = find(all(bsxfun(@eq,imxyi{besti,csnapszhti},[xi yi]),2),1);
+        if isempty(cind)
+            warning('no match found')
+            return
+        end
+
+        cridfs(:,besti) = bestridfs{besti,csnapszhti}(cind,:);
+%             snaps(besti) = bestsnap{besti,csnapszhti}(cind);
+%             fprintf('best snap: %d\n',bestsnap{besti,csnapszhti}(cind));
+    end
+
+    ths = repmat(linspace(-180,180,size(cridfs,1)+1)',1,size(cridfs,2));
+    cridfs = circshift(cridfs,floor(size(cridfs,1)/2));
+    cridfs(end+1,:) = cridfs(1,:);
+
+    h=plot(ths,cridfs);
+    czi = zht==snapszht(csnapszhti);
+    h(czi).LineStyle='--';
+    xlim([-180 180])
+    set(gca,'XTick',-180:90:180)
+%         xlabel('Angle (deg)')
+    title(sprintf('(%d, %d) Training height: %d mm',gx,gy,snapszht(csnapszhti)+50))
+    title(legend(num2str((zht+50)')),'Height (mm)')
+
+    g_fig_setfont
+    andy_setbox
+
+    minval = min(cridfs(:,czi));
 end
