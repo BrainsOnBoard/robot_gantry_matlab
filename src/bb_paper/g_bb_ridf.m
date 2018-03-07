@@ -312,8 +312,6 @@ end
         [zhti,~] = find(bsxfun(@eq,p.zs',zht));
         whd = fullfile(g_dir_imdb,shortwhd);
         [im,rawim] = g_imdb_getprocim(whd,xi,yi,zhti(zhtcnt),imfun,imsz(2));
-        rrawim = circshift(rawim,round(head*size(rawim,2)/(2*pi)),2);
-        rim = circshift(im,round(head*imsz(2)/(2*pi)),2);
         
         % nearest snap (Euclidean distance)
         [~,nearsnapi] = min(hypot(sny-p.ys(yi),snx-p.xs(xi)));
@@ -336,7 +334,7 @@ end
         figure(1);clf
         alsubplot(6,1+showpos,1:2,1)
         if shownearest
-            [rhead,minval,whsn,diffs] = ridfheadmulti(im,snap);
+            [head,minval,whsn,diffs] = ridfheadmulti(im,rsnap);
             diffs = circshift(diffs,round((imsz(2)/2)*(1+snth(csnapi)/pi)));
             diffs = diffs / prod(imsz);
             diffs(end+1) = diffs(1);
@@ -346,6 +344,8 @@ end
         else
             minval = plotridf(xi,yi,csnzhti);
         end
+        rrawim = circshift(rawim,round(head*size(rawim,2)/(2*pi)),2);
+        rim = circshift(im,round(head*imsz(2)/(2*pi)),2);
         
         alsubplot(3,1)
         imshow(rrawim)
@@ -376,6 +376,7 @@ end
         
         ax2=alsubplot(6,1);
         diffimlo = im2double(rim)-im2double(rsnap);
+        assert(abs(minval-mean2(abs(diffimlo))) <= 1e-5)
         imagesc(diffimlo)
         caxis([-1 1])
         colormap(ax2,redblue)
