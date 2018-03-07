@@ -376,7 +376,10 @@ end
         
         ax2=alsubplot(6,1);
         diffimlo = im2double(rim)-im2double(rsnap);
-        assert(abs(minval-mean2(abs(diffimlo))) <= 1e-5)
+        diffval = mean2(abs(diffimlo));
+        if abs(minval-diffval) <= 1e-5
+            warning('assertion failed (coord #%d)',ccoordi)
+        end
         imagesc(diffimlo)
         caxis([-1 1])
         colormap(ax2,redblue)
