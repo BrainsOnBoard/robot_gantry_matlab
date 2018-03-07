@@ -440,9 +440,9 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos,shownearest,improc
     rsnap = circshift(snap,round(snth(csnapi)*imsz(2)/(2*pi)),2);
 
     figure(1);clf
-    alsubplot(6,1+showpos,1:2,1)
+    alsubplot(5,1+showpos,1:2,1)
     if shownearest
-        [head,minval,whsn,diffs] = ridfheadmulti(im,rsnap);
+        [head,minval,~,diffs] = ridfheadmulti(im,rsnap);
         diffs = circshift(diffs,round((imsz(2)/2)*(1+snth(csnapi)/pi)));
         diffs = diffs / prod(imsz);
         diffs(end+1) = diffs(1);
@@ -473,16 +473,6 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos,shownearest,improc
     end
 
     ax=alsubplot(5,1);
-    diffimhi = im2double(rrawim)-im2double(rrawsnap);
-    imagesc(diffimhi)
-    pxdiff = minval*prod(imsz);
-    title(sprintf('min diff: %.3f (=%.2fpx)',minval,pxdiff))
-    caxis([-1 1])
-    colormap(ax,redblue)
-    axis equal tight off
-    colorbar
-
-    ax2=alsubplot(6,1);
     diffimlo = im2double(rim)-im2double(rsnap);
     minval2 = mean2(abs(diffimlo));
     diffval = minval2-minval;
@@ -491,8 +481,10 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos,shownearest,improc
             ccoordi,shownearest,zht(czhti)+50,diffval)
     end
     imagesc(diffimlo)
+    pxdiff = minval*prod(imsz);
+    title(sprintf('min diff: %.3f (=%.2fpx)',minval,pxdiff))
     caxis([-1 1])
-    colormap(ax2,redblue)
+    colormap(ax,redblue)
     axis equal tight off
     colorbar
 
