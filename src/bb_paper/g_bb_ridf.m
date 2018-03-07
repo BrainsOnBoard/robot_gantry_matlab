@@ -199,10 +199,10 @@ if dointeractive
                     yi = find(p.ys==ccoords(2));
                     plotforbestworst(xi,yi,czhtcnt,chead,showpos,false)
                     title(sprintf('Coord %d/%d',ccoordi,ncoords))
-                    savebestworstfig(figdir,czhtcnt,showpos,false)
+                    savebestworstfig(figdir,showpos,false,getfigfn,figtype)
                     plotforbestworst(xi,yi,czhtcnt,chead,showpos,true)
                     title(sprintf('Coord %d/%d',ccoordi,ncoords))
-                    savebestworstfig(figdir,czhtcnt,showpos,true)
+                    savebestworstfig(figdir,showpos,true,getfigfn,figtype)
                 end
             end
             g_fig_series_end(sprintf('ridf_bestworst_@%d_%s.%s',snapszht, ...
@@ -257,7 +257,8 @@ if dointeractive
                 case 'r' % reset
                     ccoordi = 1;
                 case ' ' % save
-                    savebestworstfig(figdir,czhtcnt,showpos,shownearest);
+                    savebestworstfig(figdir,showpos,shownearest, ...
+                        getfigfn,figtype);
                 case 27 % esc
                     close all
                     break
@@ -291,18 +292,9 @@ end
             userealsnaps,false,improc,true,false);
     end
 
-    function savebestworstfig(figdir,czhtcnt,showpos,shownearest)
-        if ~exist(['figures/' figdir],'dir')
-            mkdir(['figures/' figdir])
-        end
-
+    function figfn=getfigfn
         figfn = fullfile(figdir,sprintf('n%03d_%03d_%03d_%03d', ...
             ccoordi,xi,yi,find(p.zs==zht(czhtcnt))));
-        if shownearest
-            figfn = [figfn '_nearest'];
-        end
-        figfn = [figfn '.' figtype];
-        g_fig_save(figfn,[(showpos+1)*15 15],figtype,figtype,[],false);
     end
 
     function plotforbestworst(xi,yi,zhtcnt,head,showpos,shownearest)
@@ -486,4 +478,16 @@ function minval=plotridf(xi,yi,csnapszhti,p,imxyi,bestridfs,zht,snapszht)
     andy_setbox
 
     minval = min(cridfs(:,czi));
+end
+
+function savebestworstfig(figdir,showpos,shownearest,figfn,figtype)
+    if ~exist(['figures/' figdir],'dir')
+        mkdir(['figures/' figdir])
+    end
+    
+    if shownearest
+        figfn = [figfn '_nearest'];
+    end
+    figfn = [figfn '.' figtype];
+    g_fig_save(figfn,[(showpos+1)*15 15],figtype,figtype,[],false);
 end
