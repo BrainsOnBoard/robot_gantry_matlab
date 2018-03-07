@@ -182,11 +182,6 @@ if dointeractive
             error('can only have 1 snapszht')
         end
         
-        % make colormap
-        up = linspace(0,1,32)';
-        down = up(end:-1:1);
-        redblue = [up,up,ones(32,1);ones(32,1),down,down];
-        
         figdir = fullfile('ridf_bestworst',shortwhd);
         if dosave
             g_fig_series_start
@@ -197,10 +192,16 @@ if dointeractive
                     chead = headings(ccoordi,czhtcnt);
                     xi = find(p.xs==ccoords(1));
                     yi = find(p.ys==ccoords(2));
-                    plotforbestworst(xi,yi,czhtcnt,chead,showpos,false)
+                    plotforbestworst(xi,yi,czhtcnt,chead,showpos,false, ...
+                        improc,bestridfs,bestsnap,snx,sny,snth,p,zht, ...
+                        snapszht,shortwhd,imsz,imxi,imyi,imxyi,ccoordi, ...
+                        errs,allerrs)
                     title(sprintf('Coord %d/%d',ccoordi,ncoords))
                     savebestworstfig(figdir,showpos,false,getfigfn,figtype)
-                    plotforbestworst(xi,yi,czhtcnt,chead,showpos,true)
+                    plotforbestworst(xi,yi,czhtcnt,chead,showpos,true, ...
+                        improc,bestridfs,bestsnap,snx,sny,snth,p,zht, ...
+                        snapszht,shortwhd,imsz,imxi,imyi,imxyi,ccoordi, ...
+                        errs,allerrs)
                     title(sprintf('Coord %d/%d',ccoordi,ncoords))
                     savebestworstfig(figdir,showpos,true,getfigfn,figtype)
                 end
@@ -219,7 +220,9 @@ if dointeractive
             xi = find(p.xs==ccoords(1));
             yi = find(p.ys==ccoords(2));
             plotforbestworst(xi,yi,czhtcnt,headings(ccoordi,czhtcnt), ...
-                showpos,shownearest)
+                showpos,shownearest,improc,bestridfs,bestsnap,snx,sny, ...
+                snth,p,zht,snapszht,shortwhd,imsz,imxi,imyi,imxyi, ...
+                ccoordi,errs,allerrs)
             title(sprintf('Coord %d/%d',ccoordi,ncoords))
             
             try
@@ -295,96 +298,6 @@ end
     function figfn=getfigfn
         figfn = fullfile(figdir,sprintf('n%03d_%03d_%03d_%03d', ...
             ccoordi,xi,yi,find(p.zs==zht(czhtcnt))));
-    end
-
-    function plotforbestworst(xi,yi,zhtcnt,head,showpos,shownearest)
-        csnzhti = 1;
-        imfun = gantry_getimfun(improc);
-        
-        [zhti,~] = find(bsxfun(@eq,p.zs',zht));
-        whd = fullfile(g_dir_imdb,shortwhd);
-        [im,rawim] = g_imdb_getprocim(whd,xi,yi,zhti(zhtcnt),imfun,imsz(2));
-        
-        % nearest snap (Euclidean distance)
-        [~,nearsnapi] = min(hypot(sny-p.ys(yi),snx-p.xs(xi)));
-        snapi = bestsnap{zhtcnt,csnzhti};
-        chosensnapi = snapi(imxi==xi & imyi==yi);
-        if shownearest
-            csnapi = nearsnapi;
-        else
-            csnapi = chosensnapi;
-        end
-        csnx = snx(csnapi);
-        csny = sny(csnapi);
-        snxi = find(p.xs==csnx);
-        snyi = find(p.ys==csny);
-        snzi = find(p.zs==snapszht(csnzhti));
-        [snap,rawsnap] = g_imdb_getprocim(whd,snxi,snyi,snzi,imfun,imsz(2));
-        rrawsnap = circshift(rawsnap,round(snth(csnapi)*size(rawsnap,2)/(2*pi)),2);
-        rsnap = circshift(snap,round(snth(csnapi)*imsz(2)/(2*pi)),2);
-        
-        figure(1);clf
-        alsubplot(6,1+showpos,1:2,1)
-        if shownearest
-            [head,minval,whsn,diffs] = ridfheadmulti(im,rsnap);
-            diffs = circshift(diffs,round((imsz(2)/2)*(1+snth(csnapi)/pi)));
-            diffs = diffs / prod(imsz);
-            diffs(end+1) = diffs(1);
-            plot(linspace(-180,180,imsz(2)+1),diffs)
-            xlim([-180 180]);
-            minval = minval / prod(imsz);
-        else
-            minval = plotridf(xi,yi,csnzhti,p,imxyi,bestridfs,zht,snapszht);
-        end
-        rrawim = circshift(rawim,round(head*size(rawim,2)/(2*pi)),2);
-        rim = circshift(im,round(head*imsz(2)/(2*pi)),2);
-        
-        alsubplot(3,1)
-        imshow(rrawim)
-        title(sprintf('Test height: %dmm; err: %.2fdeg; overall err: %.2fdeg', ...
-            zht(zhtcnt)+50,allerrs(ccoordi,zhtcnt),errs(ccoordi)))
-        
-        alsubplot(4,1)
-        imshow(rrawsnap)
-        dist = hypot(p.ys(yi)-csny,p.xs(xi)-csnx);
-        if shownearest
-            h=title(sprintf('Nearest snap num: %d @%gmm',csnapi,dist));
-        else
-            h=title(sprintf('Snap num: %d @%gmm',csnapi,dist));
-        end
-        if csnapi==nearsnapi
-            set(h,'Color','b');
-        end
-        
-        ax=alsubplot(5,1);
-        diffimhi = im2double(rrawim)-im2double(rrawsnap);
-        imagesc(diffimhi)
-        pxdiff = minval*prod(imsz);
-        title(sprintf('min diff: %.3f (=%.2fpx)',minval,pxdiff))
-        caxis([-1 1])
-        colormap(ax,redblue)
-        axis equal tight off
-        colorbar
-        
-        ax2=alsubplot(6,1);
-        diffimlo = im2double(rim)-im2double(rsnap);
-        diffval = mean2(abs(diffimlo));
-        if abs(minval-diffval) <= 1e-5
-            warning('assertion failed (coord #%d)',ccoordi)
-        end
-        imagesc(diffimlo)
-        caxis([-1 1])
-        colormap(ax2,redblue)
-        axis equal tight off
-        colorbar
-        
-        if showpos
-            alsubplot(1:5,2);
-            plot(p.xs(imxi),p.ys(imyi),'b.',snx,sny,'g.', ...
-                p.xs(xi),p.ys(yi),'kd', ...
-                snx(nearsnapi),sny(nearsnapi),'ko', ...
-                snx(chosensnapi),sny(chosensnapi),'ro')
-        end
     end
     
     function plotmultiridfs(xi,yi)
@@ -490,4 +403,102 @@ function savebestworstfig(figdir,showpos,shownearest,figfn,figtype)
     end
     figfn = [figfn '.' figtype];
     g_fig_save(figfn,[(showpos+1)*15 15],figtype,figtype,[],false);
+end
+
+function plotforbestworst(xi,yi,zhtcnt,head,showpos,shownearest,improc, ...
+    bestridfs,bestsnap,snx,sny,snth,p,zht,snapszht,shortwhd,imsz,imxi, ...
+    imyi,imxyi,ccoordi,errs,allerrs)
+
+    % make colormap
+    up = linspace(0,1,32)';
+    down = up(end:-1:1);
+    redblue = [up,up,ones(32,1);ones(32,1),down,down];
+
+    csnzhti = 1;
+    imfun = gantry_getimfun(improc);
+
+    [zhti,~] = find(bsxfun(@eq,p.zs',zht));
+    whd = fullfile(g_dir_imdb,shortwhd);
+    [im,rawim] = g_imdb_getprocim(whd,xi,yi,zhti(zhtcnt),imfun,imsz(2));
+
+    % nearest snap (Euclidean distance)
+    [~,nearsnapi] = min(hypot(sny-p.ys(yi),snx-p.xs(xi)));
+    snapi = bestsnap{zhtcnt,csnzhti};
+    chosensnapi = snapi(imxi==xi & imyi==yi);
+    if shownearest
+        csnapi = nearsnapi;
+    else
+        csnapi = chosensnapi;
+    end
+    csnx = snx(csnapi);
+    csny = sny(csnapi);
+    snxi = find(p.xs==csnx);
+    snyi = find(p.ys==csny);
+    snzi = find(p.zs==snapszht(csnzhti));
+    [snap,rawsnap] = g_imdb_getprocim(whd,snxi,snyi,snzi,imfun,imsz(2));
+    rrawsnap = circshift(rawsnap,round(snth(csnapi)*size(rawsnap,2)/(2*pi)),2);
+    rsnap = circshift(snap,round(snth(csnapi)*imsz(2)/(2*pi)),2);
+
+    figure(1);clf
+    alsubplot(6,1+showpos,1:2,1)
+    if shownearest
+        [head,minval,whsn,diffs] = ridfheadmulti(im,rsnap);
+        diffs = circshift(diffs,round((imsz(2)/2)*(1+snth(csnapi)/pi)));
+        diffs = diffs / prod(imsz);
+        diffs(end+1) = diffs(1);
+        plot(linspace(-180,180,imsz(2)+1),diffs)
+        xlim([-180 180]);
+        minval = minval / prod(imsz);
+    else
+        minval = plotridf(xi,yi,csnzhti,p,imxyi,bestridfs,zht,snapszht);
+    end
+    rrawim = circshift(rawim,round(head*size(rawim,2)/(2*pi)),2);
+    rim = circshift(im,round(head*imsz(2)/(2*pi)),2);
+
+    alsubplot(3,1)
+    imshow(rrawim)
+    title(sprintf('Test height: %dmm; err: %.2fdeg; overall err: %.2fdeg', ...
+        zht(zhtcnt)+50,allerrs(ccoordi,zhtcnt),errs(ccoordi)))
+
+    alsubplot(4,1)
+    imshow(rrawsnap)
+    dist = hypot(p.ys(yi)-csny,p.xs(xi)-csnx);
+    if shownearest
+        h=title(sprintf('Nearest snap num: %d @%gmm',csnapi,dist));
+    else
+        h=title(sprintf('Snap num: %d @%gmm',csnapi,dist));
+    end
+    if csnapi==nearsnapi
+        set(h,'Color','b');
+    end
+
+    ax=alsubplot(5,1);
+    diffimhi = im2double(rrawim)-im2double(rrawsnap);
+    imagesc(diffimhi)
+    pxdiff = minval*prod(imsz);
+    title(sprintf('min diff: %.3f (=%.2fpx)',minval,pxdiff))
+    caxis([-1 1])
+    colormap(ax,redblue)
+    axis equal tight off
+    colorbar
+
+    ax2=alsubplot(6,1);
+    diffimlo = im2double(rim)-im2double(rsnap);
+    diffval = mean2(abs(diffimlo));
+    if abs(minval-diffval) <= 1e-5
+        warning('assertion failed (coord #%d)',ccoordi)
+    end
+    imagesc(diffimlo)
+    caxis([-1 1])
+    colormap(ax2,redblue)
+    axis equal tight off
+    colorbar
+
+    if showpos
+        alsubplot(1:5,2);
+        plot(p.xs(imxi),p.ys(imyi),'b.',snx,sny,'g.', ...
+            p.xs(xi),p.ys(yi),'kd', ...
+            snx(nearsnapi),sny(nearsnapi),'ko', ...
+            snx(chosensnapi),sny(chosensnapi),'ro')
+    end
 end
