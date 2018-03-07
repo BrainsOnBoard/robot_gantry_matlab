@@ -181,6 +181,7 @@ if dointeractive
         if length(snapszht) > 1
             error('can only have 1 snapszht')
         end
+        csnapszhti = 1;
         
         figdir = fullfile('ridf_bestworst',shortwhd);
         if dosave
@@ -192,13 +193,13 @@ if dointeractive
                     chead = headings(ccoordi,czhtcnt);
                     xi = find(p.xs==ccoords(1));
                     yi = find(p.ys==ccoords(2));
-                    plotforbestworst(xi,yi,czhtcnt,chead,showpos,false, ...
+                    plotforbestworst(xi,yi,czhtcnt,csnapszhti,chead,showpos,false, ...
                         improc,bestridfs,bestsnap,snx,sny,snth,p,zht, ...
                         snapszht,shortwhd,imsz,imxi,imyi,imxyi,ccoordi, ...
                         errs,allerrs)
                     title(sprintf('Coord %d/%d',ccoordi,ncoords))
                     savebestworstfig(figdir,showpos,false,getfigfn,figtype)
-                    plotforbestworst(xi,yi,czhtcnt,chead,showpos,true, ...
+                    plotforbestworst(xi,yi,czhtcnt,csnapszhti,chead,showpos,true, ...
                         improc,bestridfs,bestsnap,snx,sny,snth,p,zht, ...
                         snapszht,shortwhd,imsz,imxi,imyi,imxyi,ccoordi, ...
                         errs,allerrs)
@@ -219,7 +220,7 @@ if dointeractive
             ccoords = coords(ccoordi,:);
             xi = find(p.xs==ccoords(1));
             yi = find(p.ys==ccoords(2));
-            plotforbestworst(xi,yi,czhtcnt,headings(ccoordi,czhtcnt), ...
+            plotforbestworst(xi,yi,czhtcnt,csnapszhti,headings(ccoordi,czhtcnt), ...
                 showpos,shownearest,improc,bestridfs,bestsnap,snx,sny, ...
                 snth,p,zht,snapszht,shortwhd,imsz,imxi,imyi,imxyi, ...
                 ccoordi,errs,allerrs)
@@ -355,7 +356,7 @@ end
     end
 end
 
-function minval=plotridf(xi,yi,csnapszhti,p,imxyi,bestridfs,zht,snapszht)
+function minval=plotridf(xi,yi,csnapszhti,czhti,p,imxyi,bestridfs,zht,snapszht)
     gx = p.xs(xi);
     gy = p.ys(yi);
 
@@ -379,8 +380,8 @@ function minval=plotridf(xi,yi,csnapszhti,p,imxyi,bestridfs,zht,snapszht)
     cridfs(end+1,:) = cridfs(1,:);
 
     h=plot(ths,cridfs);
-    czi = zht==snapszht(csnapszhti);
-    h(czi).LineStyle='--';
+    refzi = zht==snapszht(csnapszhti);
+    h(refzi).LineStyle='--';
     xlim([-180 180])
     set(gca,'XTick',-180:90:180)
 %         xlabel('Angle (deg)')
@@ -390,7 +391,7 @@ function minval=plotridf(xi,yi,csnapszhti,p,imxyi,bestridfs,zht,snapszht)
     g_fig_setfont
     andy_setbox
 
-    minval = min(cridfs(:,czi));
+    minval = min(cridfs(:,czhti));
 end
 
 function savebestworstfig(figdir,showpos,shownearest,figfn,figtype)
@@ -405,7 +406,7 @@ function savebestworstfig(figdir,showpos,shownearest,figfn,figtype)
     g_fig_save(figfn,[(showpos+1)*15 15],figtype,figtype,[],false);
 end
 
-function plotforbestworst(xi,yi,zhtcnt,head,showpos,shownearest,improc, ...
+function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos,shownearest,improc, ...
     bestridfs,bestsnap,snx,sny,snth,p,zht,snapszht,shortwhd,imsz,imxi, ...
     imyi,imxyi,ccoordi,errs,allerrs)
 
@@ -413,17 +414,16 @@ function plotforbestworst(xi,yi,zhtcnt,head,showpos,shownearest,improc, ...
     up = linspace(0,1,32)';
     down = up(end:-1:1);
     redblue = [up,up,ones(32,1);ones(32,1),down,down];
-
-    csnzhti = 1;
+    
     imfun = gantry_getimfun(improc);
 
     [zhti,~] = find(bsxfun(@eq,p.zs',zht));
     whd = fullfile(g_dir_imdb,shortwhd);
-    [im,rawim] = g_imdb_getprocim(whd,xi,yi,zhti(zhtcnt),imfun,imsz(2));
+    [im,rawim] = g_imdb_getprocim(whd,xi,yi,zhti(czhti),imfun,imsz(2));
 
     % nearest snap (Euclidean distance)
     [~,nearsnapi] = min(hypot(sny-p.ys(yi),snx-p.xs(xi)));
-    snapi = bestsnap{zhtcnt,csnzhti};
+    snapi = bestsnap{czhti,csnapszhti};
     chosensnapi = snapi(imxi==xi & imyi==yi);
     if shownearest
         csnapi = nearsnapi;
@@ -434,7 +434,7 @@ function plotforbestworst(xi,yi,zhtcnt,head,showpos,shownearest,improc, ...
     csny = sny(csnapi);
     snxi = find(p.xs==csnx);
     snyi = find(p.ys==csny);
-    snzi = find(p.zs==snapszht(csnzhti));
+    snzi = find(p.zs==snapszht(csnapszhti));
     [snap,rawsnap] = g_imdb_getprocim(whd,snxi,snyi,snzi,imfun,imsz(2));
     rrawsnap = circshift(rawsnap,round(snth(csnapi)*size(rawsnap,2)/(2*pi)),2);
     rsnap = circshift(snap,round(snth(csnapi)*imsz(2)/(2*pi)),2);
@@ -450,7 +450,7 @@ function plotforbestworst(xi,yi,zhtcnt,head,showpos,shownearest,improc, ...
         xlim([-180 180]);
         minval = minval / prod(imsz);
     else
-        minval = plotridf(xi,yi,csnzhti,p,imxyi,bestridfs,zht,snapszht);
+        minval = plotridf(xi,yi,csnapszhti,czhti,p,imxyi,bestridfs,zht,snapszht);
     end
     rrawim = circshift(rawim,round(head*size(rawim,2)/(2*pi)),2);
     rim = circshift(im,round(head*imsz(2)/(2*pi)),2);
@@ -458,7 +458,7 @@ function plotforbestworst(xi,yi,zhtcnt,head,showpos,shownearest,improc, ...
     alsubplot(3,1)
     imshow(rrawim)
     title(sprintf('Test height: %dmm; err: %.2fdeg; overall err: %.2fdeg', ...
-        zht(zhtcnt)+50,allerrs(ccoordi,zhtcnt),errs(ccoordi)))
+        zht(czhti)+50,allerrs(ccoordi,czhti),errs(ccoordi)))
 
     alsubplot(4,1)
     imshow(rrawsnap)
@@ -487,8 +487,8 @@ function plotforbestworst(xi,yi,zhtcnt,head,showpos,shownearest,improc, ...
     minval2 = mean2(abs(diffimlo));
     diffval = minval2-minval;
     if abs(diffval) >= 1e-5
-        warning('assertion failed (coord: %d; nearest: %d; zht: %.2f; diff: %g)', ...
-            ccoordi,shownearest,zht(zhtcnt)+50,diffval)
+        error('assertion failed (coord: %d; nearest: %d; zht: %.2f; diff: %g)', ...
+            ccoordi,shownearest,zht(czhti)+50,diffval)
     end
     imagesc(diffimlo)
     caxis([-1 1])
