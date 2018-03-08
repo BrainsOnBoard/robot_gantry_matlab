@@ -15,8 +15,12 @@ figtype = [];
 doautoridf = false;
 dointeractive = true;
 
+getbest = input('Use best points (cf. worst)? [false]: ');
+if isempty(getbest)
+    getbest = false;
+end
+
 % get worst mean coords
-getbest = false;
 snapsonly = false;
 [~,dat] = g_bb_getbestworst(shortwhd,zht,snapszht,snapsonly,getbest,ncoords);
 
