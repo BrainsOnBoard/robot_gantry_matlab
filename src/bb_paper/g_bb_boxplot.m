@@ -81,28 +81,27 @@ domultiboxplots('infomax',shiftdim(errs(useinfomax,:,:,:,:,:),1))
         fprintf('Plotting %s results...\n',name)
         spcols = min(2,length(snapszht));
         
-        % plot infomax results
-        for m = 1:length(routenums)
+        for routenumi = 1:length(routenums)
             ymax = 0;
             if dosave && doseparateplots
                 g_fig_series_start
             end
             h = NaN(size(snapszht));
-            for l = 1:length(snapszht)
+            for csnapszhti = 1:length(snapszht)
                 if doseparateplots
                     figure(2);clf
                 else
-                    figure(100+m)
-                    h(l)=subplot(sprows,spcols,l);
+                    figure(100+routenumi)
+                    h(csnapszhti)=subplot(sprows,spcols,csnapszhti);
                 end
                 
-                ymax = max(ymax,doboxplot(cerrs(:,:,l,m,:),zht));
-                title(sprintf('Training height: %d mm',snapszht(l)+50))
+                ymax = max(ymax,doboxplot(cerrs(:,:,csnapszhti,routenumi,:),zht));
+                title(sprintf('Training height: %d mm',snapszht(csnapszhti)+50))
                 g_fig_setfont
                 
                 if dosave && doseparateplots
                     g_fig_save(sprintf('boxplot_%s_%s%s_res%03d_route%03d_snapszht%03d', ...
-                        flabel,improc,name,res,routenums(m),snapszht(l)), ...
+                        flabel,improc,name,res,routenums(routenumi),snapszht(csnapszhti)), ...
                         [20 10],figtype);
                 end
             end
