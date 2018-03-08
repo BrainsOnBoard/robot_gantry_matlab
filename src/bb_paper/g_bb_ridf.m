@@ -489,7 +489,6 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos,shownearest,improc
     caxis([-1 1])
     colormap(ax,redblue)
     axis equal tight off
-    colorbar
 
     if showpos
         alsubplot(1:5,2);
