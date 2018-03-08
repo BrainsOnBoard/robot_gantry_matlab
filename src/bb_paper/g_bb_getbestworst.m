@@ -1,4 +1,4 @@
-function [meandat,extremedat]=g_bb_getbestworst(shortwhd,zht,snapszht,snapsonly,getbest,ncoords)
+function [meandat,extremedat,routenum]=g_bb_getbestworst(shortwhd,zht,snapszht,snapsonly,getbest,ncoords)
 if nargin < 1 || isempty(shortwhd)
     [~,shortwhd] = g_imdb_choosedb;
 end

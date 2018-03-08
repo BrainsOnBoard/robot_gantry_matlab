@@ -2,7 +2,6 @@ function g_bb_getbestworst_plot
 ncoords = 20;
 
 [~,shortwhd] = g_imdb_choosedb;
-routenum = 1;
 
 zht = 0:100:500;
 snapszht = 0;
@@ -22,7 +21,7 @@ end
 
 % get worst mean coords
 snapsonly = false;
-[~,dat] = g_bb_getbestworst(shortwhd,zht,snapszht,snapsonly,getbest,ncoords);
+[~,dat,routenum] = g_bb_getbestworst(shortwhd,zht,snapszht,snapsonly,getbest,ncoords);
 
 if getbest
     fprefix = 'best_';
