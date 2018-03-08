@@ -1,6 +1,6 @@
 function g_bb_ridf(shortwhd,routenum,zht,snapszht,userealsnaps,improc, ...
     coords,shiftridfs,dosave,joinpdfs,figtype,doautoridf,dointeractive, ...
-    headings,errs,allerrs)
+    headings,errs,allerrs,fprefix)
 if nargin < 1 || isempty(shortwhd)
     [~,shortwhd] = g_imdb_choosedb;
 end
@@ -43,6 +43,9 @@ if nargin < 12 || isempty(doautoridf)
 end
 if nargin < 13 || isempty(dointeractive)
     dointeractive = isempty(coords);
+end
+if nargin < 17
+    fprefix = '';
 end
 
 if userealsnaps && length(snapszht) > 1
@@ -207,8 +210,8 @@ if dointeractive
                     savebestworstfig(figdir,showpos,true,getfigfn,figtype)
                 end
             end
-            g_fig_series_end(sprintf('ridf_bestworst_@%d_%s.%s',snapszht, ...
-                shortwhd,figtype),[],figtype)
+            g_fig_series_end(sprintf('%spoints_@%d_%s.%s',fprefix, ...
+                snapszht,shortwhd,figtype),[],figtype)
             return
         end
         
@@ -297,8 +300,8 @@ end
     end
 
     function figfn=getfigfn
-        figfn = fullfile(figdir,sprintf('n%03d_%03d_%03d_%03d', ...
-            ccoordi,xi,yi,find(p.zs==zht(czhtcnt))));
+        figfn = fullfile(figdir,sprintf('%sn%03d_%03d_%03d_%03d', ...
+            fprefix,ccoordi,xi,yi,find(p.zs==zht(czhtcnt))));
     end
     
     function plotmultiridfs(xi,yi)
