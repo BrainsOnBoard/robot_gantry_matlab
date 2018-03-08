@@ -21,7 +21,13 @@ end
 
 % get worst mean coords
 snapsonly = false;
-[~,dat,routenum] = g_bb_getbestworst(shortwhd,zht,snapszht,snapsonly,getbest,ncoords);
+[meandat,extremedat,routenum] = g_bb_getbestworst(shortwhd,zht, ...
+    snapszht,snapsonly,getbest,ncoords);
+if getbest
+    dat = meandat;
+else
+    dat = extremedat;
+end
 
 if getbest
     fprefix = 'best_';
