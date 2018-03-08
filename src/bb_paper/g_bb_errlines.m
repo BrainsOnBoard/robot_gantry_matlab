@@ -1,4 +1,4 @@
-function g_bb_errlines(shortwhd,routenums,zht,snapszht,userealsnaps,useinfomax,improc,doseparateplots,dosave,figtype)
+function g_bb_errlines(shortwhd,routenums,zht,snapszht,userealsnaps,useinfomax,improc,dosave,figtype)
 close all
 
 if nargin < 1 || isempty(shortwhd)
@@ -29,21 +29,17 @@ end
 if nargin < 7 || isempty(improc)
     improc = '';
 end
-if nargin < 8 || isempty(doseparateplots)
-    doseparateplots = true;
-end
-if nargin < 9 || isempty(dosave)
+if nargin < 8 || isempty(dosave)
     dosave = false;
 end
-if nargin < 10 || isempty(figtype)
+if nargin < 9 || isempty(figtype)
     figtype = 'pdf';
 end
 
 improcforinfomax = false;
 res = 90;
 forcegen = false;
-sprows = ceil(length(snapszht)/2);
-figsz = [18 15];
+figsz = [15 10];
 
 errs = cell(length(useinfomax),length(res),length(shortwhd), ...
     length(snapszht),length(routenums),length(zht));
@@ -82,73 +78,32 @@ subplot(2,1,2)
 errlines('infomax','Infomax',shiftdim(errs(useinfomax,:,:,:,:,:),1))
 
 g_fig_save(sprintf('errlines_%s_%sres%03d',flabel,improc,res), ...
-    [15 10],figtype);
+    figsz,figtype);
 
     function errlines(name,ttl,cerrs)
         fprintf('Plotting %s results...\n',name)
-        spcols = min(2,length(snapszht));
-        
-        % plot infomax results
-        for m = 1:length(routenums)
-            ymax = 0;
-%             if dosave && doseparateplots
-%                 g_fig_series_start
-%             end
-            h = NaN(size(snapszht));
-            for l = 1:length(snapszht)
-                if doseparateplots
-                    figure(2);clf
-%                 else
-%                     figure(100+m)
-%                     h(l)=subplot(sprows,spcols,l);
-                end
-                
-                ymax = max(ymax,doboxplot(cerrs(:,:,l,m,:),zht));
+        for routenumi = 1:length(routenums)
+            for csnapszhti = 1:length(snapszht)
+                doerrlines(cerrs(:,:,csnapszhti,routenumi,:),zht);
                 hold on
-%                 title(sprintf('Training height: %d mm',snapszht(l)+50))
                 g_fig_setfont
             end
             title(ttl)
-                
-%                 if dosave && doseparateplots
-%                     g_fig_save(sprintf('errlines_%s_%s%s_res%03d_route%03d_snapszht%03d', ...
-%                         flabel,improc,name,res,routenums(m),snapszht(l)), ...
-%                         [20 10],figtype);
-%                 end
-%             if dosave
-%                 if doseparateplots
-%                     g_fig_series_end(sprintf('boxplot_%s_%s%s_res%03d.pdf',flabel,improc,name,res))
-%                 else
-%                     ymax = 15*ceil(ymax/15); % round to nearest 15
-%                     set(h, 'YLim', [0 min(90,ymax)]);
-%                     g_fig_save(sprintf('boxplot_%s_%s%s_res%03d',flabel,improc,name,res),figsz,figtype,[],[],false)
-%                 end
-%             end
         end
     end
 end
 
-function ymax=doboxplot(errs,zht)
+function doerrlines(errs,zht)
 errs = shiftdim(errs);
 
 means = cellfun(@mean,errs);
 stderrs = cellfun(@stderr,errs);
-ymax = max(means+stderrs);
 
 errorbar(means,stderrs);
-
-% hold on
-% for i = 1:numel(errs)
-%     h = boxplot(errs{i},'Positions',i);
-%     yupper = get(h(1),'YData'); % upper whisker
-%     ymax = max(yupper(2),ymax);
-% end
 
 xlim([0 length(errs)+1])
 set(gca,'XTick',1:length(errs),'XTickLabel',zht+50)
 xlabel('Test height (mm)')
-
-% ylim([0 ymax])
 ylim([0 90])
 set(gca,'YTick',0:15:90)
 ylabel('Error (deg)')
