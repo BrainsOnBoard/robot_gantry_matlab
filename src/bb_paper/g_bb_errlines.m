@@ -1,4 +1,5 @@
-function g_bb_errlines(shortwhd,routenums,zht,snapszht,userealsnaps,useinfomax,improc,dosave,figtype)
+function g_bb_errlines(shortwhd,routenums,zht,snapszht,userealsnaps, ...
+    useinfomax,improc,dosave,figtype,useiqr)
 close all
 
 if nargin < 1 || isempty(shortwhd)
@@ -34,6 +35,9 @@ if nargin < 8 || isempty(dosave)
 end
 if nargin < 9 || isempty(figtype)
     figtype = 'pdf';
+end
+if nargin < 10 || isempty(useiqr)
+    useiqr = false;
 end
 
 improcforinfomax = false;
@@ -77,14 +81,19 @@ errlines('pm','Perfect memory',shiftdim(errs(~useinfomax,:,:,:,:,:),1))
 subplot(2,1,2)
 errlines('infomax','Infomax',shiftdim(errs(useinfomax,:,:,:,:,:),1))
 
-g_fig_save(sprintf('errlines_%s_%sres%03d',flabel,improc,res), ...
+iqrstr = '';
+if useiqr
+    iqrstr = 'iqr_';
+end
+
+g_fig_save(sprintf('errlines_%s_%s%sres%03d',flabel,iqrstr,improc,res), ...
     figsz,figtype);
 
     function errlines(name,ttl,cerrs)
         fprintf('Plotting %s results...\n',name)
         for routenumi = 1:length(routenums)
             for csnapszhti = 1:length(snapszht)
-                doerrlines(cerrs(:,:,csnapszhti,routenumi,:),zht);
+                doerrlines(cerrs(:,:,csnapszhti,routenumi,:),zht,useiqr);
                 hold on
                 g_fig_setfont
             end
@@ -93,16 +102,22 @@ g_fig_save(sprintf('errlines_%s_%sres%03d',flabel,improc,res), ...
     end
 end
 
-function doerrlines(errs,zht)
-errs = shiftdim(errs);
+function doerrlines(errs,zht,useiqr)
+errs = cell2mat(shiftdim(errs)');
 
-means = cellfun(@mean,errs);
-stderrs = cellfun(@stderr,errs);
+if useiqr
+    med = median(errs);
+    lower = prctile(errs,25)-med;
+    upper = prctile(errs,75)-med;
+    errorbar(1:zht,med,lower,upper);
+else
+    means = mean(errs);
+    stderrs = stderr(errs);
+    errorbar(means,stderrs);
+end
 
-errorbar(means,stderrs);
-
-xlim([0 length(errs)+1])
-set(gca,'XTick',1:length(errs),'XTickLabel',zht+50)
+xlim([0 length(zht)+1])
+set(gca,'XTick',1:length(zht),'XTickLabel',zht+50)
 xlabel('Test height (mm)')
 ylim([0 90])
 set(gca,'YTick',0:15:90)
