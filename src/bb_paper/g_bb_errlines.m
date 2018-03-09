@@ -1,5 +1,5 @@
 function g_bb_errlines(shortwhd,routenums,zht,snapszht,userealsnaps, ...
-    useinfomax,improc,dosave,figtype,useiqr)
+    useinfomax,improc,dosave,figtype,useiqr,ymax)
 close all
 
 if nargin < 1 || isempty(shortwhd)
@@ -39,6 +39,9 @@ end
 if nargin < 10 || isempty(useiqr)
     useiqr = false;
 end
+if nargin < 11 || isempty(ymax)
+    ymax = 90*ones(size(useinfomax));
+end
 
 improcforinfomax = false;
 res = 90;
@@ -76,10 +79,12 @@ end
 
 figure(2);clf
 subplot(2,1,1)
-errlines('pm','Perfect memory',shiftdim(errs(~useinfomax,:,:,:,:,:),1))
+errlines('pm','Perfect memory',shiftdim(errs(~useinfomax,:,:,:,:,:),1), ...
+    ymax(1))
 
 subplot(2,1,2)
-errlines('infomax','Infomax',shiftdim(errs(useinfomax,:,:,:,:,:),1))
+errlines('infomax','Infomax',shiftdim(errs(useinfomax,:,:,:,:,:),1), ...
+    ymax(2))
 
 iqrstr = '';
 if useiqr
@@ -89,11 +94,12 @@ end
 g_fig_save(sprintf('errlines_%s_%s%sres%03d',flabel,iqrstr,improc,res), ...
     figsz,figtype);
 
-    function errlines(name,ttl,cerrs)
+    function errlines(name,ttl,cerrs,cymax)
         fprintf('Plotting %s results...\n',name)
         for routenumi = 1:length(routenums)
             for csnapszhti = 1:length(snapszht)
-                doerrlines(cerrs(:,:,csnapszhti,routenumi,:),zht,useiqr);
+                doerrlines(cerrs(:,:,csnapszhti,routenumi,:),zht, ...
+                    useiqr,cymax);
                 hold on
                 g_fig_setfont
             end
@@ -103,7 +109,7 @@ g_fig_save(sprintf('errlines_%s_%s%sres%03d',flabel,iqrstr,improc,res), ...
     end
 end
 
-function doerrlines(errs,zht,useiqr)
+function doerrlines(errs,zht,useiqr,ymax)
 errs = cell2mat(shiftdim(errs)');
 zht = zht+50;
 
@@ -120,7 +126,7 @@ end
 
 set(gca,'XTick',zht)
 xlabel('Test height (mm)')
-ylim([0 90])
+ylim([0 ymax])
 set(gca,'YTick',0:15:90)
 ylabel('Error (deg)')
 
