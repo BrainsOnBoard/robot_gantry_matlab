@@ -105,20 +105,20 @@ end
 
 function doerrlines(errs,zht,useiqr)
 errs = cell2mat(shiftdim(errs)');
+zht = zht+50;
 
 if useiqr
     med = median(errs);
     lower = prctile(errs,25)-med;
     upper = prctile(errs,75)-med;
-    errorbar(1:zht,med,lower,upper);
+    errorbar(zht,med,lower,upper);
 else
     means = mean(errs);
     stderrs = stderr(errs);
-    errorbar(means,stderrs);
+    errorbar(zht,means,stderrs);
 end
 
-xlim([0 length(zht)+1])
-set(gca,'XTick',1:length(zht),'XTickLabel',zht+50)
+set(gca,'XTick',zht)
 xlabel('Test height (mm)')
 ylim([0 90])
 set(gca,'YTick',0:15:90)
