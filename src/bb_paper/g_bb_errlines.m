@@ -103,7 +103,9 @@ g_fig_save(sprintf('errlines_%s_%s%sres%03d',flabel,iqrstr,improc,res), ...
                 hold on
                 g_fig_setfont
             end
-            title(legend(num2str((snapszht+50)')),'Height (mm)')
+            hleg = legend(num2str((snapszht+50)'), ...
+                'Location','bestoutside');
+            title(hleg,'Height (mm)')
             title(ttl)
         end
     end
