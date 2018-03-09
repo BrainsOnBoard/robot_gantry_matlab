@@ -37,15 +37,26 @@ g_bb_quiver(imdb_pile,1,zht,snapszht2,false,useinfomax,improc,doquiver,dowhsn,fa
 % plants
 g_bb_quiver(imdb_plants,1,zht,snapszht2,false,useinfomax,improc,doquiver,dowhsn,false,dosave,figtype);
 
-%% boxplots
-% open, pile
-g_bb_boxplot(imdb_pile,1,zht,zht,false,useinfomax,improc,false,dosave,figtype);
+% %% boxplots
+% % open, pile
+% g_bb_boxplot(imdb_pile,1,zht,zht,false,useinfomax,improc,false,dosave,figtype);
+% 
+% % % open, boxes
+% % g_bb_boxplot(imdb_boxes,3,zht,zht,false,useinfomax,improc,false,dosave,figtype);
+% 
+% % plants
+% g_bb_boxplot(imdb_plants,1,zht,zht,false,useinfomax,improc,false,dosave,figtype);
 
-% % open, boxes
-% g_bb_boxplot(imdb_boxes,3,zht,zht,false,useinfomax,improc,false,dosave,figtype);
+%% errlines
+useiqr = false;
+
+% open, pile
+g_bb_errlines(imdb_pile,1,zht,zht,false,useinfomax,improc,dosave, ...
+    figtype,useiqr,[30 90]);
 
 % plants
-g_bb_boxplot(imdb_plants,1,zht,zht,false,useinfomax,improc,false,dosave,figtype);
+g_bb_errlines(imdb_plants,1,zht,zht,false,useinfomax,improc,dosave, ...
+    figtype,useiqr,[60 90]);
 
 %% RIDFs for pile
 % % old coords
