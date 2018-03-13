@@ -28,7 +28,7 @@ showstats('res', res, means, stds, 2);
 
 labels = cell(size(shortwhd));
 for i = 1:length(labels)
-    labels{i} = g_imdb_getlabel(fullfile(g_dir_imdb, shortwhd{i}));
+    labels{i} = g_imdb_getlabel(shortwhd{i});
 end
 showstats('arena', labels, means, stds, 3);
 

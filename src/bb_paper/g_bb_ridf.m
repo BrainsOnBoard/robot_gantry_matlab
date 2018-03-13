@@ -60,8 +60,6 @@ forcegen = false;
 ncoords = size(coords,1);
 
 imsz = [7 90];
-% whd = fullfile(g_dir_imdb,shortwhd);
-
 figsz = [30 30];
 
 %% load RIDFs
@@ -116,7 +114,7 @@ if isempty(improc)
 else
     improcstr = [improc '_'];
 end
-flabel = g_imdb_getlabel(fullfile(g_dir_imdb,shortwhd));
+flabel = g_imdb_getlabel(shortwhd);
 sprows = ceil(length(snapszht)/2);
 snapszhtstr = numjoin(snapszht);
 
@@ -348,17 +346,15 @@ end
     function showdiffim(xi,yi)
         warning('snapshots are broken in this function (wrong zi)')
         
-        whd = fullfile(g_dir_imdb,shortwhd);
-        
         % get the image for the clicked position
-        im = g_imdb_getim(whd,xi,yi,czhti);
+        im = g_imdb_getim(shortwhd,xi,yi,czhti);
         
         % get best-matching snap for this position
         snapi = bestsnap{czhti,csnzhti};
         posi = find(imxi==xi & imyi==yi);
         snxi = find(p.xs==snx(snapi(posi)));
         snyi = find(p.ys==sny(snapi(posi)));
-        snap = g_imdb_getim(whd,snxi,snyi,csnzhti);
+        snap = g_imdb_getim(shortwhd,snxi,snyi,csnzhti);
         
         imshow(im)
         title('current view')
@@ -441,8 +437,7 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos,shownearest,improc
     imfun = gantry_getimfun(improc);
     
     [zhti,~] = find(bsxfun(@eq,p.zs',zht));
-    whd = fullfile(g_dir_imdb,shortwhd);
-    [im,rawim] = g_imdb_getprocim(whd,xi,yi,zhti(czhti),imfun,imsz(2));
+    [im,rawim] = g_imdb_getprocim(shortwhd,xi,yi,zhti(czhti),imfun,imsz(2));
 
     % nearest snap (Euclidean distance)
     [~,nearsnapi] = min(hypot(sny-p.ys(yi),snx-p.xs(xi)));
@@ -458,7 +453,7 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos,shownearest,improc
     snxi = find(p.xs==csnx);
     snyi = find(p.ys==csny);
     snzi = find(p.zs==snapszht(csnapszhti));
-    [snap,rawsnap] = g_imdb_getprocim(whd,snxi,snyi,snzi,imfun,imsz(2));
+    [snap,rawsnap] = g_imdb_getprocim(shortwhd,snxi,snyi,snzi,imfun,imsz(2));
     rrawsnap = circshift(rawsnap,round(snth(csnapi)*size(rawsnap,2)/(2*pi)),2);
     rsnap = circshift(snap,round(snth(csnapi)*imsz(2)/(2*pi)),2);
 

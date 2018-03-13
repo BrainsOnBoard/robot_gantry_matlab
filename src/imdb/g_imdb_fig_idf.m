@@ -22,7 +22,7 @@ refyi = round(1+(length(p.ys)-1)/2);
 
 preprocess = @deal;
 
-reffr = im2double(preprocess(g_imdb_getim(whd,refxi,refyi,whz)));
+reffr = im2double(preprocess(g_imdb_getim(shortwhd,refxi,refyi,whz)));
 if isempty(reffr)
     error('no image found for reference location')
 end
@@ -30,7 +30,7 @@ end
 idf = NaN(length(p.ys),length(p.xs));
 for yi = 1:size(idf,1)
     for xi = 1:size(idf,2)
-        fr = g_imdb_getim(whd,xi,yi,whz);
+        fr = g_imdb_getim(shortwhd,xi,yi,whz);
         if ~isempty(fr)
             idf(yi,xi) = getRMSdiff(im2double(preprocess(fr)),reffr);
         end

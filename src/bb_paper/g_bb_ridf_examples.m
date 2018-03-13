@@ -71,7 +71,7 @@ for i = 1:size(coords,1)
             xi = 1+coords(i,1)/p.imsep;
             yi = 1+coords(i,2)/p.imsep;
             zi = find(zht(k)==p.zs);
-            fr = g_imdb_getprocim(whd,xi,yi,zi,imfun,imsz(2));
+            fr = g_imdb_getprocim(shortwhd,xi,yi,zi,imfun,imsz(2));
             if isempty(fr)
                 error('could not get im %d,%d,%d',xi,yi,zi);
             end

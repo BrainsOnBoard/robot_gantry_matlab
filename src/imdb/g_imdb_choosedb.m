@@ -21,7 +21,7 @@ arenafns = {};
 for i = 1:length(d)
     if d(i).isdir
         ds{end+1} = d(i).name;
-        labels{end+1} = g_imdb_getlabel(fullfile(ddir,d(i).name));
+        labels{end+1} = g_imdb_getlabel(d(i).name);
         load(fullfile(ddir,d(i).name,'im_params.mat'),'p');
         arenafns{end+1} = p.arenafn;
     end

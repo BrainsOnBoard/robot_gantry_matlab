@@ -1,4 +1,7 @@
-function [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p,isnew,allwhsn,ridfs,snapszht,snxi,snyi]=g_imdb_route_getdata(shortwhd,routenum,res,zht,useinfomax,improc,forcegen,improcforinfomax,userealsnaps,snapszht,dosave)
+function [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p, ...
+    isnew,allwhsn,ridfs,snapszht,snxi,snyi] = g_imdb_route_getdata( ...
+    shortwhd,routenum,res,zht,useinfomax,improc,forcegen, ...
+    improcforinfomax,userealsnaps,snapszht,dosave)
 if nargin < 9 || isempty(userealsnaps)
     userealsnaps = true;
 end
@@ -121,7 +124,7 @@ else
         
         ridfs = NaN(nheads,nth);
         for i = 1:nheads
-            im = g_imdb_getprocim(whd,imxi(i),imyi(i),zi,imfun,res);
+            im = g_imdb_getprocim(shortwhd,imxi(i),imyi(i),zi,imfun,res);
             [heads(i),~,cridf] = infomax_gethead(im,[],infomax_wts,[],nth);
             ridfs(i,:) = cridf';
             
@@ -137,7 +140,7 @@ else
         
         ridfs = NaN(nheads,nth,size(snaps,3));
         for i = 1:nheads
-            im = g_imdb_getprocim(whd,imxi(i),imyi(i),zi,imfun,res);
+            im = g_imdb_getprocim(shortwhd,imxi(i),imyi(i),zi,imfun,res);
             [heads(i),~,cwhsn,cridfs] = ridfheadmulti(im,snaps,'wta',[],nth,[],getallwhsn);
             allwhsn(i,:) = cwhsn';
             ridfs(i,:,:) = shiftdim(cridfs,-1);

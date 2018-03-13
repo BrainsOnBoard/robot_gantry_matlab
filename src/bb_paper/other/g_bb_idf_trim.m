@@ -1,4 +1,4 @@
-function g_bb_idf_trim(whdshort,z,ycutoff,dosave)
+function g_bb_idf_trim(shortwhd,z,ycutoff,dosave)
 
 if nargin < 4
     dosave = false;
@@ -6,10 +6,10 @@ end
 if nargin < 3 || isempty(ycutoff)
     ycutoff = 58;
 end
-if nargin < 1 || isempty(whdshort)
+if nargin < 1 || isempty(shortwhd)
     whd = g_imdb_choosedb;
 else
-    whd = fullfile(g_dir_imdb,whdshort);
+    whd = fullfile(g_dir_imdb,shortwhd);
 end
 
 load(fullfile(whd,'im_params.mat'),'p');
@@ -47,7 +47,7 @@ refyi = round(1+(length(p.ys)-1)/2);
 
 preprocess = @deal;
 
-reffrraw = g_imdb_getim(whd,refxi,refyi,zi);
+reffrraw = g_imdb_getim(shortwhd,refxi,refyi,zi);
 if isempty(reffrraw)
     error('no image found for reference location')
 end

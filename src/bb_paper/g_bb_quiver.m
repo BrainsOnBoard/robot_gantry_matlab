@@ -76,8 +76,7 @@ for i = 1:length(useinfomax)
     end
     for cres = res
         for j = 1:length(shortwhd)
-            whd = fullfile(g_dir_imdb,shortwhd{j});
-            flabel = g_imdb_getlabel(whd);
+            flabel = g_imdb_getlabel(shortwhd{j});
             for routenum = routenums
                 if dosave
                     g_fig_series_start

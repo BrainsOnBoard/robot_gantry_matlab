@@ -71,7 +71,7 @@ if dosave
     if ~isempty(improc)
         improc(end+1) = '_';
     end
-    flabel = g_imdb_getlabel(fullfile(g_dir_imdb,shortwhd{1}));
+    flabel = g_imdb_getlabel(shortwhd{1});
 end
 
 domultiboxplots('pm',shiftdim(errs(~useinfomax,:,:,:,:,:),1))
