@@ -1,8 +1,7 @@
 function [snaps,snx,sny,snth]=g_imdb_route_getimdbsnaps(arenafn,routenum,res,imfun,shortwhd,zi,imsep)
 
-whd = fullfile(g_dir_imdb,shortwhd);
-
-load(fullfile(g_dir_routes,sprintf('route_%s_%03d.mat',matfileremext(arenafn),routenum)),'clx','cly','whclick','p')
+load(fullfile(g_dir_routes,sprintf('route_%s_%03d.mat', ...
+    matfileremext(arenafn),routenum)),'clx','cly','whclick','p')
 truesnx = clx*1000/p.arenascale;
 truesny = cly*1000/p.arenascale;
 truesnth = atan2(diff(cly),diff(clx));
@@ -35,7 +34,7 @@ snaps = NaN([sz, length(pxsnx)]);
 sninds = round(snth*res/(2*pi));
 snvalids = true(length(pxsnx),1);
 for i = 1:length(pxsnx)
-    csnap = g_imdb_getprocim(whd,pxsnx(i),pxsny(i),zi,imfun,res);
+    csnap = g_imdb_getprocim(shortwhd,pxsnx(i),pxsny(i),zi,imfun,res);
     if isempty(csnap)
         warning('im: %s (%d,%d,%d) does not exist',shortwhd,pxsnx(i),pxsny(i),zi);
         snvalids(i) = false;

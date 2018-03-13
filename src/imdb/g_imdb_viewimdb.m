@@ -2,8 +2,7 @@ function g_imdb_viewimdb
 % Allows the user to view an image database interactively. Views can be
 % cycled through with keypresses.
 
-[fex,p,whd] = g_imdb_imexist;
-[~,shortwhd] = fileparts(whd);
+[fex,p,shortwhd] = g_imdb_imexist;
 figdir = g_dir_imdb_fig_viewimdb;
 
 [x,y] = ndgrid(p.xs,p.ys);
@@ -15,8 +14,7 @@ while true
     figure(5);clf
     subplot(2,1,2)
     if fex(curx,cury,curz)
-        cfn = fullfile(whd,sprintf('im_%03d_%03d_%03d.png',curx,cury,curz));
-        fr = imread(cfn);
+        fr = g_imdb_getim(shortwhd,curx,cury,curz);
         imagesc(fr)
         colormap gray
         axis equal tight

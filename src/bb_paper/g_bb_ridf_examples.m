@@ -39,8 +39,7 @@ if nargin < 10 || isempty(figno)
     figno = 1;
 end
 
-whd = fullfile(g_dir_imdb,shortwhd);
-load(fullfile(whd,'im_params.mat'),'p')
+p = g_imdb_getparams(shortwhd);
 
 imsz = [7 90];
 imfun = gantry_getimfun(improc);

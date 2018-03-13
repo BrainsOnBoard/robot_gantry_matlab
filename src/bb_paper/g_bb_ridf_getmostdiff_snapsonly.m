@@ -33,7 +33,6 @@ end
 forcegen = false;
 
 imsz = [7 90];
-% whd = fullfile(g_dir_imdb,shortwhd);
 
 %% load RIDFs
 % extract best-matching snaps and RIDFs and put into cell array (because

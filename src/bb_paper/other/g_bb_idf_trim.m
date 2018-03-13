@@ -7,12 +7,10 @@ if nargin < 3 || isempty(ycutoff)
     ycutoff = 58;
 end
 if nargin < 1 || isempty(shortwhd)
-    whd = g_imdb_choosedb;
-else
-    whd = fullfile(g_dir_imdb,shortwhd);
+    [~,shortwhd] = g_imdb_choosedb;
 end
 
-load(fullfile(whd,'im_params.mat'),'p');
+p = g_imdb_getparams(shortwhd);
 if nargin < 2 || isempty(z)
     z = p.zs(end);
 end
@@ -25,14 +23,14 @@ fprintf('height: %dmm (%s)\n',z,num2str(p.zs));
 
 figure(1);clf
 if ycutoff==58
-    plotidf(p,whd,zi,1:ycutoff);
+    plotidf(p,shortwhd,zi,1:ycutoff);
 else
     subplot(1,2,1)
-    plotidf(p,whd,zi,1:ycutoff);
+    plotidf(p,shortwhd,zi,1:ycutoff);
     title('top')
 
     subplot(1,2,2)
-    plotidf(p,whd,zi,ycutoff+1:58);
+    plotidf(p,shortwhd,zi,ycutoff+1:58);
     title('bottom')
 end
 
@@ -40,7 +38,7 @@ if dosave
     g_fig_save(sprintf('%s_idf_z%03',flabel,z),[10 10]);
 end
 
-function plotidf(p,whd,zi,yrng)
+function plotidf(p,shortwhd,zi,yrng)
 
 refxi = round(1+(length(p.xs)-1)/2);
 refyi = round(1+(length(p.ys)-1)/2);
@@ -56,7 +54,7 @@ reffr = im2double(preprocess(reffrraw(yrng,:)));
 idf = NaN(length(p.ys),length(p.xs));
 for yi = 1:size(idf,1)
     for xi = 1:size(idf,2)
-        fr = g_imdb_getim(whd,xi,yi,zi);
+        fr = g_imdb_getim(shortwhd,xi,yi,zi);
         if ~isempty(fr)
             idf(yi,xi) = getRMSdiff(im2double(preprocess(fr(yrng,:))),reffr);
         end

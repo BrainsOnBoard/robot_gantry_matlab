@@ -3,12 +3,10 @@ if nargin < 1 || isempty(dosave)
     dosave = false;
 end
 if nargin < 2 || isempty(shortwhd)
-    whd = g_imdb_choosedb;
-else
-    whd = fullfile(g_dir_imdb,shortwhd);
+    [~,shortwhd] = g_imdb_choosedb;
 end
 
-[fex,p] = g_imdb_imexist(whd,[],1);
+[fex,p] = g_imdb_imexist(shortwhd,[],1);
 
 [gy,gx] = meshgrid(p.ys,p.xs);
 ind = find(fex);

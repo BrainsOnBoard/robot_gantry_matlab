@@ -28,18 +28,18 @@ switch length(ds)
         disp('no image dbs found')
         return
     case 1
-        whd = 1;
+        imdbi = 1;
     otherwise
         for i = 1:length(ds)
             fprintf('%3d. %s\n',i,ds{i});
         end
-        whd = input('Which dir [all]: ');
-        if isempty(whd);
-            whd = 1:length(ds);
+        imdbi = input('Which dir [all]: ');
+        if isempty(imdbi);
+            imdbi = 1:length(ds);
         end
 end
 
-for i = whd
+for i = imdbi
     fprintf('unwrapping %s...\n', ds{i})
     
     olddir = fullfile(g_dir_imdb,ds{i});

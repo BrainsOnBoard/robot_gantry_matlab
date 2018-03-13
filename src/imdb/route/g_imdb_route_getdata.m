@@ -2,6 +2,7 @@ function [imxi,imyi,heads,whsn,err,nearest,dist,snx,sny,snth,errsel,p, ...
     isnew,allwhsn,ridfs,snapszht,snxi,snyi] = g_imdb_route_getdata( ...
     shortwhd,routenum,res,zht,useinfomax,improc,forcegen, ...
     improcforinfomax,userealsnaps,snapszht,dosave)
+
 if nargin < 9 || isempty(userealsnaps)
     userealsnaps = true;
 end
@@ -21,8 +22,6 @@ end
 
 getallwhsn = true;
 nth = min(360,res);
-
-whd = fullfile(g_dir_imdb,shortwhd);
 
 if useinfomax
     infomaxstr = '_infomax';
@@ -75,7 +74,7 @@ else
     
     weight_update_count = 30;
     
-    load(fullfile(whd,'im_params.mat'),'p')
+    p = g_imdb_getparams(shortwhd);
     zi = find(p.zs==zht);
     if ~any(zht == p.zs)
         error('invalid height: %f',zht);
@@ -107,7 +106,7 @@ else
         allsnth = snth;
     end
     
-    valids = g_imdb_imexist(whd,p,zi);
+    valids = g_imdb_imexist(shortwhd,p,zi);
     ind = find(valids);
     nheads = length(ind);
     [imxi,imyi] = ind2sub(size(valids),ind);

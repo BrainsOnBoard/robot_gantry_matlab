@@ -5,8 +5,6 @@ end
 
 trainheight = 200;
 
-whd = fullfile(g_dir_imdb,shortwhd);
-
 if useinfomax
     infomaxstr = '_infomax';
 else
@@ -24,7 +22,8 @@ else
     
     weight_update_count = 30;
     
-    [snaps,clickis,snx,sny,snth,pxsnx,pxsny,pxsnth,crop,p]=g_imdb_route_getsnaps(shortwhd,routenum,trainheight,res);
+    [snaps,clickis,snx,sny,snth,pxsnx,pxsny,pxsnth,~,p] = ...
+        g_imdb_route_getsnaps(shortwhd,routenum,trainheight,res);
     zi = find(p.zs==zht);
     
     heads = NaN(length(p.ys),length(p.xs));
@@ -127,7 +126,7 @@ else
 end
 
     function loadedim=loadim(x,y,z)
-        loadedim = g_imdb_getim(whd,x,y,z);
+        loadedim = g_imdb_getim(shortwhd,x,y,z);
         if ~isempty(loadedim)
             loadedim = imresize(loadedim,newsz,'bilinear');
         end

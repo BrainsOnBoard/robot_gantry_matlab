@@ -2,11 +2,9 @@ function [snaps,clickis,snx,sny,snth,pxsnx,pxsny,pxsnth,crop,p]=g_imdb_route_get
 
 imw = 720;
 
-whd = fullfile(g_dir_imdb,shortwhd);
-
 crop = load('gantry_cropparams.mat');
 load(fullfile(g_dir_imdb_routes,sprintf('route_%03d.mat',routenum)),'snx','sny','snth');
-load(fullfile(whd,'im_params.mat'),'p');
+p = g_imdb_getparams(shortwhd);
 zi = find(p.zs==zht);
 
 [pxsnx,pxsny] = bresenham_xy(snx,sny);
