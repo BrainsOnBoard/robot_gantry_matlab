@@ -1,6 +1,6 @@
 function g_bb_ridf(shortwhd,routenum,zht,snapszht,userealsnaps,improc, ...
     coords,shiftridfs,dosave,joinpdfs,figtype,doautoridf,dointeractive, ...
-    headings,errs,allerrs,fprefix,pubgrade)
+    headings,errs,allerrs,fprefix,pubgrade,ridfx360)
 if nargin < 1 || isempty(shortwhd)
     [~,shortwhd] = g_imdb_choosedb;
 end
@@ -49,6 +49,9 @@ if nargin < 17
 end
 if nargin < 18
     pubgrade = false;
+end
+if nargin < 19
+    ridfx360 = false;
 end
 
 if userealsnaps && length(snapszht) > 1
@@ -210,7 +213,7 @@ if dointeractive
                             improc,bestridfs,bestsnap,snx,sny,snth,p,zht, ...
                             snapszht,shortwhd,imsz,imxi,imyi,allheads, ...
                             imxyi,ccoordi,errs,allerrs,dosave,pubgrade, ...
-                            cfigdir,figtype)
+                            cfigdir,figtype,ridfx360)
                     end
                 end
                 return
@@ -228,7 +231,8 @@ if dointeractive
                     plotforbestworst(xi,yi,czhtcnt,csnapszhti,chead,true,false, ...
                         improc,bestridfs,bestsnap,snx,sny,snth,p,zht, ...
                         snapszht,shortwhd,imsz,imxi,imyi,allheads, ...
-                        imxyi,ccoordi,errs,allerrs,dosave,pubgrade)
+                        imxyi,ccoordi,errs,allerrs,dosave,pubgrade, ...
+                        [],[],ridfx360)
                     title(sprintf('Coord %d/%d',ccoordi,ncoords))
                     savebestworstfig(figdir,true,false,getfigfn, ...
                         figtype)
@@ -236,7 +240,8 @@ if dointeractive
                     plotforbestworst(xi,yi,czhtcnt,csnapszhti,chead,true,true, ...
                         improc,bestridfs,bestsnap,snx,sny,snth,p,zht, ...
                         snapszht,shortwhd,imsz,imxi,imyi,allheads, ...
-                        imxyi,ccoordi,errs,allerrs,dosave,pubgrade)
+                        imxyi,ccoordi,errs,allerrs,dosave,pubgrade, ...
+                        [],[],ridfx360)
                     title(sprintf('Coord %d/%d',ccoordi,ncoords))
                     savebestworstfig(figdir,true,true,getfigfn, ...
                         figtype)
@@ -264,7 +269,7 @@ if dointeractive
             plotforbestworst(xi,yi,czhtcnt,csnapszhti,headings(ccoordi,czhtcnt), ...
                 showpos,shownearest,improc,bestridfs,bestsnap,snx,sny, ...
                 snth,p,zht,snapszht,shortwhd,imsz,imxi,imyi,allheads, ...
-                imxyi,ccoordi,errs,allerrs,dosave,pubgrade)
+                imxyi,ccoordi,errs,allerrs,dosave,pubgrade,[],[],ridfx360)
             title(sprintf('Coord %d/%d',ccoordi,ncoords))
             
             try
@@ -396,7 +401,11 @@ end
 end
 
 function minval=plotridf(xi,yi,csnapszhti,czhti,p,imxyi,bestridfs,zht, ...
-    snapszht)
+    snapszht,ridfx360)
+
+    if nargin < 10
+        ridfx360 = false;
+    end
 
     gx = p.xs(xi);
     gy = p.ys(yi);
@@ -416,16 +425,23 @@ function minval=plotridf(xi,yi,csnapszhti,czhti,p,imxyi,bestridfs,zht, ...
 %             fprintf('best snap: %d\n',bestsnap{besti,csnapszhti}(cind));
     end
 
-    ths = repmat(linspace(-180,180,size(cridfs,1)+1)',1,size(cridfs,2));
-    cridfs = circshift(cridfs,floor(size(cridfs,1)/2));
+    if ridfx360
+        xlo = 0; xhi = 360;
+    else
+        xlo = -180; xhi = 180;
+    end
+    ths = repmat(linspace(xlo,xhi,size(cridfs,1)+1)',1,size(cridfs,2));
+    if ~ridfx360
+        cridfs = circshift(cridfs,floor(size(cridfs,1)/2));
+    end
     cridfs(end+1,:) = cridfs(1,:);
 
     h=plot(ths,cridfs);
     
     refzi = zht==snapszht(csnapszhti);
     h(refzi).LineStyle='--';
-    xlim([-180 180])
-    set(gca,'XTick',-180:90:180)
+    xlim([xlo xhi])
+    set(gca,'XTick',xlo:90:xhi)
     xlabel('Angle (deg)')
     title(sprintf('(%d, %d) Training height: %d mm',gx,gy,snapszht(csnapszhti)+50))
     hl = legend(num2str((zht+50)'),'Location','BestOutside');
@@ -452,7 +468,7 @@ end
 function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos, ...
     shownearest,improc,bestridfs,bestsnap,snx,sny,snth,p,zht,snapszht, ...
     shortwhd,imsz,imxi,imyi,allheads,imxyi,ccoordi,errs,allerrs,dosave, ...
-    pubgrade,cfigdir,figtype)
+    pubgrade,cfigdir,figtype,ridfx360)
 
     % make colormap
     up = linspace(0,1,32)';
@@ -489,22 +505,29 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos, ...
     end
     if shownearest
         [head,minval,~,diffs] = ridfheadmulti(im,rsnap);
-        diffs = circshift(diffs,floor(imsz(2)/2));
+        if ~ridfx360
+            diffs = circshift(diffs,floor(imsz(2)/2));
+        end
         diffs = diffs / prod(imsz);
         diffs(end+1) = diffs(1);
-        plot(linspace(-180,180,imsz(2)+1),diffs)
-        set(gca,'XTick',-180:90:180)
-        xlim([-180 180]);
+        if ridfx360
+            xlo = 0; xhi = 360;
+        else
+            xlo = -180; xhi = 180;
+        end
+        plot(linspace(xlo,xhi,imsz(2)+1),diffs)
+        set(gca,'XTick',xlo:90:xhi)
+        xlim([xlo xhi]);
         minval = minval / prod(imsz);
     else
         minval = plotridf(xi,yi,csnapszhti,czhti,p,imxyi,bestridfs,zht, ...
-            snapszht);
+            snapszht,ridfx360);
     end
     
     % plot vertical line indicating estimated heading
     hold on
     phead = mod(head*180/pi,360);
-    if phead > 180
+    if ~ridfx360 && phead > 180
         phead = phead-360;
     end
     line([phead phead],ylim,'Color','k','LineStyle',':');
@@ -527,7 +550,15 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos, ...
         fpref = sprintf('z%03d',zi);
         
         % save ridf
-        ridffigfn = fullfile(cfigdir,[fpref '_ridf.' figtype]);
+        if ridfx360
+            ridffigfn360 = fullfile(cfigdir,[fpref '_ridf360.' figtype]);
+            g_fig_save(ridffigfn360,[15 7],figtype,figtype,[],false);
+            
+            clf
+            plotridf(xi,yi,csnapszhti,czhti,p,imxyi,bestridfs,zht, ...
+                snapszht,false);
+        end
+        ridffigfn = fullfile(cfigdir,[fpref '_ridf180.' figtype]);
         g_fig_save(ridffigfn,[15 7],figtype,figtype,[],false);
         
         % save quiver
