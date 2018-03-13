@@ -550,16 +550,17 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos, ...
         fpref = sprintf('z%03d',zi);
         
         % save ridf
+        ridffigsz = [20 6];
         if ridfx360
             ridffigfn360 = fullfile(cfigdir,[fpref '_ridf360.' figtype]);
-            g_fig_save(ridffigfn360,[15 7],figtype,figtype,[],false);
+            g_fig_save(ridffigfn360,ridffigsz,figtype,figtype,[],false);
             
             clf
             plotridf(xi,yi,csnapszhti,czhti,p,imxyi,bestridfs,zht, ...
                 snapszht,false);
         end
         ridffigfn = fullfile(cfigdir,[fpref '_ridf180.' figtype]);
-        g_fig_save(ridffigfn,[15 7],figtype,figtype,[],false);
+        g_fig_save(ridffigfn,ridffigsz,figtype,figtype,[],false);
         
         % save quiver
         clf
