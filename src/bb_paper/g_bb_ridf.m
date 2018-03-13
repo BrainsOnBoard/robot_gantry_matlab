@@ -187,7 +187,7 @@ if dointeractive
         end
         csnapszhti = 1;
         
-        figdir = fullfile('ridf_bestworst',shortwhd);
+        figdir = fullfile('ridf_bestworst',g_imdb_getlabel(shortwhd));
         if dosave
             if pubgrade
                 for ccoordi = 1:ncoords
