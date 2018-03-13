@@ -444,7 +444,7 @@ function minval=plotridf(xi,yi,csnapszhti,czhti,p,imxyi,bestridfs,zht, ...
     set(gca,'XTick',xlo:90:xhi)
     xlabel('Angle (deg)')
     title(sprintf('(%d, %d) Training height: %d mm',gx,gy,snapszht(csnapszhti)+50))
-    hl = legend(num2str((zht+50)'),'Location','BestOutside');
+    hl = legend(num2str((zht+50)')); %,'Location','BestOutside');
     title(hl,'Height (mm)')
 
     g_fig_setfont
