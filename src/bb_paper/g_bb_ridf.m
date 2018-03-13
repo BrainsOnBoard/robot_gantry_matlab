@@ -527,8 +527,15 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos, ...
         fpref = sprintf('z%03d',zi);
         
         % save ridf
-        figfn = fullfile(cfigdir,[fpref '_ridf.' figtype]);
-        g_fig_save(figfn,[15 7],figtype,figtype,[],false);
+        ridffigfn = fullfile(cfigdir,[fpref '_ridf.' figtype]);
+        g_fig_save(ridffigfn,[15 7],figtype,figtype,[],false);
+        
+        % save quiver
+        clf
+        bestworstquiver(p,imxi,imyi,allheads,snx,sny,xi,yi,nearsnapi, ...
+            chosensnapi);
+        quiverfigfn = fullfile(cfigdir,[fpref '_quiver.' figtype]);
+        g_fig_save(quiverfigfn,[15 10],figtype,figtype,[],false);
         
         % save "current" view
         g_imdb_saveim(shortwhd,xi,yi,zi,fullfile('figures',cfigdir, ...
@@ -572,17 +579,25 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos, ...
 
     if showpos
         alsubplot(3:5,2)
-        hold on
-        imx = p.xs(imxi);
-        imy = p.ys(imyi);
-        anglequiver(imx,imy,allheads)
-        anglequiver(snx,sny,allheads(any(bsxfun(@eq,snx,imx) & bsxfun(@eq,sny,imy))),[],'g')
-        axis equal tight
-        plot(p.xs(xi),p.ys(yi),'kd', ...
-            snx(nearsnapi),sny(nearsnapi),'ko', ...
-            snx(chosensnapi),sny(chosensnapi),'ro', ...
-            'MarkerSize',8,'LineWidth',2)
+        bestworstquiver(p,imxi,imyi,allheads,snx,sny,xi,yi,nearsnapi, ...
+            chosensnapi);
     end
+end
+
+function bestworstquiver(p,imxi,imyi,allheads,snx,sny,xi,yi,nearsnapi, ...
+    chosensnapi)
+
+    hold on
+    imx = p.xs(imxi);
+    imy = p.ys(imyi);
+    anglequiver(imx,imy,allheads)
+    snheads = allheads(any(bsxfun(@eq,snx,imx) & bsxfun(@eq,sny,imy)));
+    anglequiver(snx,sny,snheads,[],'g')
+    axis equal tight
+    plot(p.xs(xi),p.ys(yi),'kd', ...
+        snx(nearsnapi),sny(nearsnapi),'ko', ...
+        snx(chosensnapi),sny(chosensnapi),'ro', ...
+        'MarkerSize',8,'LineWidth',2)
 end
 
 function alfigure(num,dosave)
