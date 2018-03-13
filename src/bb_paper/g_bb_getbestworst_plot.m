@@ -17,8 +17,8 @@ dointeractive = true;
 getbest = inputval('Use best points (cf. worst)?',false);
 
 snapsonly = false;
-[meandat,extremedat,routenum] = g_bb_getbestworst(shortwhd,zht, ...
-    snapszht,snapsonly,getbest,ncoords);
+[meandat,extremedat,routenum,mindist] = g_bb_getbestworst(shortwhd,zht, ...
+    snapszht,snapsonly,getbest,ncoords,[],[]);
 if getbest
     dat = meandat;
 else
@@ -26,9 +26,9 @@ else
 end
 
 if getbest
-    fprefix = 'best_';
+    fprefix = sprintf('best_d%d',mindist);
 else
-    fprefix = 'worst_';
+    fprefix = sprintf('worst_d%d',mindist);
 end
 g_bb_ridf(shortwhd,routenum,zht,snapszht,userealsnaps,improc, ...
     dat.coords,shiftridfs,dosave,joinpdfs,figtype, ...

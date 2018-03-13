@@ -1,5 +1,5 @@
-function [meandat,extremedat,routenum]=g_bb_getbestworst(shortwhd,zht, ...
-    snapszht,snapsonly,getbest,ncoords,routenum)
+function [meandat,extremedat,routenum,mindist]=g_bb_getbestworst( ...
+    shortwhd,zht,snapszht,snapsonly,getbest,ncoords,routenum,mindist)
 if nargin < 1 || isempty(shortwhd)
     [~,shortwhd] = g_imdb_choosedb;
 end
@@ -21,12 +21,17 @@ end
 if nargin < 7 || isempty(routenum)
     routenum = inputval('Enter route number',1);
 end
+if nargin < 8
+    mindist = 0;
+elseif isempty(mindist)
+    mindist = inputval('Enter minimum distance from point to snap',0);
+end
 
 improc = '';
 
 [errs,headings] = deal(cell(1,length(zht)));
 for i = 1:length(zht)
-    [imxi,imyi,heads,~,allerrs,~,~,~,~,~,errsel,p,~,~,~,snapszht,snxi,snyi] = g_imdb_route_getdata( ...
+    [imxi,imyi,heads,~,allerrs,~,dist,~,~,~,errsel,p,~,~,~,snapszht,snxi,snyi] = g_imdb_route_getdata( ...
         shortwhd,routenum,90,zht(i),false,improc,false,[], ...
         false,snapszht);
     
@@ -36,13 +41,17 @@ for i = 1:length(zht)
     else
         % get errors from "error corridor"
         xyi = find(errsel);
-%         xyi = 1:length(imxi);
+%         xyi = 1:length(imxi); % all errors
     end
     errs{i} = allerrs(xyi);
+    errs{i}(dist(xyi) < mindist) = NaN;
     headings{i} = heads(xyi);
 end
 errs = cell2mat(errs);
+sel = all(~isnan(errs),2);
+errs = errs(sel,:);
 headings = cell2mat(headings);
+headings = headings(sel,:);
 
 if getbest
     sorttype = 'ascend';
