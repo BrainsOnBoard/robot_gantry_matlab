@@ -447,7 +447,7 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos,shownearest,improc
     rsnap = circshift(snap,round(snth(csnapi)*imsz(2)/(2*pi)),2);
 
     alfigure(1,dosave);clf
-    alsubplot(5,1+showpos,1:2,1:2)
+    alsubplot(5,1+showpos,1:2,[1 1+showpos])
     if shownearest
         [head,minval,~,diffs] = ridfheadmulti(im,rsnap);
         diffs = circshift(diffs,floor(imsz(2)/2));
