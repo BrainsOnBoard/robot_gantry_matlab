@@ -189,33 +189,57 @@ if dointeractive
         
         figdir = fullfile('ridf_bestworst',shortwhd);
         if dosave
+            if pubgrade
+                for ccoordi = 1:ncoords
+                    for czhtcnt = 1:length(zht)
+                        ccoords = coords(ccoordi,:);
+                        chead = headings(ccoordi,czhtcnt);
+                        xi = find(p.xs==ccoords(1));
+                        yi = find(p.ys==ccoords(2));
+                        
+                        % we dump the different bits for each figure in a
+                        % new dir
+                        cfigdir = fullfile(figdir,sprintf('%sn%03d_%03d_%03d', ...
+                            fprefix,ccoordi,xi,yi));
+                        fcfigdir = fullfile(g_dir_figures,cfigdir);
+                        if ~exist(fcfigdir,'dir')
+                            mkdir(fcfigdir);
+                        end
+                        
+                        plotforbestworst(xi,yi,czhtcnt,csnapszhti,chead,true,false, ...
+                            improc,bestridfs,bestsnap,snx,sny,snth,p,zht, ...
+                            snapszht,shortwhd,imsz,imxi,imyi,allheads, ...
+                            imxyi,ccoordi,errs,allerrs,dosave,pubgrade, ...
+                            cfigdir,figtype)
+                    end
+                end
+                return
+            end
+            
             if joinpdfs
                 g_fig_series_start
             end
-            showpos = ~pubgrade;
             for ccoordi = 1:ncoords
                 for czhtcnt = 1:length(zht)
                     ccoords = coords(ccoordi,:);
                     chead = headings(ccoordi,czhtcnt);
                     xi = find(p.xs==ccoords(1));
                     yi = find(p.ys==ccoords(2));
-                    plotforbestworst(xi,yi,czhtcnt,csnapszhti,chead,showpos,false, ...
+                    plotforbestworst(xi,yi,czhtcnt,csnapszhti,chead,true,false, ...
                         improc,bestridfs,bestsnap,snx,sny,snth,p,zht, ...
                         snapszht,shortwhd,imsz,imxi,imyi,allheads, ...
-                        imxyi,ccoordi,errs,allerrs,dosave)
+                        imxyi,ccoordi,errs,allerrs,dosave,pubgrade)
                     title(sprintf('Coord %d/%d',ccoordi,ncoords))
-                    savebestworstfig(figdir,showpos,false,getfigfn, ...
+                    savebestworstfig(figdir,true,false,getfigfn, ...
                         figtype)
                     
-                    if ~pubgrade
-                        plotforbestworst(xi,yi,czhtcnt,csnapszhti,chead,showpos,true, ...
-                            improc,bestridfs,bestsnap,snx,sny,snth,p,zht, ...
-                            snapszht,shortwhd,imsz,imxi,imyi,allheads, ...
-                            imxyi,ccoordi,errs,allerrs,dosave)
-                        title(sprintf('Coord %d/%d',ccoordi,ncoords))
-                        savebestworstfig(figdir,showpos,true,getfigfn, ...
-                            figtype)
-                    end
+                    plotforbestworst(xi,yi,czhtcnt,csnapszhti,chead,true,true, ...
+                        improc,bestridfs,bestsnap,snx,sny,snth,p,zht, ...
+                        snapszht,shortwhd,imsz,imxi,imyi,allheads, ...
+                        imxyi,ccoordi,errs,allerrs,dosave,pubgrade)
+                    title(sprintf('Coord %d/%d',ccoordi,ncoords))
+                    savebestworstfig(figdir,true,true,getfigfn, ...
+                        figtype)
                 end
             end
             pubstr = '';
@@ -240,7 +264,7 @@ if dointeractive
             plotforbestworst(xi,yi,czhtcnt,csnapszhti,headings(ccoordi,czhtcnt), ...
                 showpos,shownearest,improc,bestridfs,bestsnap,snx,sny, ...
                 snth,p,zht,snapszht,shortwhd,imsz,imxi,imyi,allheads, ...
-                imxyi,ccoordi,errs,allerrs,dosave)
+                imxyi,ccoordi,errs,allerrs,dosave,pubgrade)
             title(sprintf('Coord %d/%d',ccoordi,ncoords))
             
             try
@@ -425,9 +449,10 @@ function savebestworstfig(figdir,showpos,shownearest,figfn,figtype)
     g_fig_save(figfn,[(showpos+1)*15 15],figtype,figtype,[],false);
 end
 
-function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos,shownearest,improc, ...
-    bestridfs,bestsnap,snx,sny,snth,p,zht,snapszht,shortwhd,imsz,imxi, ...
-    imyi,allheads,imxyi,ccoordi,errs,allerrs,dosave)
+function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos, ...
+    shownearest,improc,bestridfs,bestsnap,snx,sny,snth,p,zht,snapszht, ...
+    shortwhd,imsz,imxi,imyi,allheads,imxyi,ccoordi,errs,allerrs,dosave, ...
+    pubgrade,cfigdir,figtype)
 
     % make colormap
     up = linspace(0,1,32)';
@@ -437,7 +462,8 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos,shownearest,improc
     imfun = gantry_getimfun(improc);
     
     [zhti,~] = find(bsxfun(@eq,p.zs',zht));
-    [im,rawim] = g_imdb_getprocim(shortwhd,xi,yi,zhti(czhti),imfun,imsz(2));
+    zi = zhti(czhti);
+    [im,rawim] = g_imdb_getprocim(shortwhd,xi,yi,zi,imfun,imsz(2));
 
     % nearest snap (Euclidean distance)
     [~,nearsnapi] = min(hypot(sny-p.ys(yi),snx-p.xs(xi)));
@@ -458,7 +484,9 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos,shownearest,improc
     rsnap = circshift(snap,round(snth(csnapi)*imsz(2)/(2*pi)),2);
 
     alfigure(1,dosave);clf
-    alsubplot(5,1+showpos,1:2,[1 1+showpos])
+    if ~pubgrade
+        alsubplot(5,1+showpos,1:2,[1 1+showpos])
+    end
     if shownearest
         [head,minval,~,diffs] = ridfheadmulti(im,rsnap);
         diffs = circshift(diffs,floor(imsz(2)/2));
@@ -484,6 +512,12 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos,shownearest,improc
         
     rrawim = circshift(rawim,round(head*size(rawim,2)/(2*pi)),2);
     rim = circshift(im,round(head*imsz(2)/(2*pi)),2);
+    
+    if pubgrade
+        figfn = fullfile(cfigdir,sprintf('z%03d_ridf.%s',zi,figtype));
+        g_fig_save(figfn,[15 7],figtype,figtype,[],false);
+        return
+    end
 
     alsubplot(3,1)
     imshow(rrawim)
