@@ -509,13 +509,39 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos, ...
     end
     line([phead phead],ylim,'Color','k','LineStyle',':');
     axis tight
-        
+    
+    % get correctly rotated versions of im and snap
     rrawim = circshift(rawim,round(head*size(rawim,2)/(2*pi)),2);
     rim = circshift(im,round(head*imsz(2)/(2*pi)),2);
     
+    % calculate difference image
+    diffim = im2double(rim)-im2double(rsnap);
+    minval2 = mean2(abs(diffim));
+    diffval = minval2-minval;
+    if abs(diffval) >= 1e-5 % check that the difference value is correct
+        error('assertion failed (coord: %d; nearest: %d; zht: %.2f; diff: %g)', ...
+            ccoordi,shownearest,zht(czhti)+50,diffval)
+    end
+    
     if pubgrade
-        figfn = fullfile(cfigdir,sprintf('z%03d_ridf.%s',zi,figtype));
+        fpref = sprintf('z%03d',zi);
+        
+        % save ridf
+        figfn = fullfile(cfigdir,[fpref '_ridf.' figtype]);
         g_fig_save(figfn,[15 7],figtype,figtype,[],false);
+        
+        % save "current" view
+        g_imdb_saveim(shortwhd,xi,yi,zi,fullfile('figures',cfigdir, ...
+            [fpref '_im.png']));
+        
+        % save best-matching snapshot
+        g_imdb_saveim(shortwhd,snxi,snyi,snzi,fullfile('figures', ...
+            cfigdir,[fpref '_snap.png']));
+        
+        % save difference image (at best-matching rotation)
+        imwrite(1+(size(redblue,1)-1)*(diffim+1)/2,redblue, ...
+            fullfile('figures',cfigdir,[fpref '_diff.png']));
+        
         return
     end
 
@@ -537,14 +563,7 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos, ...
     end
 
     ax=alsubplot(5,1);
-    diffimlo = im2double(rim)-im2double(rsnap);
-    minval2 = mean2(abs(diffimlo));
-    diffval = minval2-minval;
-    if abs(diffval) >= 1e-5
-        error('assertion failed (coord: %d; nearest: %d; zht: %.2f; diff: %g)', ...
-            ccoordi,shownearest,zht(czhti)+50,diffval)
-    end
-    imagesc(diffimlo)
+    imagesc(diffim)
     pxdiff = minval*prod(imsz);
     title(sprintf('min diff: %.3f (=%.2fpx)',minval,pxdiff))
     caxis([-1 1])
