@@ -126,7 +126,7 @@ if dointeractive
         showquiver
 
         while true % loop until user quits
-            figure(1)
+            alfigure(1,dosave)
             try
                 [x,y,but] = ginput(1);
             catch ex
@@ -152,7 +152,7 @@ if dointeractive
 
                     plotmultiridfs(xi,yi)
                     
-                    figure(3);clf
+                    alfigure(3,dosave);clf
                     alsubplot(3,1,1,1)
                     showdiffim(xi,yi)
                 case 'w' % zht up
@@ -199,13 +199,13 @@ if dointeractive
                     plotforbestworst(xi,yi,czhtcnt,csnapszhti,chead,showpos,false, ...
                         improc,bestridfs,bestsnap,snx,sny,snth,p,zht, ...
                         snapszht,shortwhd,imsz,imxi,imyi,allheads, ...
-                        imxyi,ccoordi,errs,allerrs)
+                        imxyi,ccoordi,errs,allerrs,dosave)
                     title(sprintf('Coord %d/%d',ccoordi,ncoords))
                     savebestworstfig(figdir,showpos,false,getfigfn,figtype)
                     plotforbestworst(xi,yi,czhtcnt,csnapszhti,chead,showpos,true, ...
                         improc,bestridfs,bestsnap,snx,sny,snth,p,zht, ...
                         snapszht,shortwhd,imsz,imxi,imyi,allheads, ...
-                        imxyi,ccoordi,errs,allerrs)
+                        imxyi,ccoordi,errs,allerrs,dosave)
                     title(sprintf('Coord %d/%d',ccoordi,ncoords))
                     savebestworstfig(figdir,showpos,true,getfigfn,figtype)
                 end
@@ -226,7 +226,7 @@ if dointeractive
             plotforbestworst(xi,yi,czhtcnt,csnapszhti,headings(ccoordi,czhtcnt), ...
                 showpos,shownearest,improc,bestridfs,bestsnap,snx,sny, ...
                 snth,p,zht,snapszht,shortwhd,imsz,imxi,imyi,allheads, ...
-                imxyi,ccoordi,errs,allerrs)
+                imxyi,ccoordi,errs,allerrs,dosave)
             title(sprintf('Coord %d/%d',ccoordi,ncoords))
             
             try
@@ -312,7 +312,7 @@ end
         spcols = min(2,length(snapszht));
         ymax = 0;
         if joinpdfs || isempty(coords)
-            figure(2);clf
+            alfigure(2,dosave);clf
         else
             figure
         end
@@ -415,7 +415,7 @@ end
 
 function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos,shownearest,improc, ...
     bestridfs,bestsnap,snx,sny,snth,p,zht,snapszht,shortwhd,imsz,imxi, ...
-    imyi,allheads,imxyi,ccoordi,errs,allerrs)
+    imyi,allheads,imxyi,ccoordi,errs,allerrs,dosave)
 
     % make colormap
     up = linspace(0,1,32)';
@@ -446,7 +446,7 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos,shownearest,improc
     rrawsnap = circshift(rawsnap,round(snth(csnapi)*size(rawsnap,2)/(2*pi)),2);
     rsnap = circshift(snap,round(snth(csnapi)*imsz(2)/(2*pi)),2);
 
-    figure(1);clf
+    alfigure(1,dosave);clf
     alsubplot(5,1+showpos,1:2,1:2)
     if shownearest
         [head,minval,~,diffs] = ridfheadmulti(im,rsnap);
@@ -518,5 +518,13 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos,shownearest,improc
             snx(nearsnapi),sny(nearsnapi),'ko', ...
             snx(chosensnapi),sny(chosensnapi),'ro', ...
             'MarkerSize',8,'LineWidth',2)
+    end
+end
+
+function alfigure(num,dosave)
+    if ~dosave || ~isgraphics(num)
+        figure(num)
+    else
+        set(0,'CurrentFigure',num);
     end
 end
