@@ -538,15 +538,13 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos, ...
         g_fig_save(quiverfigfn,[15 10],figtype,figtype,[],false);
         
         % save "current" view
-        g_imdb_saveim(shortwhd,xi,yi,zi,fullfile('figures',cfigdir, ...
-            [fpref '_im.png']));
+        imwrite(rrawim,fullfile('figures',cfigdir,[fpref '_im.png']));
         
         % save best-matching snapshot
-        g_imdb_saveim(shortwhd,snxi,snyi,snzi,fullfile('figures', ...
-            cfigdir,[fpref '_snap.png']));
+        imwrite(rrawsnap,fullfile('figures',cfigdir,[fpref '_snap.png']));
         
         % save difference image (at best-matching rotation)
-        imwrite(1+(size(redblue,1)-1)*(diffim+1)/2,redblue, ...
+        imwrite(round(1+(size(redblue,1)-1)*(diffim+1)/2),redblue, ...
             fullfile('figures',cfigdir,[fpref '_diff.png']));
         
         return
