@@ -359,7 +359,9 @@ end
     end
 end
 
-function minval=plotridf(xi,yi,csnapszhti,czhti,p,imxyi,bestridfs,zht,snapszht)
+function minval=plotridf(xi,yi,csnapszhti,czhti,p,imxyi,bestridfs,zht, ...
+    snapszht)
+
     gx = p.xs(xi);
     gy = p.ys(yi);
 
@@ -453,8 +455,19 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos,shownearest,improc
         xlim([-180 180]);
         minval = minval / prod(imsz);
     else
-        minval = plotridf(xi,yi,csnapszhti,czhti,p,imxyi,bestridfs,zht,snapszht);
+        minval = plotridf(xi,yi,csnapszhti,czhti,p,imxyi,bestridfs,zht, ...
+            snapszht);
     end
+    
+    % plot vertical line indicating estimated heading
+    hold on
+    phead = mod(head*180/pi,360);
+    if phead > 180
+        phead = phead-360;
+    end
+    line([phead phead],ylim,'Color','k','LineStyle',':');
+    axis tight
+        
     rrawim = circshift(rawim,round(head*size(rawim,2)/(2*pi)),2);
     rim = circshift(im,round(head*imsz(2)/(2*pi)),2);
 
