@@ -19,10 +19,7 @@ if nargin < 6 || isempty(ncoords)
     ncoords = 10;
 end
 if nargin < 7 || isempty(routenum)
-    routenum = input('Enter route number [1]: ');
-    if isempty(routenum)
-        routenum = 1;
-    end
+    routenum = inputval('Enter route number',1);
 end
 
 improc = '';

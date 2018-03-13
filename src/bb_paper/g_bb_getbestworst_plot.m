@@ -14,10 +14,7 @@ figtype = [];
 doautoridf = false;
 dointeractive = true;
 
-getbest = input('Use best points (cf. worst)? [false]: ');
-if isempty(getbest)
-    getbest = false;
-end
+getbest = inputval('Use best points (cf. worst)?',false);
 
 snapsonly = false;
 [meandat,extremedat,routenum] = g_bb_getbestworst(shortwhd,zht, ...
