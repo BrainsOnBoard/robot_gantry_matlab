@@ -448,10 +448,11 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos,shownearest,improc
     alsubplot(5,1+showpos,1:2,1)
     if shownearest
         [head,minval,~,diffs] = ridfheadmulti(im,rsnap);
-        diffs = circshift(diffs,round((imsz(2)/2)*(1+snth(csnapi)/pi)));
+        diffs = circshift(diffs,floor(imsz(2)/2));
         diffs = diffs / prod(imsz);
         diffs(end+1) = diffs(1);
         plot(linspace(-180,180,imsz(2)+1),diffs)
+        set(gca,'XTick',-180:90:180)
         xlim([-180 180]);
         minval = minval / prod(imsz);
     else
