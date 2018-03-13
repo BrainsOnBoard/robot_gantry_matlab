@@ -19,7 +19,6 @@ if isempty(getbest)
     getbest = false;
 end
 
-% get worst mean coords
 snapsonly = false;
 [meandat,extremedat,routenum] = g_bb_getbestworst(shortwhd,zht, ...
     snapszht,snapsonly,getbest,ncoords);

@@ -1,6 +1,6 @@
 function g_bb_ridf(shortwhd,routenum,zht,snapszht,userealsnaps,improc, ...
     coords,shiftridfs,dosave,joinpdfs,figtype,doautoridf,dointeractive, ...
-    headings,errs,allerrs,fprefix)
+    headings,errs,allerrs,fprefix,pubgrade)
 if nargin < 1 || isempty(shortwhd)
     [~,shortwhd] = g_imdb_choosedb;
 end
@@ -46,6 +46,9 @@ if nargin < 13 || isempty(dointeractive)
 end
 if nargin < 17
     fprefix = '';
+end
+if nargin < 18
+    pubgrade = false;
 end
 
 if userealsnaps && length(snapszht) > 1
@@ -188,8 +191,10 @@ if dointeractive
         
         figdir = fullfile('ridf_bestworst',shortwhd);
         if dosave
-            g_fig_series_start
-            showpos = true;
+            if joinpdfs
+                g_fig_series_start
+            end
+            showpos = ~pubgrade;
             for ccoordi = 1:ncoords
                 for czhtcnt = 1:length(zht)
                     ccoords = coords(ccoordi,:);
@@ -201,17 +206,28 @@ if dointeractive
                         snapszht,shortwhd,imsz,imxi,imyi,allheads, ...
                         imxyi,ccoordi,errs,allerrs,dosave)
                     title(sprintf('Coord %d/%d',ccoordi,ncoords))
-                    savebestworstfig(figdir,showpos,false,getfigfn,figtype)
-                    plotforbestworst(xi,yi,czhtcnt,csnapszhti,chead,showpos,true, ...
-                        improc,bestridfs,bestsnap,snx,sny,snth,p,zht, ...
-                        snapszht,shortwhd,imsz,imxi,imyi,allheads, ...
-                        imxyi,ccoordi,errs,allerrs,dosave)
-                    title(sprintf('Coord %d/%d',ccoordi,ncoords))
-                    savebestworstfig(figdir,showpos,true,getfigfn,figtype)
+                    savebestworstfig(figdir,showpos,false,getfigfn, ...
+                        figtype)
+                    
+                    if ~pubgrade
+                        plotforbestworst(xi,yi,czhtcnt,csnapszhti,chead,showpos,true, ...
+                            improc,bestridfs,bestsnap,snx,sny,snth,p,zht, ...
+                            snapszht,shortwhd,imsz,imxi,imyi,allheads, ...
+                            imxyi,ccoordi,errs,allerrs,dosave)
+                        title(sprintf('Coord %d/%d',ccoordi,ncoords))
+                        savebestworstfig(figdir,showpos,true,getfigfn, ...
+                            figtype)
+                    end
                 end
             end
-            g_fig_series_end(sprintf('%spoints_@%d_%s.%s',fprefix, ...
-                snapszht,shortwhd,figtype),[],figtype)
+            pubstr = '';
+            if pubgrade
+                pubstr = '_pub';
+            end
+            if joinpdfs
+                g_fig_series_end(sprintf('%spoints_@%d_%s%s.%s',fprefix, ...
+                    snapszht,shortwhd,pubstr,figtype),[],figtype)
+            end
             return
         end
         
@@ -423,7 +439,7 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos,shownearest,improc
     redblue = [up,up,ones(32,1);ones(32,1),down,down];
     
     imfun = gantry_getimfun(improc);
-
+    
     [zhti,~] = find(bsxfun(@eq,p.zs',zht));
     whd = fullfile(g_dir_imdb,shortwhd);
     [im,rawim] = g_imdb_getprocim(whd,xi,yi,zhti(czhti),imfun,imsz(2));

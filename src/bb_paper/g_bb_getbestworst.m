@@ -1,4 +1,5 @@
-function [meandat,extremedat,routenum]=g_bb_getbestworst(shortwhd,zht,snapszht,snapsonly,getbest,ncoords)
+function [meandat,extremedat,routenum]=g_bb_getbestworst(shortwhd,zht, ...
+    snapszht,snapsonly,getbest,ncoords,routenum)
 if nargin < 1 || isempty(shortwhd)
     [~,shortwhd] = g_imdb_choosedb;
 end
@@ -17,10 +18,11 @@ end
 if nargin < 6 || isempty(ncoords)
     ncoords = 10;
 end
-
-routenum = input('Enter route number [1]: ');
-if isempty(routenum)
-    routenum = 1;
+if nargin < 7 || isempty(routenum)
+    routenum = input('Enter route number [1]: ');
+    if isempty(routenum)
+        routenum = 1;
+    end
 end
 
 improc = '';
