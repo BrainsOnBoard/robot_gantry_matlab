@@ -463,7 +463,7 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos, ...
     
     [zhti,~] = find(bsxfun(@eq,p.zs',zht));
     zi = zhti(czhti);
-    [im,rawim] = g_imdb_getprocim(shortwhd,xi,yi,zi,imfun,imsz(2));
+    [im,imhi] = g_imdb_getprocim(shortwhd,xi,yi,zi,imfun,imsz(2));
 
     % nearest snap (Euclidean distance)
     [~,nearsnapi] = min(hypot(sny-p.ys(yi),snx-p.xs(xi)));
@@ -479,8 +479,8 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos, ...
     snxi = find(p.xs==csnx);
     snyi = find(p.ys==csny);
     snzi = find(p.zs==snapszht(csnapszhti));
-    [snap,rawsnap] = g_imdb_getprocim(shortwhd,snxi,snyi,snzi,imfun,imsz(2));
-    rrawsnap = circshift(rawsnap,round(snth(csnapi)*size(rawsnap,2)/(2*pi)),2);
+    [snap,snaphi] = g_imdb_getprocim(shortwhd,snxi,snyi,snzi,imfun,imsz(2));
+    rsnaphi = circshift(snaphi,round(snth(csnapi)*size(snaphi,2)/(2*pi)),2);
     rsnap = circshift(snap,round(snth(csnapi)*imsz(2)/(2*pi)),2);
 
     alfigure(1,dosave);clf
@@ -511,12 +511,12 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos, ...
     axis tight
     
     % get correctly rotated versions of im and snap
-    rrawim = circshift(rawim,round(head*size(rawim,2)/(2*pi)),2);
+    rimhi = circshift(imhi,round(head*size(imhi,2)/(2*pi)),2);
     rim = circshift(im,round(head*imsz(2)/(2*pi)),2);
     
     % calculate difference image
-    diffim = im2double(rim)-im2double(rsnap);
-    minval2 = mean2(abs(diffim));
+    diffimlo = im2double(rim)-im2double(rsnap);
+    minval2 = mean2(abs(diffimlo));
     diffval = minval2-minval;
     if abs(diffval) >= 1e-5 % check that the difference value is correct
         error('assertion failed (coord: %d; nearest: %d; zht: %.2f; diff: %g)', ...
@@ -538,25 +538,28 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos, ...
         g_fig_save(quiverfigfn,[15 10],figtype,figtype,[],false);
         
         % save "current" view
-        imwrite(rrawim,fullfile('figures',cfigdir,[fpref '_im.png']));
+        imwrite(rimhi,fullfile('figures',cfigdir,[fpref '_im.png']));
         
         % save best-matching snapshot
-        imwrite(rrawsnap,fullfile('figures',cfigdir,[fpref '_snap.png']));
+        imwrite(rsnaphi,fullfile('figures',cfigdir,[fpref '_snap.png']));
         
-        % save difference image (at best-matching rotation)
-        imwrite(round(1+(size(redblue,1)-1)*(diffim+1)/2),redblue, ...
+        % save difference images (at best-matching rotation)
+        diffimhi = im2double(rimhi)-im2double(rsnaphi);
+        imwrite(round(1+(size(redblue,1)-1)*(diffimhi+1)/2),redblue, ...
+            fullfile('figures',cfigdir,[fpref '_diffhi.png']));
+        imwrite(round(1+(size(redblue,1)-1)*(diffimlo+1)/2),redblue, ...
             fullfile('figures',cfigdir,[fpref '_diff.png']));
         
         return
     end
 
     alsubplot(3,1)
-    imshow(rrawim)
+    imshow(rimhi)
     title(sprintf('Test height: %dmm; err: %.2fdeg; overall err: %.2fdeg', ...
         zht(czhti)+50,allerrs(ccoordi,czhti),errs(ccoordi)))
 
     alsubplot(4,1)
-    imshow(rrawsnap)
+    imshow(rsnaphi)
     dist = hypot(p.ys(yi)-csny,p.xs(xi)-csnx);
     if shownearest
         h=title(sprintf('Nearest snap num: %d @%gmm',csnapi,dist));
@@ -566,9 +569,9 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos, ...
     if csnapi==nearsnapi
         set(h,'Color','b');
     end
-
+    
     ax=alsubplot(5,1);
-    imagesc(diffim)
+    imagesc(diffimlo)
     pxdiff = minval*prod(imsz);
     title(sprintf('min diff: %.3f (=%.2fpx)',minval,pxdiff))
     caxis([-1 1])
