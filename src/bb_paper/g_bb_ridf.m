@@ -385,13 +385,15 @@ function minval=plotridf(xi,yi,csnapszhti,czhti,p,imxyi,bestridfs,zht, ...
     cridfs(end+1,:) = cridfs(1,:);
 
     h=plot(ths,cridfs);
+    
     refzi = zht==snapszht(csnapszhti);
     h(refzi).LineStyle='--';
     xlim([-180 180])
     set(gca,'XTick',-180:90:180)
-%         xlabel('Angle (deg)')
+    xlabel('Angle (deg)')
     title(sprintf('(%d, %d) Training height: %d mm',gx,gy,snapszht(csnapszhti)+50))
-    title(legend(num2str((zht+50)')),'Height (mm)')
+    hl = legend(num2str((zht+50)'),'Location','BestOutside');
+    title(hl,'Height (mm)')
 
     g_fig_setfont
     andy_setbox
@@ -445,7 +447,7 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos,shownearest,improc
     rsnap = circshift(snap,round(snth(csnapi)*imsz(2)/(2*pi)),2);
 
     figure(1);clf
-    alsubplot(5,1+showpos,1:2,1)
+    alsubplot(5,1+showpos,1:2,1:2)
     if shownearest
         [head,minval,~,diffs] = ridfheadmulti(im,rsnap);
         diffs = circshift(diffs,floor(imsz(2)/2));
@@ -505,7 +507,7 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos,shownearest,improc
     axis equal tight off
 
     if showpos
-        alsubplot(1:5,2)
+        alsubplot(3:5,2)
         hold on
         imx = p.xs(imxi);
         imy = p.ys(imyi);
