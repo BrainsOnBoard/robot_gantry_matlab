@@ -67,7 +67,15 @@ end
 
 merrs = mean(errs,2);
 [meandat.errs,mI] = sort(merrs,sorttype);
-mI = mI(1:ncoords);
+if isempty(mI)
+    error('no points fit these criteria')
+end
+if length(mI) < ncoords
+    warning('only %d points found (requested %d)',length(mI),ncoords)
+    ncoords = length(mI);
+else
+    mI = mI(1:ncoords);
+end
 meandat.errs = meandat.errs(1:ncoords);
 meandat.allerrs = errs(mI,:);
 meandat.headings = headings(mI,:);
