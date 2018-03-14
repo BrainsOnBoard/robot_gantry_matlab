@@ -29,9 +29,9 @@ end
 
 improc = '';
 
-[errs,headings] = deal(cell(1,length(zht)));
+[errs,headings,whsn] = deal(cell(1,length(zht)));
 for i = 1:length(zht)
-    [imxi,imyi,heads,~,allerrs,~,dist,~,~,~,errsel,p,~,~,~,snapszht,snxi,snyi] = g_imdb_route_getdata( ...
+    [imxi,imyi,heads,allwhsn,allerrs,~,dist,~,~,~,errsel,p,~,~,~,snapszht,snxi,snyi] = g_imdb_route_getdata( ...
         shortwhd,routenum,90,zht(i),false,improc,false,[], ...
         false,snapszht);
     
@@ -46,12 +46,15 @@ for i = 1:length(zht)
     errs{i} = allerrs(xyi);
     errs{i}(dist(xyi) < mindist) = NaN;
     headings{i} = heads(xyi);
+    whsn{i} = allwhsn(xyi);
 end
 errs = cell2mat(errs);
 sel = all(~isnan(errs),2);
 errs = errs(sel,:);
 headings = cell2mat(headings);
 headings = headings(sel,:);
+whsn = cell2mat(whsn);
+whsn = whsn(sel,:);
 
 if getbest
     sorttype = 'ascend';
@@ -79,17 +82,19 @@ end
 meandat.errs = meandat.errs(1:ncoords);
 meandat.allerrs = errs(mI,:);
 meandat.headings = headings(mI,:);
+meandat.whsn = whsn(mI,:);
 
 if getbest
     extreme_errs = min(errs,[],2);
 else
     extreme_errs = max(errs,[],2);
 end
-[extremedat.errs,maxI] = sort(extreme_errs,sorttype);
-maxI = maxI(1:ncoords);
+[extremedat.errs,exI] = sort(extreme_errs,sorttype);
+exI = exI(1:ncoords);
 extremedat.errs = extremedat.errs(1:ncoords);
-extremedat.allerrs = errs(maxI,:);
-extremedat.headings = headings(maxI,:);
+extremedat.allerrs = errs(exI,:);
+extremedat.headings = headings(exI,:);
+extremedat.whsn = whsn(exI);
 
 if getbest
     disp('Best mean errors:')
@@ -126,7 +131,7 @@ for i = 2:length(mI)
 end
 fprintf('];\n');
 
-extremedat.coords = [p.xs(imxi(xyi(maxI)))' p.ys(imyi(xyi(maxI)))'];
+extremedat.coords = [p.xs(imxi(xyi(exI)))' p.ys(imyi(xyi(exI)))'];
 if getbest
     fprintf('\n%% best-matching positions - min error')
 else
@@ -140,7 +145,7 @@ if getbest
 else
     fprintf('\nbadcoords = [%d %d', extremedat.coords(1,:))
 end
-for i = 2:length(maxI)
+for i = 2:length(exI)
     fprintf('; %d %d',extremedat.coords(i,:))
 end
 fprintf('];\n\n');
