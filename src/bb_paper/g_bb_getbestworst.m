@@ -1,5 +1,6 @@
 function [meandat,extremedat,routenum,mindist]=g_bb_getbestworst( ...
     shortwhd,zht,snapszht,snapsonly,getbest,ncoords,routenum,mindist)
+
 if nargin < 1 || isempty(shortwhd)
     [~,shortwhd] = g_imdb_choosedb;
 end
@@ -43,18 +44,16 @@ for i = 1:length(zht)
         xyi = find(errsel);
 %         xyi = 1:length(imxi); % all errors
     end
+    % exclude positions where snap was within specified mindist
+    xyi(dist(xyi) < mindist) = [];
+    
     errs{i} = allerrs(xyi);
-    errs{i}(dist(xyi) < mindist) = NaN;
     headings{i} = heads(xyi);
     whsn{i} = allwhsn(xyi);
 end
 errs = cell2mat(errs);
-sel = all(~isnan(errs),2);
-errs = errs(sel,:);
 headings = cell2mat(headings);
-headings = headings(sel,:);
 whsn = cell2mat(whsn);
-whsn = whsn(sel,:);
 
 if getbest
     sorttype = 'ascend';
