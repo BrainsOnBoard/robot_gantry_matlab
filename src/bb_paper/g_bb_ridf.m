@@ -530,7 +530,9 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos, ...
     if ~ridfx360 && phead > 180
         phead = phead-360;
     end
-    line([phead phead],ylim,'Color','k','LineStyle',':');
+    pl=line([phead phead],ylim,'Color','k','LineStyle',':');
+    leginf = get(get(pl,'Annotation'),'LegendInformation');
+    set(leginf,'IconDisplayStyle','off')
     axis tight
     
     % get correctly rotated versions of im and snap
