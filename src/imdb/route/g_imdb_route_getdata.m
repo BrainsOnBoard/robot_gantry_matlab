@@ -29,6 +29,10 @@ else
     infomaxstr = '';
 end
 
+if ~isscalar(zht)
+    error('zht must be scalar')
+end
+
 if useinfomax && ~improcforinfomax
     improc = '';
 end
