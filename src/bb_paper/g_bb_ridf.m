@@ -401,7 +401,7 @@ end
 end
 
 function minval=plotridf(xi,yi,csnapszhti,czhti,p,imxyi,bestridfs,zht, ...
-    snapszht,ridfx360)
+    snapszht,ridfx360,head)
 
     if nargin < 10
         ridfx360 = false;
@@ -449,6 +449,19 @@ function minval=plotridf(xi,yi,csnapszhti,czhti,p,imxyi,bestridfs,zht, ...
 
     g_fig_setfont
     andy_setbox
+    
+    if nargin >= 11
+        % plot vertical line indicating estimated heading
+        hold on
+        phead = mod(head*180/pi,360);
+        if ~ridfx360 && phead > 180
+            phead = phead-360;
+        end
+        pl=line([phead phead],ylim,'Color','k','LineStyle',':');
+        leginf = get(get(pl,'Annotation'),'LegendInformation');
+        set(leginf,'IconDisplayStyle','off')
+        axis tight
+    end
 
     minval = min(cridfs(:,czhti));
 end
@@ -521,19 +534,8 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos, ...
         minval = minval / prod(imsz);
     else
         minval = plotridf(xi,yi,csnapszhti,czhti,p,imxyi,bestridfs,zht, ...
-            snapszht,ridfx360);
+            snapszht,ridfx360,head);
     end
-    
-    % plot vertical line indicating estimated heading
-    hold on
-    phead = mod(head*180/pi,360);
-    if ~ridfx360 && phead > 180
-        phead = phead-360;
-    end
-    pl=line([phead phead],ylim,'Color','k','LineStyle',':');
-    leginf = get(get(pl,'Annotation'),'LegendInformation');
-    set(leginf,'IconDisplayStyle','off')
-    axis tight
     
     % get correctly rotated versions of im and snap
     rimhi = circshift(imhi,round(head*size(imhi,2)/(2*pi)),2);
@@ -559,7 +561,7 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos, ...
             
             clf
             plotridf(xi,yi,csnapszhti,czhti,p,imxyi,bestridfs,zht, ...
-                snapszht,false);
+                snapszht,false,head);
         end
         ridffigfn = fullfile(cfigdir,[fpref '_ridf180.' figtype]);
         g_fig_save(ridffigfn,ridffigsz,figtype,figtype,[],false);
