@@ -253,7 +253,7 @@ if dointeractive
             end
             if joinpdfs
                 g_fig_series_end(sprintf('%spoints_@%d_%s%s.%s',fprefix, ...
-                    snapszht,shortwhd,pubstr,figtype),[],figtype)
+                    snapszht,flabel,pubstr,figtype),[],figtype)
             end
             return
         end
