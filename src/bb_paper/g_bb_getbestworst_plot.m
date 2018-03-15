@@ -26,9 +26,9 @@ else
 end
 
 if getbest
-    fprefix = sprintf('best_d%d',mindist);
+    fprefix = sprintf('best_d%d_',mindist);
 else
-    fprefix = sprintf('worst_d%d',mindist);
+    fprefix = sprintf('worst_d%d_',mindist);
 end
 g_bb_ridf(shortwhd,routenum,zht,snapszht,userealsnaps,improc, ...
     dat.coords,shiftridfs,dosave,joinpdfs,figtype, ...
