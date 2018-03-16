@@ -1,12 +1,12 @@
-function [head,minval,whsn,diffs] = ridfheadmulti(im,imref,snapweighting,angleunit,nth,snths,getallwhsn)
-% function [head,minval,whsn,diffs] = ridfheadmulti(im,imref,snapweighting,angleunit,nth,snths,getallwhsn)
+function [head,minval,whsn,diffs] = ridfheadmulti(im,snaps,snapweighting,angleunit,nth,snths,getallwhsn)
+% function [head,minval,whsn,diffs] = ridfheadmulti(im,snaps,snapweighting,angleunit,nth,snths,getallwhsn)
 % TODO: make getallwhsn parameter also apply for weighting schemes other than WTA
 
 if nargin < 7
     getallwhsn = false;
 end
 if nargin < 6 || isempty(snths)
-    snths = zeros(1,size(imref,3));
+    snths = zeros(1,size(snaps,3));
 else
     snths = snths(:)';
 end
@@ -32,16 +32,19 @@ else
     wt = snapweighting;
 end
 
-if ~isa(im,'double') || ~isa(imref,'double')
-    error('im and imref must both be doubles')
+if ~isa(im,'double') || ~isa(snaps,'double')
+    error('im and snaps must both be doubles')
+end
+if ~ismatrix(im) || ndims(snaps)<2 || ndims(snaps)>3
+    error('can only compare one im and one or more snaps');
 end
 
 rots = linspace(0,size(im,2),nth+1);
 rots = round(rots(1:end-1));
 
-diffs = NaN(nth,size(imref,3));
+diffs = NaN(nth,size(snaps,3));
 for i = 1:nth
-    diffs(i,:) = shiftdim(sumabsdiff(cshiftcut(im,size(imref,2),rots(i)),imref),1);
+    diffs(i,:) = shiftdim(sumabsdiff(cshiftcut(im,size(snaps,2),rots(i)),snaps),1);
 end
 
 [minvalall,I] = min(diffs); % find minimum for each RIDF
@@ -56,12 +59,12 @@ if strcmpi(sweightstr,'wta') % winner take all weighting
 else
     switch sweightstr
         case 'equal' % weight all snapshots equally
-            wt = ones(1,size(imref,3));
-            whsn = 1:size(imref,3);
+            wt = ones(1,size(snaps,3));
+            whsn = 1:size(snaps,3);
         case 'norm' % normalised weights
             if isempty(sweightparam)
                 wt = min(minvalall)./minvalall;
-                whsn = 1:size(imref,3);
+                whsn = 1:size(snaps,3);
             else
                 [smin,whsn] = sort(minvalall);
                 whsn = whsn(1:sweightparam);
