@@ -14,27 +14,39 @@ ncoords = 20;
 pubgrade = true;
 ridfx360 = true;
 skipexisting = true;
+res = 90;
 
-coords = [1900 200; 2700 800];
-shortwhd = 'imdb_2017-02-09_001'; % pile
-routenum = 1;
+shortwhd = {
+    'imdb_2017-02-09_001'; % pile
+    'imdb_2017-06-06_001'  % plants
+    };
+coords = {[
+    2700 800; % 14. selecting snaps further from pile with height
+    600 500   % d16. good perf with distant snap
+    ], [
+    600 800; % d1. good example
+    300 1500  % d3. low err with far-away snap
+    ]};
+routenum = [1 1];
 
-[dat.headings,dat.allerrs,dat.whsn] = g_bb_getdatapartial(coords,shortwhd, ...
-    routenum,90,zht,false,improc,false,[],false,snapszht,dosave);
-dat.coords = coords;
-dat.errs = mean(dat.allerrs);
-dat.headings = dat.headings';
-dat.allerrs = dat.allerrs';
-dat.whsn = dat.whsn';
+for i = 1:length(shortwhd)
+    [dat.headings,dat.allerrs,dat.whsn] = g_bb_getdatapartial( ...
+        coords{i},shortwhd{i},routenum(1),res,zht,false,improc,false, ...
+        [],false,snapszht,dosave);
+    dat.errs = mean(dat.allerrs);
+    dat.headings = dat.headings';
+    dat.allerrs = dat.allerrs';
+    dat.whsn = dat.whsn';
 
-getbest = true;
+    getbest = true;
 
-if getbest
-    fprefix = 'best_pub_';
-else
-    fprefix = 'worst_pub_';
+    if getbest
+        fprefix = 'best_pub_';
+    else
+        fprefix = 'worst_pub_';
+    end
+    g_bb_ridf(shortwhd{i},routenum(1),zht,snapszht,userealsnaps,improc, ...
+        coords{i},shiftridfs,dosave,joinpdfs,figtype, ...
+        doautoridf,dointeractive,dat.headings,dat.errs,dat.allerrs,fprefix, ...
+        pubgrade,ridfx360,skipexisting)
 end
-g_bb_ridf(shortwhd,routenum,zht,snapszht,userealsnaps,improc, ...
-    dat.coords,shiftridfs,dosave,joinpdfs,figtype, ...
-    doautoridf,dointeractive,dat.headings,dat.errs,dat.allerrs,fprefix, ...
-    pubgrade,ridfx360,skipexisting)
