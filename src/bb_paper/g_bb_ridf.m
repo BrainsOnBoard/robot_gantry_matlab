@@ -235,7 +235,7 @@ if dointeractive
                     [rnearsnap,nearsnapi] = plotnearestridfs(xi,yi,snx, ...
                         sny,snth,shortwhd,zht,snapszht,csnapszhti,p, ...
                         improc,imsz,ridfx360);
-                    imwrite(rnearsnap,fullfile(g_dir_figures,cfigdir, ...
+                    ridfimwrite(rnearsnap,fullfile(g_dir_figures,cfigdir, ...
                         sprintf('nearsnap%d.png',nearsnapi)));
                     if ridfx360
                         nearridffigfn360 = fullfile(cfigdir,['nearridf360.' figtype]);
@@ -647,17 +647,17 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos, ...
         g_fig_save(quiverfigfn,[15 10],figtype,figtype,[],false);
         
         % save "current" view
-        imwrite(rimhi,fullfile(g_dir_figures,cfigdir,[fpref '_im.png']));
+        ridfimwrite(rimhi,fullfile(g_dir_figures,cfigdir,[fpref '_im.png']));
         
         % save best-matching snapshot
-        imwrite(rsnaphi,fullfile(g_dir_figures,cfigdir, ...
+        ridfimwrite(rsnaphi,fullfile(g_dir_figures,cfigdir, ...
             sprintf('%s_snap%d.png',fpref,csnapi)));
         
         % save difference images (at best-matching rotation)
         diffimhi = im2double(rimhi)-im2double(rsnaphi);
-        imwrite(round(1+(size(redblue,1)-1)*(diffimhi+1)/2),redblue, ...
+        ridfimwrite(round(1+(size(redblue,1)-1)*(diffimhi+1)/2),redblue, ...
             fullfile(g_dir_figures,cfigdir,[fpref '_diffhi.png']));
-        imwrite(round(1+(size(redblue,1)-1)*(diffimlo+1)/2),redblue, ...
+        ridfimwrite(round(1+(size(redblue,1)-1)*(diffimlo+1)/2),redblue, ...
             fullfile(g_dir_figures,cfigdir,[fpref '_diff.png']));
         
         return
@@ -733,3 +733,7 @@ function cridfs=getridfs(xi,yi,csnapszhti,bestridfs,imxyi,zht)
     end
 end
 
+function ridfimwrite(im,varargin)
+    fprintf('Saving image to %s...\n',varargin{end});
+    imwrite(im,varargin{:});
+end
