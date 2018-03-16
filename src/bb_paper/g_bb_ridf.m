@@ -409,7 +409,7 @@ function [xi,yi]=geticoords(coords,p)
     end 
 end
 
-function minval=plotridf(xi,yi,csnapszhti,czhti,p,imxyi,bestridfs,zht, ...
+function cridfs=plotridf(xi,yi,csnapszhti,p,imxyi,bestridfs,zht, ...
     snapszht,ridfx360,head)
 
     if nargin < 10
@@ -418,21 +418,8 @@ function minval=plotridf(xi,yi,csnapszhti,czhti,p,imxyi,bestridfs,zht, ...
 
     gx = p.xs(xi);
     gy = p.ys(yi);
-
-    % get RIDF for best match
-    cridfs = NaN(size(bestridfs{1},2),length(zht));
-%         snaps = NaN(length(zht),1);
-    for besti = 1:length(zht)
-        cind = find(all(bsxfun(@eq,imxyi{besti,csnapszhti},[xi yi]),2),1);
-        if isempty(cind)
-            warning('no match found')
-            return
-        end
-
-        cridfs(:,besti) = bestridfs{besti,csnapszhti}(cind,:);
-%             snaps(besti) = bestsnap{besti,csnapszhti}(cind);
-%             fprintf('best snap: %d\n',bestsnap{besti,csnapszhti}(cind));
-    end
+    
+    cridfs = getcridfs(xi,yi,csnapszhti,bestridfs,imxyi,zht);
 
     if ridfx360
         xlo = 0; xhi = 360;
@@ -471,8 +458,6 @@ function minval=plotridf(xi,yi,csnapszhti,czhti,p,imxyi,bestridfs,zht, ...
         set(leginf,'IconDisplayStyle','off')
         axis tight
     end
-
-    minval = min(cridfs(:,czhti));
 end
 
 function savebestworstfig(figdir,showpos,shownearest,figfn,figtype)
@@ -541,8 +526,9 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos, ...
         xlim([xlo xhi]);
         minval = minval / prod(imsz);
     else
-        minval = plotridf(xi,yi,csnapszhti,czhti,p,imxyi,bestridfs,zht, ...
+        cridfs = plotridf(xi,yi,csnapszhti,p,imxyi,bestridfs,zht, ...
             snapszht,ridfx360,head);
+        minval = min(cridfs(:,czhti));
     end
     
     % get correctly rotated versions of im and snap
@@ -568,7 +554,7 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos, ...
             g_fig_save(ridffigfn360,ridffigsz,figtype,figtype,[],false);
             
             clf
-            plotridf(xi,yi,csnapszhti,czhti,p,imxyi,bestridfs,zht, ...
+            plotridf(xi,yi,csnapszhti,p,imxyi,bestridfs,zht, ...
                 snapszht,false,head);
         end
         ridffigfn = fullfile(cfigdir,[fpref '_ridf180.' figtype]);
@@ -650,5 +636,19 @@ function alfigure(num,dosave)
         figure(num)
     else
         set(0,'CurrentFigure',num);
+    end
+end
+
+function cridfs=getcridfs(xi,yi,csnapszhti,bestridfs,imxyi,zht)
+    % get RIDF for best match
+    cridfs = NaN(size(bestridfs{1},2),length(zht));
+    for i = 1:length(zht)
+        cind = find(all(bsxfun(@eq,imxyi{i,csnapszhti},[xi yi]),2),1);
+        if isempty(cind)
+            warning('no match found')
+            return
+        end
+
+        cridfs(:,i) = bestridfs{i,csnapszhti}(cind,:);
     end
 end
