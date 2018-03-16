@@ -216,6 +216,7 @@ if dointeractive
                     
                     % save ridfs
                     ridffigsz = [20 6];
+                    clf
                     plotridf(xi,yi,csnapszhti,p,imxyi,bestridfs,zht, ...
                         snapszht,ridfx360);
                     if ridfx360
@@ -228,6 +229,21 @@ if dointeractive
                     end
                     ridffigfn = fullfile(cfigdir,['ridf180.' figtype]);
                     g_fig_save(ridffigfn,ridffigsz,figtype,figtype,[],false);
+                    
+                    % save ridfs, using nearest snap rather than selected
+                    clf
+                    plotnearestridfs(xi,yi,snx,sny,snth,shortwhd,zht, ...
+                        snapszht(csnapszhti),p,improc,imsz,ridfx360)
+                    if ridfx360
+                        nearridffigfn360 = fullfile(cfigdir,['nearridf360.' figtype]);
+                        g_fig_save(nearridffigfn360,ridffigsz,figtype,figtype,[],false);
+
+                        clf
+                        plotnearestridfs(xi,yi,snx,sny,snth,shortwhd,zht, ...
+                            snapszht(csnapszhti),p,improc,imsz,false)
+                    end
+                    nearridffigfn = fullfile(cfigdir,['nearridf180.' figtype]);
+                    g_fig_save(nearridffigfn,ridffigsz,figtype,figtype,[],false);
                     
                     for czhtcnt = 1:length(zht)
                         chead = headings(ccoordi,czhtcnt);
@@ -475,6 +491,44 @@ function cridfs=plotridf(xi,yi,csnapszhti,p,imxyi,bestridfs,zht, ...
     end
 end
 
+function plotnearestridfs(xi,yi,snx,sny,snth,shortwhd,zht,csnapszht,p, ...
+    improc,imsz,ridfx360)
+
+    % nearest snap (Euclidean distance)
+    imfun = gantry_getimfun(improc);
+    ims = NaN([imsz,length(zht)]);
+    for i = 1:length(zht)
+        ims(:,:,i) = g_imdb_getprocim(shortwhd,xi,yi,find(p.zs==zht(i)), ...
+            imfun,imsz(2));
+    end
+    
+    [~,nearsnapi] = min(hypot(sny-p.ys(yi),snx-p.xs(xi)));
+    [snxi,snyi] = geticoords([snx(nearsnapi),sny(nearsnapi)],p);
+    snzi = find(p.zs==csnapszht);
+        
+    snap = g_imdb_getprocim(shortwhd,snxi,snyi,snzi,imfun,imsz(2));
+    rsnap = circshift(snap,round(snth(nearsnapi)*imsz(2)/(2*pi)),2);
+    
+    diffs = NaN(imsz(2),length(zht));
+    for i = 1:length(zht)
+        [~,~,~,diffs(:,i)] = ridfheadmulti(ims(:,:,i),rsnap);
+    end
+    if ~ridfx360
+        diffs = circshift(diffs,floor(imsz(2)/2));
+    end
+    diffs = diffs / prod(imsz);
+    diffs(end+1,:) = diffs(1,:);
+    
+    if ridfx360
+        xlo = 0; xhi = 360;
+    else
+        xlo = -180; xhi = 180;
+    end
+    plot(linspace(xlo,xhi,imsz(2)+1),diffs)
+    set(gca,'XTick',xlo:90:xhi)
+    xlim([xlo xhi]);
+end
+
 function savebestworstfig(figdir,showpos,shownearest,figfn,figtype)
     if ~exist(['figures/' figdir],'dir')
         mkdir(['figures/' figdir])
@@ -658,3 +712,4 @@ function cridfs=getcridfs(xi,yi,csnapszhti,bestridfs,imxyi,zht)
         cridfs(:,i) = bestridfs{i,csnapszhti}(cind,:);
     end
 end
+
