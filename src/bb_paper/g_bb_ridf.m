@@ -392,15 +392,15 @@ end
         else
             figure
         end
-        for csnapszhti = 1:length(snapszht)
-            subplot(sprows,spcols,csnapszhti)
-            plotridfforsnap(xi,yi,csnapszhti,p,imxyi,bestridfs,zht,snapszht);
+        for cursnapszhti = 1:length(snapszht)
+            subplot(sprows,spcols,cursnapszhti)
+            plotridfforsnap(xi,yi,cursnapszhti,p,imxyi,bestridfs,zht,snapszht);
             
             yl = ylim;
             ymax = max(yl(2),ymax);
         end
-        for csnapszhti = 1:length(snapszht)
-            subplot(sprows,spcols,csnapszhti)
+        for cursnapszhti = 1:length(snapszht)
+            subplot(sprows,spcols,cursnapszhti)
             ylim([0 ymax])
         end
     end
