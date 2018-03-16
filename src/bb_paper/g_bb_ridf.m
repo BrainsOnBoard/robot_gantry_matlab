@@ -214,6 +214,21 @@ if dointeractive
                         mkdir(fcfigdir);
                     end
                     
+                    % save ridfs
+                    ridffigsz = [20 6];
+                    plotridf(xi,yi,csnapszhti,p,imxyi,bestridfs,zht, ...
+                        snapszht,ridfx360);
+                    if ridfx360
+                        ridffigfn360 = fullfile(cfigdir,['ridf360.' figtype]);
+                        g_fig_save(ridffigfn360,ridffigsz,figtype,figtype,[],false);
+
+                        clf
+                        plotridf(xi,yi,csnapszhti,p,imxyi,bestridfs,zht, ...
+                            snapszht,false);
+                    end
+                    ridffigfn = fullfile(cfigdir,['ridf180.' figtype]);
+                    g_fig_save(ridffigfn,ridffigsz,figtype,figtype,[],false);
+                    
                     for czhtcnt = 1:length(zht)
                         chead = headings(ccoordi,czhtcnt);
                         plotforbestworst(xi,yi,czhtcnt,csnapszhti,chead,true,false, ...
@@ -526,8 +541,12 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos, ...
         xlim([xlo xhi]);
         minval = minval / prod(imsz);
     else
-        cridfs = plotridf(xi,yi,csnapszhti,p,imxyi,bestridfs,zht, ...
-            snapszht,ridfx360,head);
+        if pubgrade
+            cridfs = getcridfs(xi,yi,csnapszhti,bestridfs,imxyi,zht);
+        else
+            cridfs = plotridf(xi,yi,csnapszhti,p,imxyi,bestridfs,zht, ...
+                snapszht,ridfx360,head);
+        end
         minval = min(cridfs(:,czhti));
     end
     
@@ -546,19 +565,6 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos, ...
     
     if pubgrade
         fpref = sprintf('z%03d',zi);
-        
-        % save ridf
-        ridffigsz = [20 6];
-        if ridfx360
-            ridffigfn360 = fullfile(cfigdir,[fpref '_ridf360.' figtype]);
-            g_fig_save(ridffigfn360,ridffigsz,figtype,figtype,[],false);
-            
-            clf
-            plotridf(xi,yi,csnapszhti,p,imxyi,bestridfs,zht, ...
-                snapszht,false,head);
-        end
-        ridffigfn = fullfile(cfigdir,[fpref '_ridf180.' figtype]);
-        g_fig_save(ridffigfn,ridffigsz,figtype,figtype,[],false);
         
         % save quiver
         clf
