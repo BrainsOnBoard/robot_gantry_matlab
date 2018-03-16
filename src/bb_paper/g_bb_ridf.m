@@ -232,15 +232,18 @@ if dointeractive
                     
                     % save ridfs, using nearest snap rather than selected
                     clf
-                    plotnearestridfs(xi,yi,snx,sny,snth,shortwhd,zht, ...
-                        snapszht,csnapszhti,p,improc,imsz,ridfx360)
+                    [rnearsnap,nearsnapi] = plotnearestridfs(xi,yi,snx, ...
+                        sny,snth,shortwhd,zht,snapszht,csnapszhti,p, ...
+                        improc,imsz,ridfx360);
+                    imwrite(rnearsnap,fullfile(g_dir_figures,cfigdir, ...
+                        sprintf('nearsnap%d.png',nearsnapi)));
                     if ridfx360
                         nearridffigfn360 = fullfile(cfigdir,['nearridf360.' figtype]);
                         g_fig_save(nearridffigfn360,ridffigsz,figtype,figtype,[],false);
 
                         clf
                         plotnearestridfs(xi,yi,snx,sny,snth,shortwhd,zht, ...
-                            snapszht,csnapszhti,p,improc,imsz,false)
+                            snapszht,csnapszhti,p,improc,imsz,false);
                     end
                     nearridffigfn = fullfile(cfigdir,['nearridf180.' figtype]);
                     g_fig_save(nearridffigfn,ridffigsz,figtype,figtype,[],false);
@@ -512,7 +515,7 @@ function plotridf(diffs,zht,snapszht,ridfx360,csnapszhti,ttl,head)
     end
 end
 
-function plotnearestridfs(xi,yi,snx,sny,snth,shortwhd,zht,snapszht, ...
+function [rsnaphi,nearsnapi]=plotnearestridfs(xi,yi,snx,sny,snth,shortwhd,zht,snapszht, ...
     csnapszhti,p,improc,imsz,ridfx360)
 
     % nearest snap (Euclidean distance)
@@ -527,8 +530,11 @@ function plotnearestridfs(xi,yi,snx,sny,snth,shortwhd,zht,snapszht, ...
     [snxi,snyi] = geticoords([snx(nearsnapi),sny(nearsnapi)],p);
     snzi = find(p.zs==snapszht(csnapszhti));
         
-    snap = g_imdb_getprocim(shortwhd,snxi,snyi,snzi,imfun,imsz(2));
+    [snap,snaphi] = g_imdb_getprocim(shortwhd,snxi,snyi,snzi,imfun,imsz(2));
     rsnap = circshift(snap,round(snth(nearsnapi)*imsz(2)/(2*pi)),2);
+    if nargout
+        rsnaphi = circshift(snaphi,round(snth(nearsnapi)*size(snap,2)/(2*pi)),2);
+    end
     
     diffs = NaN(imsz(2),length(zht));
     for i = 1:length(zht)
@@ -641,18 +647,18 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos, ...
         g_fig_save(quiverfigfn,[15 10],figtype,figtype,[],false);
         
         % save "current" view
-        imwrite(rimhi,fullfile('figures',cfigdir,[fpref '_im.png']));
+        imwrite(rimhi,fullfile(g_dir_figures,cfigdir,[fpref '_im.png']));
         
         % save best-matching snapshot
-        imwrite(rsnaphi,fullfile('figures',cfigdir, ...
+        imwrite(rsnaphi,fullfile(g_dir_figures,cfigdir, ...
             sprintf('%s_snap%d.png',fpref,csnapi)));
         
         % save difference images (at best-matching rotation)
         diffimhi = im2double(rimhi)-im2double(rsnaphi);
         imwrite(round(1+(size(redblue,1)-1)*(diffimhi+1)/2),redblue, ...
-            fullfile('figures',cfigdir,[fpref '_diffhi.png']));
+            fullfile(g_dir_figures,cfigdir,[fpref '_diffhi.png']));
         imwrite(round(1+(size(redblue,1)-1)*(diffimlo+1)/2),redblue, ...
-            fullfile('figures',cfigdir,[fpref '_diff.png']));
+            fullfile(g_dir_figures,cfigdir,[fpref '_diff.png']));
         
         return
     end
