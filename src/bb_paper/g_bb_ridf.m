@@ -644,7 +644,8 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos, ...
         imwrite(rimhi,fullfile('figures',cfigdir,[fpref '_im.png']));
         
         % save best-matching snapshot
-        imwrite(rsnaphi,fullfile('figures',cfigdir,[fpref '_snap.png']));
+        imwrite(rsnaphi,fullfile('figures',cfigdir, ...
+            sprintf('%s_snap%d.png',fpref,csnapi)));
         
         % save difference images (at best-matching rotation)
         diffimhi = im2double(rimhi)-im2double(rsnaphi);
