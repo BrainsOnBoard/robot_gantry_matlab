@@ -217,14 +217,14 @@ if dointeractive
                     % save ridfs
                     ridffigsz = [20 6];
                     clf
-                    plotridf(xi,yi,csnapszhti,p,imxyi,bestridfs,zht, ...
+                    plotridfforsnap(xi,yi,csnapszhti,p,imxyi,bestridfs,zht, ...
                         snapszht,ridfx360);
                     if ridfx360
                         ridffigfn360 = fullfile(cfigdir,['ridf360.' figtype]);
                         g_fig_save(ridffigfn360,ridffigsz,figtype,figtype,[],false);
 
                         clf
-                        plotridf(xi,yi,csnapszhti,p,imxyi,bestridfs,zht, ...
+                        plotridfforsnap(xi,yi,csnapszhti,p,imxyi,bestridfs,zht, ...
                             snapszht,false);
                     end
                     ridffigfn = fullfile(cfigdir,['ridf180.' figtype]);
@@ -394,7 +394,7 @@ end
         end
         for csnapszhti = 1:length(snapszht)
             subplot(sprows,spcols,csnapszhti)
-            plotridf(xi,yi,csnapszhti,p,imxyi,bestridfs,zht,snapszht);
+            plotridfforsnap(xi,yi,csnapszhti,p,imxyi,bestridfs,zht,snapszht);
             
             yl = ylim;
             ymax = max(yl(2),ymax);
@@ -440,44 +440,65 @@ function [xi,yi]=geticoords(coords,p)
     end 
 end
 
-function cridfs=plotridf(xi,yi,csnapszhti,p,imxyi,bestridfs,zht, ...
+function diffs=plotridfforsnap(xi,yi,csnapszhti,p,imxyi,bestridfs,zht, ...
     snapszht,ridfx360,head)
 
-    if nargin < 10
+    if nargin < 9
         ridfx360 = false;
     end
-
-    gx = p.xs(xi);
-    gy = p.ys(yi);
+    if nargin < 10
+        head = [];
+    end
     
-    cridfs = getcridfs(xi,yi,csnapszhti,bestridfs,imxyi,zht);
+    diffs = getridfs(xi,yi,csnapszhti,bestridfs,imxyi,zht);
+    ttl = sprintf('(%d, %d) Training height: %d mm',p.xs(xi),p.ys(yi), ...
+        snapszht(csnapszhti)+50);
+    plotridf(diffs,zht,snapszht,ridfx360,csnapszhti,ttl,head)
+end
 
+function plotridf(diffs,zht,snapszht,ridfx360,csnapszhti,ttl,head)
+    if nargin < 7
+        head = [];
+    end
+    if nargin < 6
+        ttl = [];
+    end
+    if nargin < 5
+        csnapszhti = [];
+    end
+    if nargin < 4
+        ridfx360 = false;
+    end
+    
     if ridfx360
         xlo = 0; xhi = 360;
     else
         xlo = -180; xhi = 180;
+        diffs = circshift(diffs,floor(size(diffs,1)/2));
     end
-    ths = repmat(linspace(xlo,xhi,size(cridfs,1)+1)',1,size(cridfs,2));
-    if ~ridfx360
-        cridfs = circshift(cridfs,floor(size(cridfs,1)/2));
-    end
-    cridfs(end+1,:) = cridfs(1,:);
-
-    h=plot(ths,cridfs);
     
-    refzi = zht==snapszht(csnapszhti);
-    h(refzi).LineStyle='--';
+    diffs(end+1,:) = diffs(1,:);
+    ths = repmat(linspace(xlo,xhi,size(diffs,1))',1,size(diffs,2));
+    h=plot(ths,diffs);
+    
+    if ~isempty(csnapszhti)
+        refzi = zht==snapszht(csnapszhti);
+        h(refzi).LineStyle='--';
+    end
+    
     xlim([xlo xhi])
     set(gca,'XTick',xlo:90:xhi)
     xlabel('Angle (deg)')
-    title(sprintf('(%d, %d) Training height: %d mm',gx,gy,snapszht(csnapszhti)+50))
+    if ~isempty(ttl)
+        title(ttl)
+    end
     hl = legend(num2str((zht+50)')); %,'Location','BestOutside');
     title(hl,'Height (mm)')
 
     g_fig_setfont
     andy_setbox
     
-    if nargin >= 11
+    if ~isempty(head)
         % plot vertical line indicating estimated heading
         hold on
         phead = mod(head*180/pi,360);
@@ -596,9 +617,9 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos, ...
         minval = minval / prod(imsz);
     else
         if pubgrade
-            cridfs = getcridfs(xi,yi,csnapszhti,bestridfs,imxyi,zht);
+            cridfs = getridfs(xi,yi,csnapszhti,bestridfs,imxyi,zht);
         else
-            cridfs = plotridf(xi,yi,csnapszhti,p,imxyi,bestridfs,zht, ...
+            cridfs = plotridfforsnap(xi,yi,csnapszhti,p,imxyi,bestridfs,zht, ...
                 snapszht,ridfx360,head);
         end
         minval = min(cridfs(:,czhti));
@@ -699,7 +720,7 @@ function alfigure(num,dosave)
     end
 end
 
-function cridfs=getcridfs(xi,yi,csnapszhti,bestridfs,imxyi,zht)
+function cridfs=getridfs(xi,yi,csnapszhti,bestridfs,imxyi,zht)
     % get RIDF for best match
     cridfs = NaN(size(bestridfs{1},2),length(zht));
     for i = 1:length(zht)
