@@ -234,7 +234,7 @@ if dointeractive
                     
                     % save ridfs, using nearest snap rather than selected
                     clf
-                    [rnearsnaphi,rnearsnap,nearsnapi] = plotnearestridfs(xi,yi,snx, ...
+                    [rnearsnaphi,rnearsnap,nrminval,nearsnapi] = plotnearestridfs(xi,yi,snx, ...
                         sny,snth,shortwhd,zht,snapszht,csnapszhti,p, ...
                         improc,imsz,ridfx360);
                     ridfimwrite(rnearsnaphi,fullfile(g_dir_figures,cfigdir, ...
@@ -256,7 +256,8 @@ if dointeractive
                             improc,bestridfs,bestsnap,snx,sny,snth,p,zht, ...
                             snapszht,shortwhd,imsz,imxi,imyi,allheads, ...
                             imxyi,ccoordi,errs,allerrs,dosave,pubgrade, ...
-                            cfigdir,figtype,ridfx360,rnearsnap,rnearsnaphi)
+                            cfigdir,figtype,ridfx360,rnearsnap, ...
+                            rnearsnaphi,nrminval(czhtcnt));
                     end
                 end
                 return
@@ -517,7 +518,7 @@ function plotridf(diffs,zht,snapszht,ridfx360,csnapszhti,ttl,head)
     end
 end
 
-function [rsnaphi,rsnap,nearsnapi]=plotnearestridfs(xi,yi,snx,sny,snth,shortwhd,zht,snapszht, ...
+function [rsnaphi,rsnap,minval,nearsnapi]=plotnearestridfs(xi,yi,snx,sny,snth,shortwhd,zht,snapszht, ...
     csnapszhti,p,improc,imsz,ridfx360)
 
     % nearest snap (Euclidean distance)
@@ -539,9 +540,11 @@ function [rsnaphi,rsnap,nearsnapi]=plotnearestridfs(xi,yi,snx,sny,snth,shortwhd,
     end
     
     diffs = NaN(imsz(2),length(zht));
+    minval = NaN(length(zht),1);
     for i = 1:length(zht)
-        [~,~,~,diffs(:,i)] = ridfheadmulti(ims(:,:,i),rsnap);
+        [~,minval(i),~,diffs(:,i)] = ridfheadmulti(ims(:,:,i),rsnap);
     end
+    minval = minval / prod(imsz);
     
     plotridf(diffs,zht,snapszht,ridfx360,csnapszhti);
 end
@@ -561,7 +564,7 @@ end
 function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos, ...
     shownearest,improc,bestridfs,bestsnap,snx,sny,snth,p,zht,snapszht, ...
     shortwhd,imsz,imxi,imyi,allheads,imxyi,ccoordi,errs,allerrs,dosave, ...
-    pubgrade,cfigdir,figtype,ridfx360,rnearsnap,rnearsnaphi)
+    pubgrade,cfigdir,figtype,ridfx360,rnearsnap,rnearsnaphi,nrminval)
 
     if pubgrade && shownearest
         error('pubgrade and shownearest can''t both be true')
@@ -673,6 +676,12 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos, ...
         
         nrim = rotim(im,nrhead);
         nrdiffim = im2double(nrim)-im2double(rnearsnap);
+        nrminval2 = mean2(abs(nrdiffim));
+        nrdiffval = nrminval2-nrminval;
+        if abs(nrdiffval) >= 1e-5
+            error('assertion failed (nearest; coord: %d; nearest: %d; zht: %.2f; diff: %g)', ...
+                ccoordi,shownearest,zht(czhti)+50,diffval)
+        end
         diffimwrite(nrdiffim,redblue,...
             fullfile(g_dir_figures,cfigdir,[fpref '_diffnear.png']));
         
