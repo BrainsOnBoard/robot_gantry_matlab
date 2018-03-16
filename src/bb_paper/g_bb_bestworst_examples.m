@@ -13,6 +13,7 @@ dointeractive = true;
 ncoords = 20;
 pubgrade = true;
 ridfx360 = true;
+skipexisting = true;
 
 coords = [1900 200; 2700 800];
 shortwhd = 'imdb_2017-02-09_001'; % pile
@@ -36,4 +37,4 @@ end
 g_bb_ridf(shortwhd,routenum,zht,snapszht,userealsnaps,improc, ...
     dat.coords,shiftridfs,dosave,joinpdfs,figtype, ...
     doautoridf,dointeractive,dat.headings,dat.errs,dat.allerrs,fprefix, ...
-    pubgrade,ridfx360)
+    pubgrade,ridfx360,skipexisting)

@@ -1,6 +1,6 @@
 function g_bb_ridf(shortwhd,routenum,zht,snapszht,userealsnaps,improc, ...
     coords,shiftridfs,dosave,joinpdfs,figtype,doautoridf,dointeractive, ...
-    headings,errs,allerrs,fprefix,pubgrade,ridfx360)
+    headings,errs,allerrs,fprefix,pubgrade,ridfx360,skipexisting)
 if nargin < 1 || isempty(shortwhd)
     [~,shortwhd] = g_imdb_choosedb;
 end
@@ -52,6 +52,9 @@ if nargin < 18
 end
 if nargin < 19
     ridfx360 = false;
+end
+if nargin < 20
+    skipexisting = false;
 end
 
 if userealsnaps && length(snapszht) > 1
@@ -194,21 +197,26 @@ if dointeractive
         if dosave
             if pubgrade
                 for ccoordi = 1:ncoords
-                    for czhtcnt = 1:length(zht)
-                        ccoords = coords(ccoordi,:);
-                        chead = headings(ccoordi,czhtcnt);
-                        xi = find(p.xs==ccoords(1));
-                        yi = find(p.ys==ccoords(2));
-                        
-                        % we dump the different bits for each figure in a
-                        % new dir
-                        cfigdir = fullfile(figdir,sprintf('%sn%03d_%03d_%03d', ...
-                            fprefix,ccoordi,xi,yi));
-                        fcfigdir = fullfile(g_dir_figures,cfigdir);
-                        if ~exist(fcfigdir,'dir')
-                            mkdir(fcfigdir);
+                    ccoords = coords(ccoordi,:);
+                    xi = find(p.xs==ccoords(1));
+                    yi = find(p.ys==ccoords(2));
+                    
+                    % we dump the different bits for each figure in a new dir
+                    cfigdir = fullfile(figdir,sprintf('%sn%03d_%03d_%03d', ...
+                        fprefix,ccoordi,xi,yi));
+                    fcfigdir = fullfile(g_dir_figures,cfigdir);
+                    if exist(fcfigdir,'dir')
+                        if skipexisting
+                            warning('figs for coords (%d,%d) already exist', ...
+                                ccoords);
+                            continue
                         end
-                        
+                    else
+                        mkdir(fcfigdir);
+                    end
+                    
+                    for czhtcnt = 1:length(zht)
+                        chead = headings(ccoordi,czhtcnt);
                         plotforbestworst(xi,yi,czhtcnt,csnapszhti,chead,true,false, ...
                             improc,bestridfs,bestsnap,snx,sny,snth,p,zht, ...
                             snapszht,shortwhd,imsz,imxi,imyi,allheads, ...
@@ -223,11 +231,11 @@ if dointeractive
                 g_fig_series_start
             end
             for ccoordi = 1:ncoords
+                ccoords = coords(ccoordi,:);
+                xi = find(p.xs==ccoords(1));
+                yi = find(p.ys==ccoords(2));
                 for czhtcnt = 1:length(zht)
-                    ccoords = coords(ccoordi,:);
                     chead = headings(ccoordi,czhtcnt);
-                    xi = find(p.xs==ccoords(1));
-                    yi = find(p.ys==ccoords(2));
                     plotforbestworst(xi,yi,czhtcnt,csnapszhti,chead,true,false, ...
                         improc,bestridfs,bestsnap,snx,sny,snth,p,zht, ...
                         snapszht,shortwhd,imsz,imxi,imyi,allheads, ...
