@@ -198,8 +198,7 @@ if dointeractive
             if pubgrade
                 for ccoordi = 1:ncoords
                     ccoords = coords(ccoordi,:);
-                    xi = find(p.xs==ccoords(1));
-                    yi = find(p.ys==ccoords(2));
+                    [xi,yi] = geticoords(ccoords,p);
                     
                     % we dump the different bits for each figure in a new dir
                     cfigdir = fullfile(figdir,sprintf('%sn%03d_%03d_%03d', ...
@@ -232,8 +231,7 @@ if dointeractive
             end
             for ccoordi = 1:ncoords
                 ccoords = coords(ccoordi,:);
-                xi = find(p.xs==ccoords(1));
-                yi = find(p.ys==ccoords(2));
+                [xi,yi] = geticoords(ccoords,p);
                 for czhtcnt = 1:length(zht)
                     chead = headings(ccoordi,czhtcnt);
                     plotforbestworst(xi,yi,czhtcnt,csnapszhti,chead,true,false, ...
@@ -272,8 +270,7 @@ if dointeractive
         shownearest = false;
         while true
             ccoords = coords(ccoordi,:);
-            xi = find(p.xs==ccoords(1));
-            yi = find(p.ys==ccoords(2));
+            [xi,yi] = geticoords(ccoords,p);
             plotforbestworst(xi,yi,czhtcnt,csnapszhti,headings(ccoordi,czhtcnt), ...
                 showpos,shownearest,improc,bestridfs,bestsnap,snx,sny, ...
                 snth,p,zht,snapszht,shortwhd,imsz,imxi,imyi,allheads, ...
@@ -328,10 +325,7 @@ else
         g_fig_series_start
     end
     for i = 1:ncoords
-        % get corresponding grid coords
-        xi = find(p.xs==coords(i,1));
-        yi = find(p.ys==coords(i,2));
-        
+        [xi,yi] = geticoords(coords(i,:),p);
         plotmultiridfs(xi,yi)
         if dosave
             g_fig_save(sprintf('ridf_%s_%s%sres%03d_route%03d_snapszht%s_x%04d_y%04d', ...
@@ -389,8 +383,7 @@ end
         % get best-matching snap for this position
         snapi = bestsnap{czhti,csnzhti};
         posi = find(imxi==xi & imyi==yi);
-        snxi = find(p.xs==snx(snapi(posi)));
-        snyi = find(p.ys==sny(snapi(posi)));
+        [snxi,snyi] = geticoords([snx(snapi(posi)), sny(snapi(posi))],p);
         snap = g_imdb_getim(shortwhd,snxi,snyi,csnzhti);
         
         imshow(im)
@@ -406,6 +399,14 @@ end
         axis equal tight
         colorbar
     end
+end
+
+function [xi,yi]=geticoords(coords,p)
+    xi = find(p.xs==coords(1));
+    yi = find(p.ys==coords(2));
+    if isempty(xi) || isempty(yi)
+        error('could not find coords (%d,%d)',coords);
+    end 
 end
 
 function minval=plotridf(xi,yi,csnapszhti,czhti,p,imxyi,bestridfs,zht, ...
@@ -513,8 +514,7 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos, ...
     end
     csnx = snx(csnapi);
     csny = sny(csnapi);
-    snxi = find(p.xs==csnx);
-    snyi = find(p.ys==csny);
+    [snxi,snyi] = geticoords([csnx,csny],p);
     snzi = find(p.zs==snapszht(csnapszhti));
     [snap,snaphi] = g_imdb_getprocim(shortwhd,snxi,snyi,snzi,imfun,imsz(2));
     rsnaphi = circshift(snaphi,round(snth(csnapi)*size(snaphi,2)/(2*pi)),2);
