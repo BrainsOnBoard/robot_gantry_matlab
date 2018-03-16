@@ -98,7 +98,9 @@ for i = 1:length(zht)
         for k = 1:length(ind)
             % RIDFs will be shifted by snth(whsn(k)); centre on 0? instead
             if shiftridfs
-                cridf = circshift(ridfs(ind(k),:,whsn(k)),-round(snth(whsn(k)) * size(ridfs,2) / (2*pi)),2);
+                % double-check this code
+                warning('the shiftridfs code may be dubious...')
+                cridf = rotim(ridfs(ind(k),:,whsn(k)),-snth(whsn(k)));
             else
                 cridf = ridfs(ind(k),:,whsn(k));
             end
@@ -531,9 +533,9 @@ function [rsnaphi,nearsnapi]=plotnearestridfs(xi,yi,snx,sny,snth,shortwhd,zht,sn
     snzi = find(p.zs==snapszht(csnapszhti));
         
     [snap,snaphi] = g_imdb_getprocim(shortwhd,snxi,snyi,snzi,imfun,imsz(2));
-    rsnap = circshift(snap,round(snth(nearsnapi)*imsz(2)/(2*pi)),2);
+    rsnap = rotim(snap,snth(nearsnapi));
     if nargout
-        rsnaphi = circshift(snaphi,round(snth(nearsnapi)*size(snap,2)/(2*pi)),2);
+        rsnaphi = rotim(snaphi,snth(nearsnapi));
     end
     
     diffs = NaN(imsz(2),length(zht));
@@ -590,8 +592,8 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos, ...
     [snxi,snyi] = geticoords([csnx,csny],p);
     snzi = find(p.zs==snapszht(csnapszhti));
     [snap,snaphi] = g_imdb_getprocim(shortwhd,snxi,snyi,snzi,imfun,imsz(2));
-    rsnaphi = circshift(snaphi,round(snth(csnapi)*size(snaphi,2)/(2*pi)),2);
-    rsnap = circshift(snap,round(snth(csnapi)*imsz(2)/(2*pi)),2);
+    rsnaphi = rotim(snaphi,snth(csnapi));
+    rsnap = rotim(snap,snth(csnapi));
 
     alfigure(1,dosave);clf
     if ~pubgrade
@@ -624,8 +626,8 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos, ...
     end
     
     % get correctly rotated versions of im and snap
-    rimhi = circshift(imhi,round(head*size(imhi,2)/(2*pi)),2);
-    rim = circshift(im,round(head*imsz(2)/(2*pi)),2);
+    rimhi = rotim(imhi,head);
+    rim = rotim(im,head);
     
     % calculate difference image
     diffimlo = im2double(rim)-im2double(rsnap);
@@ -736,4 +738,8 @@ end
 function ridfimwrite(im,varargin)
     fprintf('Saving image to %s...\n',varargin{end});
     imwrite(im,varargin{:});
+end
+
+function rim=rotim(im,th)
+    rim = circshift(im,round(th*size(im,2)/(2*pi)),2);
 end
