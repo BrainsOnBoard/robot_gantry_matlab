@@ -234,10 +234,10 @@ if dointeractive
                     
                     % save ridfs, using nearest snap rather than selected
                     clf
-                    [rnearsnap,nearsnapi] = plotnearestridfs(xi,yi,snx, ...
+                    [rnearsnaphi,rnearsnap,nearsnapi] = plotnearestridfs(xi,yi,snx, ...
                         sny,snth,shortwhd,zht,snapszht,csnapszhti,p, ...
                         improc,imsz,ridfx360);
-                    ridfimwrite(rnearsnap,fullfile(g_dir_figures,cfigdir, ...
+                    ridfimwrite(rnearsnaphi,fullfile(g_dir_figures,cfigdir, ...
                         sprintf('nearsnap%d.png',nearsnapi)));
                     if ridfx360
                         nearridffigfn360 = fullfile(cfigdir,['nearridf360.' figtype]);
@@ -256,11 +256,11 @@ if dointeractive
                             improc,bestridfs,bestsnap,snx,sny,snth,p,zht, ...
                             snapszht,shortwhd,imsz,imxi,imyi,allheads, ...
                             imxyi,ccoordi,errs,allerrs,dosave,pubgrade, ...
-                            cfigdir,figtype,ridfx360)
+                            cfigdir,figtype,ridfx360,rnearsnap,rnearsnaphi)
                     end
                 end
                 return
-            end
+            end % end pubgrade
             
             if joinpdfs
                 g_fig_series_start
@@ -517,7 +517,7 @@ function plotridf(diffs,zht,snapszht,ridfx360,csnapszhti,ttl,head)
     end
 end
 
-function [rsnaphi,nearsnapi]=plotnearestridfs(xi,yi,snx,sny,snth,shortwhd,zht,snapszht, ...
+function [rsnaphi,rsnap,nearsnapi]=plotnearestridfs(xi,yi,snx,sny,snth,shortwhd,zht,snapszht, ...
     csnapszhti,p,improc,imsz,ridfx360)
 
     % nearest snap (Euclidean distance)
@@ -561,7 +561,7 @@ end
 function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos, ...
     shownearest,improc,bestridfs,bestsnap,snx,sny,snth,p,zht,snapszht, ...
     shortwhd,imsz,imxi,imyi,allheads,imxyi,ccoordi,errs,allerrs,dosave, ...
-    pubgrade,cfigdir,figtype,ridfx360)
+    pubgrade,cfigdir,figtype,ridfx360,rnearsnap,rnearsnaphi)
 
     if pubgrade && shownearest
         error('pubgrade and shownearest can''t both be true')
@@ -657,10 +657,24 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos, ...
         
         % save difference images (at best-matching rotation)
         diffimhi = im2double(rimhi)-im2double(rsnaphi);
-        ridfimwrite(round(1+(size(redblue,1)-1)*(diffimhi+1)/2),redblue, ...
+        diffimwrite(diffimhi,redblue, ...
             fullfile(g_dir_figures,cfigdir,[fpref '_diffhi.png']));
-        ridfimwrite(round(1+(size(redblue,1)-1)*(diffimlo+1)/2),redblue, ...
+        diffimwrite(diffimlo,redblue, ...
             fullfile(g_dir_figures,cfigdir,[fpref '_diff.png']));
+        
+        % for "nearest" snap
+        nrhead = ridfheadmulti(im,rnearsnap);
+        nrimhi = rotim(imhi,nrhead);
+        ridfimwrite(nrimhi,fullfile(g_dir_figures,cfigdir,[fpref '_nearim.png']));
+        
+        nrdiffimhi = im2double(nrimhi)-im2double(rnearsnaphi);
+        diffimwrite(nrdiffimhi,redblue, ...
+            fullfile(g_dir_figures,cfigdir,[fpref '_diffnearhi.png']));
+        
+        nrim = rotim(im,nrhead);
+        nrdiffim = im2double(nrim)-im2double(rnearsnap);
+        diffimwrite(nrdiffim,redblue,...
+            fullfile(g_dir_figures,cfigdir,[fpref '_diffnear.png']));
         
         return
     end
@@ -738,6 +752,10 @@ end
 function ridfimwrite(im,varargin)
     fprintf('Saving image to %s...\n',varargin{end});
     imwrite(im,varargin{:});
+end
+
+function diffimwrite(diffim,redblue,fpath)
+    ridfimwrite(round(1+(size(redblue,1)-1)*(diffim+1)/2),redblue,fpath);
 end
 
 function rim=rotim(im,th)
