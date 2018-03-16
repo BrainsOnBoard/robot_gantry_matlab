@@ -555,6 +555,10 @@ function plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos, ...
     shortwhd,imsz,imxi,imyi,allheads,imxyi,ccoordi,errs,allerrs,dosave, ...
     pubgrade,cfigdir,figtype,ridfx360)
 
+    if pubgrade && shownearest
+        error('pubgrade and shownearest can''t both be true')
+    end
+
     % make colormap
     up = linspace(0,1,32)';
     down = up(end:-1:1);
