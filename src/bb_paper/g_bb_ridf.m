@@ -233,14 +233,14 @@ if dointeractive
                     % save ridfs, using nearest snap rather than selected
                     clf
                     plotnearestridfs(xi,yi,snx,sny,snth,shortwhd,zht, ...
-                        snapszht(csnapszhti),p,improc,imsz,ridfx360)
+                        snapszht,csnapszhti,p,improc,imsz,ridfx360)
                     if ridfx360
                         nearridffigfn360 = fullfile(cfigdir,['nearridf360.' figtype]);
                         g_fig_save(nearridffigfn360,ridffigsz,figtype,figtype,[],false);
 
                         clf
                         plotnearestridfs(xi,yi,snx,sny,snth,shortwhd,zht, ...
-                            snapszht(csnapszhti),p,improc,imsz,false)
+                            snapszht,csnapszhti,p,improc,imsz,false)
                     end
                     nearridffigfn = fullfile(cfigdir,['nearridf180.' figtype]);
                     g_fig_save(nearridffigfn,ridffigsz,figtype,figtype,[],false);
@@ -512,8 +512,8 @@ function plotridf(diffs,zht,snapszht,ridfx360,csnapszhti,ttl,head)
     end
 end
 
-function plotnearestridfs(xi,yi,snx,sny,snth,shortwhd,zht,csnapszht,p, ...
-    improc,imsz,ridfx360)
+function plotnearestridfs(xi,yi,snx,sny,snth,shortwhd,zht,snapszht, ...
+    csnapszhti,p,improc,imsz,ridfx360)
 
     % nearest snap (Euclidean distance)
     imfun = gantry_getimfun(improc);
@@ -525,7 +525,7 @@ function plotnearestridfs(xi,yi,snx,sny,snth,shortwhd,zht,csnapszht,p, ...
     
     [~,nearsnapi] = min(hypot(sny-p.ys(yi),snx-p.xs(xi)));
     [snxi,snyi] = geticoords([snx(nearsnapi),sny(nearsnapi)],p);
-    snzi = find(p.zs==csnapszht);
+    snzi = find(p.zs==snapszht(csnapszhti));
         
     snap = g_imdb_getprocim(shortwhd,snxi,snyi,snzi,imfun,imsz(2));
     rsnap = circshift(snap,round(snth(nearsnapi)*imsz(2)/(2*pi)),2);
@@ -534,20 +534,8 @@ function plotnearestridfs(xi,yi,snx,sny,snth,shortwhd,zht,csnapszht,p, ...
     for i = 1:length(zht)
         [~,~,~,diffs(:,i)] = ridfheadmulti(ims(:,:,i),rsnap);
     end
-    if ~ridfx360
-        diffs = circshift(diffs,floor(imsz(2)/2));
-    end
-    diffs = diffs / prod(imsz);
-    diffs(end+1,:) = diffs(1,:);
     
-    if ridfx360
-        xlo = 0; xhi = 360;
-    else
-        xlo = -180; xhi = 180;
-    end
-    plot(linspace(xlo,xhi,imsz(2)+1),diffs)
-    set(gca,'XTick',xlo:90:xhi)
-    xlim([xlo xhi]);
+    plotridf(diffs,zht,snapszht,ridfx360,csnapszhti);
 end
 
 function savebestworstfig(figdir,showpos,shownearest,figfn,figtype)
