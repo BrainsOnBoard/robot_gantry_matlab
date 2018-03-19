@@ -667,6 +667,7 @@ function csnapi=plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos, ...
     
     if pubgrade
         fpref = sprintf('z%03d',zi);
+        ffigdir = fullfile(g_dir_figures,cfigdir);
         
         % save quiver
         clf
@@ -676,27 +677,28 @@ function csnapi=plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos, ...
         g_fig_save(quiverfigfn,[15 10],figtype,figtype,[],false);
         
         % save "current" view
-        ridfimwrite(rimhi,fullfile(g_dir_figures,cfigdir,[fpref '_im.png']));
+        ridfimwrite(imhi,fullfile(ffigdir,[fpref '_im.png']));
+        ridfimwrite(rimhi,fullfile(ffigdir,[fpref '_rotim.png']));
         
         % save best-matching snapshot
-        ridfimwrite(rsnaphi,fullfile(g_dir_figures,cfigdir, ...
+        ridfimwrite(rsnaphi,fullfile(ffigdir, ...
             sprintf('%s_snap%d.png',fpref,csnapi)));
         
         % save difference images (at best-matching rotation)
         diffimhi = im2double(rimhi)-im2double(rsnaphi);
         diffimwrite(diffimhi,redblue, ...
-            fullfile(g_dir_figures,cfigdir,[fpref '_diffhi.png']));
+            fullfile(ffigdir,[fpref '_diffhi.png']));
         diffimwrite(diffimlo,redblue, ...
-            fullfile(g_dir_figures,cfigdir,[fpref '_diff.png']));
+            fullfile(ffigdir,[fpref '_diff.png']));
         
         % for "nearest" snap
         nrhead = ridfheadmulti(im,rnearsnap);
         nrimhi = rotim(imhi,nrhead);
-        ridfimwrite(nrimhi,fullfile(g_dir_figures,cfigdir,[fpref '_nearim.png']));
+        ridfimwrite(nrimhi,fullfile(ffigdir,[fpref '_nearim.png']));
         
         nrdiffimhi = im2double(nrimhi)-im2double(rnearsnaphi);
         diffimwrite(nrdiffimhi,redblue, ...
-            fullfile(g_dir_figures,cfigdir,[fpref '_diffnearhi.png']));
+            fullfile(ffigdir,[fpref '_diffnearhi.png']));
         
         nrim = rotim(im,nrhead);
         nrdiffim = im2double(nrim)-im2double(rnearsnap);
@@ -707,10 +709,10 @@ function csnapi=plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos, ...
                 ccoordi,shownearest,zht(czhti)+50,diffval)
         end
         diffimwrite(nrdiffim,redblue,...
-            fullfile(g_dir_figures,cfigdir,[fpref '_diffnear.png']));
+            fullfile(ffigdir,[fpref '_diffnear.png']));
         
         return
-    end
+    end % end pubgrade
 
     alsubplot(3,1)
     imshow(rimhi)
