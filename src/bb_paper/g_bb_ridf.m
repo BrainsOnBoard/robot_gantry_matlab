@@ -216,6 +216,19 @@ if dointeractive
                         mkdir(fcfigdir);
                     end
                     
+                    % save details to text file
+                    txtfn = fullfile(g_dir_figures,cfigdir,'details.txt');
+                    fprintf('Writing %s...\n',txtfn)
+                    fid = fopen(txtfn,'w');
+                    fprintf(fid,'Number: %d\n',ccoordi);
+                    fprintf(fid,'Database label: %s\n',flabel);
+                    fprintf(fid,'Coords: (%d,%d)\n\n',ccoords);
+                    for czhtcnt = 1:length(zht)
+                        fprintf(fid,'Height: %d\n',zht(czhtcnt));
+                        fprintf(fid,'  Heading: %.2fdeg\n',headings(ccoordi,czhtcnt)*180/pi);
+                        fprintf(fid,'  Error: %.4fdeg\n\n',allerrs(ccoordi,czhtcnt));
+                    end
+                    
                     % save ridfs
                     ridffigsz = [20 6];
                     clf
