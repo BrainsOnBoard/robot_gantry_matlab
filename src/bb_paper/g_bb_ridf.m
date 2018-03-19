@@ -32,11 +32,11 @@ end
 if nargin < 9 || isempty(dosave)
     dosave = false;
 end
-if nargin < 10 || isempty(joinpdfs)
-    joinpdfs = false;
-end
 if nargin < 11 || isempty(figtype)
     figtype = 'pdf';
+end
+if nargin < 10 || isempty(joinpdfs)
+    joinpdfs = strcmpi(figtype,'pdf');
 end
 if nargin < 12 || isempty(doautoridf)
     doautoridf = false;
