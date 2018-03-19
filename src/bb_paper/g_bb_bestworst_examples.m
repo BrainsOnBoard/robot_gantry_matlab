@@ -7,14 +7,13 @@ improc = '';
 shiftridfs = false;
 dosave = true;
 joinpdfs = [];
-figtype = 'svg';
 doautoridf = false;
 dointeractive = true;
 ncoords = 20;
-pubgrade = true;
 ridfx360 = true;
 skipexisting = true;
 res = 90;
+pubgrade = true;
 if pubgrade
     figtype = 'svg';
 else
