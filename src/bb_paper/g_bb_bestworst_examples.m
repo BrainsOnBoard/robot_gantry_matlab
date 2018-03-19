@@ -25,11 +25,11 @@ shortwhd = {
     'imdb_2017-06-06_001'  % plants
     };
 coords = {[
-    1300 1500; % 14. selecting snaps further from pile with height
-    600 500   % d16. good perf with distant snap
+    2700 1000; % d14. selecting snaps further from pile with height
+    600 500    % d16. good perf with distant snap
     ], [
     600 800; % d1. good example
-    300 1500  % d3. low err with far-away snap
+    300 1500 % d3. low err with far-away snap
     ]};
 routenum = [1 1];
 
