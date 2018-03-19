@@ -567,6 +567,7 @@ function [rsnaphi,rsnap,minval,nearsnapi,nearheads]=plotnearestridfs(xi,yi,snx,s
     for i = 1:length(zht)
         [nearheads(i),minval(i),~,diffs(:,i)] = ridfheadmulti(ims(:,:,i),rsnap);
     end
+    diffs = diffs / prod(imsz);
     minval = minval / prod(imsz);
     
     plotridf(diffs,zht,snapszht,ridfx360,csnapszhti);
