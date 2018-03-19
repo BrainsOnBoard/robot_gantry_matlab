@@ -573,8 +573,9 @@ function [rsnaphi,rsnap,minval,nearsnapi,nearheads]=plotnearestridfs(xi,yi,snx,s
 end
 
 function savebestworstfig(figdir,showpos,shownearest,figfn,figtype)
-    if ~exist(['figures/' figdir],'dir')
-        mkdir(['figures/' figdir])
+    cfigdir = fullfile(g_dir_figures,figdir);
+    if ~exist(cfigdir,'dir')
+        mkdir(cfigdir)
     end
     
     if shownearest
