@@ -15,6 +15,11 @@ pubgrade = true;
 ridfx360 = true;
 skipexisting = true;
 res = 90;
+if pubgrade
+    figtype = 'svg';
+else
+    figtype = 'pdf';
+end
 
 shortwhd = {
     'imdb_2017-02-09_001'; % pile
