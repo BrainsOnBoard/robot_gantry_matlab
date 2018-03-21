@@ -708,15 +708,16 @@ if showpos
 end
 
 %%
-function bestworstquiver(p,imxi,imyi,allheads,snx,sny,xi,yi,nearsnapi, ...
+function bestworstquiver(p,imxi,imyi,heads,snx,sny,xi,yi,nearsnapi, ...
     chosensnapi)
 
 hold on
 imx = p.xs(imxi);
 imy = p.ys(imyi);
-anglequiver(imx,imy,allheads)
-snheads = allheads(any(bsxfun(@eq,snx,imx) & bsxfun(@eq,sny,imy)));
-anglequiver(snx,sny,snheads,[],'g')
+anglequiver(imx,imy,heads)
+selsn = any(bsxfun(@eq,snx,imx) & bsxfun(@eq,sny,imy));
+snheads = heads(selsn);
+anglequiver(imx(selsn),imy(selsn),snheads,[],'g')
 axis equal tight
 plot(p.xs(xi),p.ys(yi),'kd', ...
     snx(nearsnapi),sny(nearsnapi),'ko', ...
