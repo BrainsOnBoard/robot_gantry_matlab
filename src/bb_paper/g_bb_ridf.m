@@ -63,7 +63,6 @@ if userealsnaps && length(snapszht) > 1
     error('cannot have real snapshots and multiple snapszht')
 end
 
-forcegen = false;
 ncoords = size(coords,1);
 
 imsz = [7 90];
@@ -72,43 +71,10 @@ figsz = [30 30];
 %% load RIDFs
 % extract best-matching snaps and RIDFs and put into cell array (because
 % the dimensions differ)
-[bestsnap,bestridfs,imxyi] = deal(cell(length(zht),length(snapszht)));
-for i = 1:length(zht)
-    for j = 1:length(snapszht)
-        [imxi,imyi,allheads,whsn,~,~,~,snx,sny,snth,~,p,~,~,ridfs] = g_imdb_route_getdata( ...
-            shortwhd,routenum,imsz(2),zht(i),false,improc,forcegen,[], ...
-            userealsnaps,snapszht(j));
 
-        if doautoridf
-            [ind,sni] = deal(NaN(ncoords,1));
-            icoords = NaN(size(coords));
-            for k = 1:ncoords
-                sni(k) = find(snx==coords(k,1) & sny==coords(k,2));
-                icoords(k,:) = [find(coords(k,1)==p.xs), find(coords(k,2)==p.ys)];
-                ind(k) = find(icoords(k,1)==imxi & icoords(k,2)==imyi);
-            end
-            whsn = sni;
-            imxyi{i,j} = icoords;
-        else
-            ind = 1:length(whsn);
-            imxyi{i,j} = [imxi, imyi];
-        end
-        bestsnap{i,j} = whsn;
-        
-        bestridfs{i,j} = NaN(length(whsn),imsz(2));
-        for k = 1:length(ind)
-            % RIDFs will be shifted by snth(whsn(k)); centre on 0? instead
-            if shiftridfs
-                % double-check this code
-                warning('the shiftridfs code may be dubious...')
-                cridf = rotim(ridfs(ind(k),:,whsn(k)),-snth(whsn(k)));
-            else
-                cridf = ridfs(ind(k),:,whsn(k));
-            end
-            bestridfs{i,j}(k,:) = cridf / prod(imsz);
-        end
-    end
-end
+% warning: it is totally broken that this returns allheads...
+[bestsnap,bestridfs,imxi,imyi,imxyi,snx,sny,snth,p,allheads]=loadridfs(shortwhd,routenum, ...
+    coords,imsz,zht,snapszht,userealsnaps,improc,doautoridf,shiftridfs);
 
 %%
 % imfun = gantry_getimfun(improc);
@@ -393,13 +359,13 @@ else
     if joinpdfs
         g_fig_series_start
     end
-    for i = 1:ncoords
-        [xi,yi] = geticoords(coords(i,:),p);
+    for j = 1:ncoords
+        [xi,yi] = geticoords(coords(j,:),p);
         plotmultiridfs(xi,yi,zht,snapszht,sprows,imxyi,bestridfs,p, ...
             dosave,joinpdfs || isempty(coords))
         if dosave
             g_fig_save(sprintf('ridf_%s_%s%sres%03d_route%03d_snapszht%s_x%04d_y%04d', ...
-                flabel,improcstr,'pm_',imsz(2),routenum,snapszhtstr,coords(i,1),coords(i,2)), ...
+                flabel,improcstr,'pm_',imsz(2),routenum,snapszhtstr,coords(j,1),coords(j,2)), ...
                 figsz,figtype,[],[],joinpdfs);
         end
     end
@@ -787,3 +753,49 @@ ridfimwrite(round(1+(size(redblue,1)-1)*(diffim+1)/2),redblue,fpath);
 function rim=rotim(im,th)
 rim = circshift(im,round(th*size(im,2)/(2*pi)),2);
 
+function [bestsnap,bestridfs,imxi,imyi,imxyi,snx,sny,snth,p,allheads]=loadridfs(shortwhd,routenum,coords, ...
+    imsz,zht,snapszht,userealsnaps,improc,doautoridf,shiftridfs)
+
+if shiftridfs
+    % see code below
+    warning('the shiftridfs code may be dubious...')
+end
+
+forcegen = false;
+
+[bestsnap,bestridfs,imxyi] = deal(cell(length(zht),length(snapszht)));
+for i = 1:length(zht)
+    for j = 1:length(snapszht)
+        [imxi,imyi,allheads,whsn,~,~,~,snx,sny,snth,~,p,~,~,ridfs] = g_imdb_route_getdata( ...
+            shortwhd,routenum,imsz(2),zht(i),false,improc,forcegen,[], ...
+            userealsnaps,snapszht(j));
+
+        if doautoridf
+            [ind,sni] = deal(NaN(ncoords,1));
+            icoords = NaN(size(coords));
+            for k = 1:ncoords
+                sni(k) = find(snx==coords(k,1) & sny==coords(k,2));
+                icoords(k,:) = [find(coords(k,1)==p.xs), find(coords(k,2)==p.ys)];
+                ind(k) = find(icoords(k,1)==imxi & icoords(k,2)==imyi);
+            end
+            whsn = sni;
+            imxyi{i,j} = icoords;
+        else
+            ind = 1:length(whsn);
+            imxyi{i,j} = [imxi, imyi];
+        end
+        bestsnap{i,j} = whsn;
+        
+        bestridfs{i,j} = NaN(length(whsn),imsz(2));
+        for k = 1:length(ind)
+            % RIDFs will be shifted by snth(whsn(k)); centre on 0? instead
+            if shiftridfs
+                % double-check this code
+                cridf = rotim(ridfs(ind(k),:,whsn(k)),-snth(whsn(k)));
+            else
+                cridf = ridfs(ind(k),:,whsn(k));
+            end
+            bestridfs{i,j}(k,:) = cridf / prod(imsz);
+        end
+    end
+end
