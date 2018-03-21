@@ -168,7 +168,8 @@ if dointeractive
                     
                     alfigure(3,dosave);clf
                     alsubplot(3,1,1,1)
-                    showdiffim(xi,yi)
+                    showdiffim(xi,yi,shortwhd,czhti,csnzhti,bestsnap, ...
+                        imxi,imyi,snx,sny,p)
                 case 'w' % zht up
                     if czhti < length(zht)
                         czhti = czhti+1;
@@ -435,33 +436,33 @@ end
             ylim([0 ymax])
         end
     end
+end
 
-    function showdiffim(xi,yi)
-        warning('snapshots are broken in this function (wrong zi)')
-        
-        % get the image for the clicked position
-        im = g_imdb_getim(shortwhd,xi,yi,czhti);
-        
-        % get best-matching snap for this position
-        snapi = bestsnap{czhti,csnzhti};
-        possel = imxi==xi & imyi==yi;
-        csnapi = snapi(possel);
-        [snxi,snyi] = geticoords([snx(csnapi), sny(csnapi)],p);
-        snap = g_imdb_getim(shortwhd,snxi,snyi,csnzhti);
-        
-        imshow(im)
-        title(sprintf('current view (%d,%d)',p.xs(xi),p.ys(yi)))
-        
-        alsubplot(2,1)
-        imshow(snap)
-        title(sprintf('best-matching snapshot (#%d)',csnapi))
-        
-        alsubplot(3,1)
-        imagesc(im2double(im)-im2double(snap))
-        title('difference')
-        axis equal tight
-        colorbar
-    end
+function showdiffim(xi,yi,shortwhd,czhti,csnzhti,bestsnap,imxi,imyi,snx,sny,p)
+    warning('snapshots are broken in this function (wrong zi)')
+
+    % get the image for the clicked position
+    im = g_imdb_getim(shortwhd,xi,yi,czhti);
+
+    % get best-matching snap for this position
+    snapi = bestsnap{czhti,csnzhti};
+    possel = imxi==xi & imyi==yi;
+    csnapi = snapi(possel);
+    [snxi,snyi] = geticoords([snx(csnapi), sny(csnapi)],p);
+    snap = g_imdb_getim(shortwhd,snxi,snyi,csnzhti);
+
+    imshow(im)
+    title(sprintf('current view (%d,%d)',p.xs(xi),p.ys(yi)))
+
+    alsubplot(2,1)
+    imshow(snap)
+    title(sprintf('best-matching snapshot (#%d)',csnapi))
+
+    alsubplot(3,1)
+    imagesc(im2double(im)-im2double(snap))
+    title('difference')
+    axis equal tight
+    colorbar
 end
 
 function [xi,yi]=geticoords(coords,p)
