@@ -164,7 +164,8 @@ if dointeractive
                     selx = p.xs(xi);
                     sely = p.ys(yi);
 
-                    plotmultiridfs(xi,yi)
+                    plotmultiridfs(xi,yi,zht,snapszht,sprows,imxyi, ...
+                        bestridfs,p,dosave,joinpdfs || isempty(coords))
                     
                     alfigure(3,dosave);clf
                     alsubplot(3,1,1,1)
@@ -389,7 +390,8 @@ else
     end
     for i = 1:ncoords
         [xi,yi] = geticoords(coords(i,:),p);
-        plotmultiridfs(xi,yi)
+        plotmultiridfs(xi,yi,zht,snapszht,sprows,imxyi,bestridfs,p, ...
+            dosave,joinpdfs || isempty(coords))
         if dosave
             g_fig_save(sprintf('ridf_%s_%s%sres%03d_route%03d_snapszht%s_x%04d_y%04d', ...
                 flabel,improcstr,'pm_',imsz(2),routenum,snapszhtstr,coords(i,1),coords(i,2)), ...
@@ -411,30 +413,32 @@ end
         figfn = fullfile(figdir,sprintf('%sn%03d_%03d_%03d_%03d', ...
             fprefix,ccoordi,xi,yi,find(p.zs==zht(czhtcnt))));
     end
-    
-    function plotmultiridfs(xi,yi)
-        gx = p.xs(xi);
-        gy = p.ys(yi);
-        fprintf('selecting point (%d,%d)\n',gx,gy)
-        
-        spcols = min(2,length(snapszht));
-        ymax = 0;
-        if joinpdfs || isempty(coords)
-            alfigure(2,dosave);clf
-        else
-            figure
-        end
-        for cursnapszhti = 1:length(snapszht)
-            subplot(sprows,spcols,cursnapszhti)
-            plotridfforsnap(xi,yi,cursnapszhti,p,imxyi,bestridfs,zht,snapszht);
-            
-            yl = ylim;
-            ymax = max(yl(2),ymax);
-        end
-        for cursnapszhti = 1:length(snapszht)
-            subplot(sprows,spcols,cursnapszhti)
-            ylim([0 ymax])
-        end
+end
+
+function plotmultiridfs(xi,yi,zht,snapszht,sprows,imxyi,bestridfs, ...
+        p,dosave,donewfig)
+
+    gx = p.xs(xi);
+    gy = p.ys(yi);
+    fprintf('selecting point (%d,%d)\n',gx,gy)
+
+    spcols = min(2,length(snapszht));
+    ymax = 0;
+    if donewfig
+        alfigure(2,dosave);clf
+    else
+        figure
+    end
+    for cursnapszhti = 1:length(snapszht)
+        subplot(sprows,spcols,cursnapszhti)
+        plotridfforsnap(xi,yi,cursnapszhti,p,imxyi,bestridfs,zht,snapszht);
+
+        yl = ylim;
+        ymax = max(yl(2),ymax);
+    end
+    for cursnapszhti = 1:length(snapszht)
+        subplot(sprows,spcols,cursnapszhti)
+        ylim([0 ymax])
     end
 end
 
