@@ -131,11 +131,14 @@ if dointeractive
         czhti = floor(round(length(zht))/2);
         csnzhti = floor(round(length(snapszht))/2);
 
-        % show quiver plot to click on
-        showquiver
-
+        selx = [];
+        sely = [];
         while true % loop until user quits
             alfigure(1,dosave)
+            
+            % show quiver plot to click on
+            showquiver
+            
             try
                 [x,y,but] = ginput(1);
             catch ex
@@ -158,6 +161,8 @@ if dointeractive
                     % get nearest point on grid to click
                     [~,xi] = min(abs(p.xs-x));
                     [~,yi] = min(abs(p.ys-y));
+                    selx = p.xs(xi);
+                    sely = p.ys(yi);
 
                     plotmultiridfs(xi,yi)
                     
@@ -167,22 +172,18 @@ if dointeractive
                 case 'w' % zht up
                     if czhti < length(zht)
                         czhti = czhti+1;
-                        showquiver
                     end
                 case 's' % zht down
                     if czhti > 1
                         czhti = czhti-1;
-                        showquiver
                     end
                 case 'q' % snapszht up
                     if csnzhti < length(snapszht)
                         csnzhti = csnzhti+1;
-                        showquiver
                     end
                 case 'a' % snapszht down
                     if csnzhti > 1
                         csnzhti = csnzhti-1;
-                        showquiver
                     end
                 case ' ' % save
                     g_fig_save(sprintf('ridf_%s_%s%sres%03d_route%03d_snapszht%s_x%04d_y%04d', ...
@@ -370,6 +371,8 @@ if dointeractive
                     shownearest = ~shownearest;
                 case 'r' % reset
                     ccoordi = 1;
+                    selx = [];
+                    sely = [];
                 case ' ' % save
                     savebestworstfig(figdir,showpos,shownearest, ...
                         getfigfn,figtype);
@@ -400,7 +403,7 @@ end
 
     function showquiver
         g_bb_quiver(shortwhd,routenum,zht(czhti),snapszht(csnzhti), ...
-            userealsnaps,false,improc,true,false);
+            userealsnaps,false,improc,true,false,[],[],[],selx,sely);
     end
 
     function figfn=getfigfn

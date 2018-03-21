@@ -1,5 +1,6 @@
-function g_bb_quiver(shortwhd,routenums,zht,snapszht,userealsnaps,useinfomax,improc,plotquiver,plotwhsn,doseparateplots,dosave,figtype)
-close all
+function g_bb_quiver(shortwhd,routenums,zht,snapszht,userealsnaps, ...
+    useinfomax,improc,plotquiver,plotwhsn,doseparateplots,dosave, ...
+    figtype,selx,sely)
 
 if nargin < 1 || isempty(shortwhd)
     shortwhd={
@@ -43,6 +44,10 @@ if nargin < 11 || isempty(dosave)
 end
 if nargin < 12 || isempty(figtype)
     figtype = 'pdf';
+end
+if nargin < 14
+    selx = [];
+    sely = [];
 end
 
 if plotquiver
@@ -122,6 +127,10 @@ for i = 1:length(useinfomax)
                             anglequiver(p.xs(imxi(~errsel)),p.ys(imyi(~errsel)),heads(~errsel));
                             anglequiver(p.xs(imxi(errsel)),p.ys(imyi(errsel)),heads(errsel),[],'g')
                             plot(snx,sny,'ro')
+                            if ~isempty(selx)
+                                plot(selx,sely,'md','LineWidth',3);
+                            end
+                            
                             axis equal tight
                             xlim([0 p.lim(1)])
                             ylim([0 p.lim(2)])
