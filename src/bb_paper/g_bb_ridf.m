@@ -188,6 +188,9 @@ if dointeractive
                     if csnzhti > 1
                         csnzhti = csnzhti-1;
                     end
+                case 'r' % reset
+                    selx = [];
+                    sely = [];
                 case ' ' % save
                     g_fig_save(sprintf('ridf_%s_%s%sres%03d_route%03d_snapszht%s_x%04d_y%04d', ...
                         flabel,improcstr,'pm_',imsz(2),routenum,snapszhtstr,coords(i,1),coords(i,2)),figsz,figtype);
@@ -374,8 +377,6 @@ if dointeractive
                     shownearest = ~shownearest;
                 case 'r' % reset
                     ccoordi = 1;
-                    selx = [];
-                    sely = [];
                 case ' ' % save
                     savebestworstfig(figdir,showpos,shownearest, ...
                         getfigfn,figtype);
