@@ -137,7 +137,8 @@ if dointeractive
             alfigure(1,dosave)
             
             % show quiver plot to click on
-            showquiver
+            g_bb_quiver(shortwhd,routenum,zht(czhti),snapszht(csnzhti), ...
+                userealsnaps,false,improc,true,false,[],[],[],selx,sely);
             
             try
                 [x,y,but] = ginput(1);
@@ -403,11 +404,6 @@ else
             flabel,improcstr,'pm_',imsz(2),routenum,snapszhtstr),true,figtype);
     end
 end
-
-    function showquiver
-        g_bb_quiver(shortwhd,routenum,zht(czhti),snapszht(csnzhti), ...
-            userealsnaps,false,improc,true,false,[],[],[],selx,sely);
-    end
 
     function figfn=getfigfn
         figfn = fullfile(figdir,sprintf('%sn%03d_%03d_%03d_%03d', ...
