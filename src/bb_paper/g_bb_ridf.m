@@ -299,6 +299,8 @@ if dointeractive
                 ccoords = coords(ccoordi,:);
                 [xi,yi] = geticoords(ccoords,p);
                 for czhtcnt = 1:length(zht)
+                    figfn = fullfile(figdir,sprintf('%sn%03d_%03d_%03d_%03d', ...
+                        fprefix,ccoordi,xi,yi,find(p.zs==zht(czhtcnt))));
                     chead = headings(ccoordi,czhtcnt);
                     plotforbestworst(xi,yi,czhtcnt,csnapszhti,chead,true,false, ...
                         improc,bestridfs,bestsnap,snx,sny,snth,p,zht, ...
@@ -306,8 +308,7 @@ if dointeractive
                         imxyi,ccoordi,errs,allerrs,dosave,pubgrade, ...
                         [],[],ridfx360);
                     title(sprintf('Coord %d/%d',ccoordi,ncoords))
-                    savebestworstfig(figdir,true,false,getfigfn, ...
-                        figtype)
+                    savebestworstfig(figdir,true,false,figfn,figtype)
                     
                     plotforbestworst(xi,yi,czhtcnt,csnapszhti,chead,true,true, ...
                         improc,bestridfs,bestsnap,snx,sny,snth,p,zht, ...
@@ -315,8 +316,7 @@ if dointeractive
                         imxyi,ccoordi,errs,allerrs,dosave,pubgrade, ...
                         [],[],ridfx360);
                     title(sprintf('Coord %d/%d',ccoordi,ncoords))
-                    savebestworstfig(figdir,true,true,getfigfn, ...
-                        figtype)
+                    savebestworstfig(figdir,true,true,figfn,figtype)
                 end
             end
             pubstr = '';
@@ -378,8 +378,10 @@ if dointeractive
                 case 'r' % reset
                     ccoordi = 1;
                 case ' ' % save
-                    savebestworstfig(figdir,showpos,shownearest, ...
-                        getfigfn,figtype);
+                    figfn = fullfile(figdir,sprintf('%sn%03d_%03d_%03d_%03d', ...
+                        fprefix,ccoordi,xi,yi,find(p.zs==zht(czhtcnt))));
+                    savebestworstfig(figdir,showpos,shownearest,figfn, ...
+                        figtype);
                 case 27 % esc
                     close all
                     break
@@ -405,11 +407,6 @@ else
             flabel,improcstr,'pm_',imsz(2),routenum,snapszhtstr),true,figtype);
     end
 end
-
-    function figfn=getfigfn
-        figfn = fullfile(figdir,sprintf('%sn%03d_%03d_%03d_%03d', ...
-            fprefix,ccoordi,xi,yi,find(p.zs==zht(czhtcnt))));
-    end
 end
 
 function plotmultiridfs(xi,yi,zht,snapszht,sprows,imxyi,bestridfs, ...
