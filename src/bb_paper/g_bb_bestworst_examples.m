@@ -1,4 +1,4 @@
-clear
+function g_bb_bestworst_examples
 
 zht = 0:100:500;
 snapszht = 0;
@@ -9,11 +9,12 @@ dosave = true;
 joinpdfs = [];
 doautoridf = false;
 dointeractive = true;
-ncoords = 20;
 ridfx360 = true;
-skipexisting = true;
 res = 90;
+
 pubgrade = true;
+skipexisting = true;
+
 if pubgrade
     figtype = 'svg';
 else
