@@ -444,16 +444,17 @@ end
         
         % get best-matching snap for this position
         snapi = bestsnap{czhti,csnzhti};
-        posi = find(imxi==xi & imyi==yi);
-        [snxi,snyi] = geticoords([snx(snapi(posi)), sny(snapi(posi))],p);
+        possel = imxi==xi & imyi==yi;
+        csnapi = snapi(possel);
+        [snxi,snyi] = geticoords([snx(csnapi), sny(csnapi)],p);
         snap = g_imdb_getim(shortwhd,snxi,snyi,csnzhti);
         
         imshow(im)
-        title('current view')
+        title(sprintf('current view (%d,%d)',p.xs(xi),p.ys(yi)))
         
         alsubplot(2,1)
         imshow(snap)
-        title('best-matching snapshot')
+        title(sprintf('best-matching snapshot (#%d)',csnapi))
         
         alsubplot(3,1)
         imagesc(im2double(im)-im2double(snap))
