@@ -75,13 +75,6 @@ figsz = [30 30];
     coords,imsz,zht,snapszht,userealsnaps,improc,doautoridf,shiftridfs);
 
 %%
-% imfun = gantry_getimfun(improc);
-% if userealsnaps
-%     [snaps,~,snx,sny]=g_imdb_route_getrealsnaps(p.arenafn,routenum,imsz(2),imfun);
-% else
-%     [snaps,snx,sny]=g_imdb_route_getimdbsnaps(p.arenafn,routenum,imsz(2),imfun,shortwhd,find(p.zs==snapszht),p.imsep);
-% end
-
 if isempty(improc)
     improcstr = '';
 else
@@ -373,6 +366,7 @@ else
     end
 end
 
+%%
 function plotmultiridfs(xi,yi,zht,snapszht,sprows,imxyi,bestridfs, ...
         p,dosave,donewfig)
 
@@ -399,6 +393,7 @@ for cursnapszhti = 1:length(snapszht)
     ylim([0 ymax])
 end
 
+%%
 function showdiffim(xi,yi,shortwhd,czhti,csnzhti,bestsnap,imxi,imyi,snx,sny,p)
 warning('snapshots are broken in this function (wrong zi)')
 
@@ -425,6 +420,7 @@ title('difference')
 axis equal tight
 colorbar
 
+%%
 function [xi,yi]=geticoords(coords,p)
 xi = find(p.xs==coords(1));
 yi = find(p.ys==coords(2));
@@ -432,6 +428,7 @@ if isempty(xi) || isempty(yi)
     error('could not find coords (%d,%d)',coords);
 end 
 
+%%
 function diffs=plotridfforsnap(xi,yi,csnapszhti,p,imxyi,bestridfs,zht, ...
 snapszht,ridfx360,head)
 
@@ -447,6 +444,7 @@ ttl = sprintf('(%d, %d) Training height: %d mm',p.xs(xi),p.ys(yi), ...
     snapszht(csnapszhti)+50);
 plotridf(diffs,zht,snapszht,ridfx360,csnapszhti,ttl,head)
 
+%%
 function plotridf(diffs,zht,snapszht,ridfx360,csnapszhti,ttl,head)
 if nargin < 7
     head = [];
@@ -502,6 +500,7 @@ if ~isempty(head)
     axis tight
 end
 
+%%
 function [rsnaphi,rsnap,minval,nearsnapi,nearheads]=plotnearestridfs(xi,yi,snx,sny,snth,shortwhd,zht,snapszht, ...
     csnapszhti,p,improc,imsz,ridfx360)
 	
@@ -534,6 +533,7 @@ minval = minval / prod(imsz);
 
 plotridf(diffs,zht,snapszht,ridfx360,csnapszhti);
 
+%%
 function savebestworstfig(figdir,showpos,shownearest,figfn,figtype)
 cfigdir = fullfile(g_dir_figures,figdir);
 if ~exist(cfigdir,'dir')
@@ -546,6 +546,7 @@ end
 figfn = [figfn '.' figtype];
 g_fig_save(figfn,[(showpos+1)*15 15],figtype,figtype,[],false);
 
+%%
 function csnapi=plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos, ...
     shownearest,improc,bestridfs,bestsnap,snx,sny,snth,p,zht,snapszht, ...
     shortwhd,imsz,imxi,imyi,allheads,imxyi,ccoordi,errs,allerrs,dosave, ...
@@ -706,6 +707,7 @@ if showpos
         chosensnapi);
 end
 
+%%
 function bestworstquiver(p,imxi,imyi,allheads,snx,sny,xi,yi,nearsnapi, ...
     chosensnapi)
 
@@ -721,6 +723,7 @@ plot(p.xs(xi),p.ys(yi),'kd', ...
     snx(chosensnapi),sny(chosensnapi),'ro', ...
     'MarkerSize',8,'LineWidth',2)
 
+%%
 function alfigure(num,dosave)
 if ~dosave || ~isgraphics(num)
     figure(num)
@@ -728,6 +731,7 @@ else
     set(0,'CurrentFigure',num);
 end
 
+%%
 function cridfs=getridfs(xi,yi,csnapszhti,bestridfs,imxyi,zht)
 % get RIDF for best match
 cridfs = NaN(size(bestridfs{1},2),length(zht));
@@ -741,16 +745,20 @@ for i = 1:length(zht)
     cridfs(:,i) = bestridfs{i,csnapszhti}(cind,:);
 end
 
+%%
 function ridfimwrite(im,varargin)
 fprintf('Saving image to %s...\n',varargin{end});
 imwrite(im,varargin{:});
 
+%%
 function diffimwrite(diffim,redblue,fpath)
 ridfimwrite(round(1+(size(redblue,1)-1)*(diffim+1)/2),redblue,fpath);
 
+%%
 function rim=rotim(im,th)
 rim = circshift(im,round(th*size(im,2)/(2*pi)),2);
 
+%%
 function [bestsnap,bestridfs,imxi,imyi,imxyi,snx,sny,snth,p,allheads]=loadridfs(shortwhd,routenum,coords, ...
     imsz,zht,snapszht,userealsnaps,improc,doautoridf,shiftridfs)
 
