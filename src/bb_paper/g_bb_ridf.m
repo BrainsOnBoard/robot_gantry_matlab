@@ -150,6 +150,7 @@ if dointeractive
                     selx = [];
                     sely = [];
                 case ' ' % save
+                    error('this code is broken')
                     g_fig_save(sprintf('ridf_%s_%s%sres%03d_route%03d_snapszht%s_x%04d_y%04d', ...
                         flabel,improcstr,'pm_',imsz(2),routenum,snapszhtstr,coords(i,1),coords(i,2)),figsz,figtype);
             end
