@@ -63,6 +63,10 @@ if userealsnaps && length(snapszht) > 1
     error('cannot have real snapshots and multiple snapszht')
 end
 
+if ~ismatrix(coords) || size(coords,2)~=2
+    error('coords must be an Nx2 matrix')
+end
+
 ncoords = size(coords,1);
 
 imsz = [7 90];
