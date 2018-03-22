@@ -65,6 +65,11 @@ end
 
 ncoords = size(coords,1);
 
+if ~iscell(fprefix)
+    fprefix = repmat(fprefix,ncoords);
+    fprefix = mat2cell(fprefix,[1 1]);
+end
+
 imsz = [7 90];
 figsz = [30 30];
 
@@ -170,7 +175,7 @@ if dointeractive
                     
                     % we dump the different bits for each figure in a new dir
                     cfigdir = fullfile(figdir,sprintf('%sn%03d_%03d_%03d', ...
-                        fprefix,ccoordi,xi,yi));
+                        fprefix{ccoordi},ccoordi,xi,yi));
                     fcfigdir = fullfile(g_dir_figures,cfigdir);
                     if exist(fcfigdir,'dir')
                         if skipexisting
@@ -259,7 +264,7 @@ if dointeractive
                 [xi,yi] = geticoords(ccoords,p);
                 for czhtcnt = 1:length(zht)
                     figfn = fullfile(figdir,sprintf('%sn%03d_%03d_%03d_%03d', ...
-                        fprefix,ccoordi,xi,yi,find(p.zs==zht(czhtcnt))));
+                        fprefix{ccoordi},ccoordi,xi,yi,find(p.zs==zht(czhtcnt))));
                     chead = headings(ccoordi,czhtcnt);
                     plotforbestworst(xi,yi,czhtcnt,csnapszhti,chead,true,false, ...
                         improc,bestridfs,bestsnap,snx,sny,snth,p,zht, ...
@@ -283,7 +288,10 @@ if dointeractive
                 pubstr = '_pub';
             end
             if joinpdfs
-                g_fig_series_end(sprintf('%spoints_@%d_%s%s.%s',fprefix, ...
+                if ~all(cellfun(@(x)fprefix==fprefix{1},fprefix))
+                    warning('filename prefixes don''t match')
+                end
+                g_fig_series_end(sprintf('%spoints_@%d_%s%s.%s',fprefix{1}, ...
                     snapszht,flabel,pubstr,figtype),[],figtype)
             end
             return
