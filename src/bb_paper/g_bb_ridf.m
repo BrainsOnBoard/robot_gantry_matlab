@@ -640,8 +640,8 @@ if pubgrade
     g_fig_save(quiverfigfn,[15 10],figtype,figtype,[],false);
 
     % save "current" view
-    ridfimwrite(imhi,fullfile(ffigdir,[fpref '_im.png']));
-    ridfimwrite(rimhi,fullfile(ffigdir,[fpref '_rotim.png']));
+    ridfimwrite(imhi,fullfile(ffigdir,[fpref '_unrotim.png']));
+    ridfimwrite(rimhi,fullfile(ffigdir,[fpref '_im.png']));
 
     % save best-matching snapshot
     ridfimwrite(rsnaphi,fullfile(ffigdir, ...
