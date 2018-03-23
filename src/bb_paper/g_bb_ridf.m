@@ -154,9 +154,9 @@ if dointeractive
                     selx = [];
                     sely = [];
                 case ' ' % save
-                    error('this code is broken')
-                    g_fig_save(sprintf('ridf_%s_%s%sres%03d_route%03d_snapszht%s_x%04d_y%04d', ...
-                        flabel,improcstr,'pm_',imsz(2),routenum,snapszhtstr,coords(i,1),coords(i,2)),figsz,figtype);
+                    error('todo: reimplement this')
+%                     g_fig_save(sprintf('ridf_%s_%s%sres%03d_route%03d_snapszht%s_x%04d_y%04d', ...
+%                         flabel,improcstr,'pm_',imsz(2),routenum,snapszhtstr,coords(i,1),coords(i,2)),figsz,figtype);
             end
         end
     else
@@ -168,13 +168,13 @@ if dointeractive
         figdir = fullfile('ridf_bestworst',g_imdb_getlabel(shortwhd));
         if dosave
             if pubgrade
-                for ccoordi = 1:ncoords
-                    ccoords = coords(ccoordi,:);
+                for i = 1:ncoords
+                    ccoords = coords(i,:);
                     [xi,yi] = geticoords(ccoords,p);
                     
                     % we dump the different bits for each figure in a new dir
                     cfigdir = fullfile(figdir,sprintf('%sn%03d_%03d_%03d', ...
-                        fprefix,ccoordi,xi,yi));
+                        fprefix,i,xi,yi));
                     fcfigdir = fullfile(g_dir_figures,cfigdir);
                     if exist(fcfigdir,'dir')
                         if skipexisting
@@ -221,35 +221,35 @@ if dointeractive
                     g_fig_save(nearridffigfn,ridffigsz,figtype,figtype,[],false);
                     
                     snapnums = NaN(length(zht),1);
-                    for czhtcnt = 1:length(zht)
-                        chead = headings(ccoordi,czhtcnt);
-                        snapnums(czhtcnt)=plotforbestworst(xi,yi,czhtcnt,csnapszhti,chead,true,false, ...
+                    for j = 1:length(zht)
+                        chead = headings(i,j);
+                        snapnums(j)=plotforbestworst(xi,yi,j,csnapszhti,chead,true,false, ...
                             improc,bestridfs,bestsnap,snx,sny,snth,p,zht, ...
-                            snapszht,shortwhd,imsz,imxi,imyi,heads{czhtcnt,csnapszhti}, ...
-                            imxyi,ccoordi,errs,allerrs,dosave,pubgrade, ...
+                            snapszht,shortwhd,imsz,imxi,imyi,heads{j,csnapszhti}, ...
+                            imxyi,i,errs,allerrs,dosave,pubgrade, ...
                             cfigdir,figtype,ridfx360,rnearsnap, ...
-                            rnearsnaphi,nrminval(czhtcnt));
+                            rnearsnaphi,nrminval(j));
                     end
                                         
                     % save details to text file
                     txtfn = fullfile(g_dir_figures,cfigdir,'details.txt');
                     fprintf('Writing %s...\n',txtfn)
                     fid = fopen(txtfn,'w');
-                    fprintf(fid,'Number:         %d\n',ccoordi);
+                    fprintf(fid,'Number:         %d\n',i);
                     fprintf(fid,'Database label: %s\n',flabel);
                     fprintf(fid,'Coords:         (%d,%d)\n\n',ccoords);
                     nearsnth = snth(nearsnapi);
                     nearerrs = abs(circ_dist(nearheads,nearsnth));
                     nearerrs = min(nearerrs,pi/2);
                     nearerrs = nearerrs*180/pi;
-                    for czhtcnt = 1:length(zht)
-                        fprintf(fid,'Height: %dmm\n',50+zht(czhtcnt));
-                        fprintf(fid,'  Snap num:        %d\n',snapnums(czhtcnt));
-                        fprintf(fid,'  Heading:         %.2fdeg\n',headings(ccoordi,czhtcnt)*180/pi);
-                        fprintf(fid,'  Error:           %.4fdeg\n\n',allerrs(ccoordi,czhtcnt));
+                    for j = 1:length(zht)
+                        fprintf(fid,'Height: %dmm\n',50+zht(j));
+                        fprintf(fid,'  Snap num:        %d\n',snapnums(j));
+                        fprintf(fid,'  Heading:         %.2fdeg\n',headings(i,j)*180/pi);
+                        fprintf(fid,'  Error:           %.4fdeg\n\n',allerrs(i,j));
                         fprintf(fid,'  Snap num (near): %d\n',nearsnapi);
-                        fprintf(fid,'  Heading (near):  %.2fdeg\n',nearheads(czhtcnt)*180/pi);
-                        fprintf(fid,'  Error (near):    %.4fdeg\n\n',nearerrs(czhtcnt));
+                        fprintf(fid,'  Heading (near):  %.2fdeg\n',nearheads(j)*180/pi);
+                        fprintf(fid,'  Error (near):    %.4fdeg\n\n',nearerrs(j));
                     end
                 end
                 return
@@ -258,27 +258,27 @@ if dointeractive
             if joinpdfs
                 g_fig_series_start
             end
-            for ccoordi = 1:ncoords
-                ccoords = coords(ccoordi,:);
+            for i = 1:ncoords
+                ccoords = coords(i,:);
                 [xi,yi] = geticoords(ccoords,p);
-                for czhtcnt = 1:length(zht)
+                for j = 1:length(zht)
                     figfn = fullfile(figdir,sprintf('%sn%03d_%03d_%03d_%03d', ...
-                        fprefix,ccoordi,xi,yi,find(p.zs==zht(czhtcnt))));
-                    chead = headings(ccoordi,czhtcnt);
-                    plotforbestworst(xi,yi,czhtcnt,csnapszhti,chead,true,false, ...
+                        fprefix,i,xi,yi,find(p.zs==zht(j))));
+                    chead = headings(i,j);
+                    plotforbestworst(xi,yi,j,csnapszhti,chead,true,false, ...
                         improc,bestridfs,bestsnap,snx,sny,snth,p,zht, ...
-                        snapszht,shortwhd,imsz,imxi,imyi,heads{czhtcnt,csnapszhti}, ...
-                        imxyi,ccoordi,errs,allerrs,dosave,pubgrade, ...
+                        snapszht,shortwhd,imsz,imxi,imyi,heads{j,csnapszhti}, ...
+                        imxyi,i,errs,allerrs,dosave,pubgrade, ...
                         [],[],ridfx360);
-                    title(sprintf('Coord %d/%d',ccoordi,ncoords))
+                    title(sprintf('Coord %d/%d',i,ncoords))
                     savebestworstfig(figdir,true,false,figfn,figtype)
                     
-                    plotforbestworst(xi,yi,czhtcnt,csnapszhti,chead,true,true, ...
+                    plotforbestworst(xi,yi,j,csnapszhti,chead,true,true, ...
                         improc,bestridfs,bestsnap,snx,sny,snth,p,zht, ...
-                        snapszht,shortwhd,imsz,imxi,imyi,heads{czhtcnt,csnapszhti}, ...
-                        imxyi,ccoordi,errs,allerrs,dosave,pubgrade, ...
+                        snapszht,shortwhd,imsz,imxi,imyi,heads{j,csnapszhti}, ...
+                        imxyi,i,errs,allerrs,dosave,pubgrade, ...
                         [],[],ridfx360);
-                    title(sprintf('Coord %d/%d',ccoordi,ncoords))
+                    title(sprintf('Coord %d/%d',i,ncoords))
                     savebestworstfig(figdir,true,true,figfn,figtype)
                 end
             end
