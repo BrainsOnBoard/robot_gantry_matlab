@@ -204,8 +204,9 @@ if dointeractive
                     
                     % save ridfs, using nearest snap rather than selected
                     clf
-                    [rnearsnaphi,rnearsnap,nrminval,nearsnapi,nearheads] = plotnearestridfs(xi,yi,snx, ...
-                        sny,snth,shortwhd,zht,snapszht,csnapszhti,p, ...
+                    [rnearsnaphi,rnearsnap,nrminval,nearsnapi,nearheads, ...
+                        neardiffs] = plotallnearridfs(xi,yi,snx,sny, ...
+                        snth,shortwhd,zht,snapszht,csnapszhti,p, ...
                         improc,imsz,ridfx360);
                     ridfimwrite(rnearsnaphi,fullfile(g_dir_figures,cfigdir, ...
                         sprintf('nearsnap%d.png',nearsnapi)));
@@ -214,7 +215,7 @@ if dointeractive
                         g_fig_save(nearridffigfn360,ridffigsz,figtype,figtype,[],false);
 
                         clf
-                        plotnearestridfs(xi,yi,snx,sny,snth,shortwhd,zht, ...
+                        plotallnearridfs(xi,yi,snx,sny,snth,shortwhd,zht, ...
                             snapszht,csnapszhti,p,improc,imsz,false);
                     end
                     nearridffigfn = fullfile(cfigdir,['nearridf180.' figtype]);
@@ -223,12 +224,25 @@ if dointeractive
                     snapnums = NaN(length(zht),1);
                     for j = 1:length(zht)
                         chead = headings(i,j);
-                        snapnums(j)=plotforbestworst(xi,yi,j,csnapszhti,chead,true,false, ...
+                        [snapnums(j),ridf]=plotforbestworst(xi,yi,j,csnapszhti,chead,true,false, ...
                             improc,bestridfs,bestsnap,snx,sny,snth,p,zht, ...
                             snapszht,shortwhd,imsz,imxi,imyi,heads{j,csnapszhti}, ...
                             imxyi,i,errs,allerrs,dosave,pubgrade, ...
                             cfigdir,figtype,ridfx360,rnearsnap, ...
                             rnearsnaphi,nrminval(j));
+                        
+                        % plot near ridfs
+                        clf
+                        plotnearridf(ridf,neardiffs(:,j),ridfx360)
+                        if ridfx360
+                            cnearridffigfn360 = fullfile(cfigdir,sprintf('z%03d_nearridf360.%s',j,figtype));
+                            g_fig_save(cnearridffigfn360,ridffigsz,figtype,figtype,[],false);
+                            
+                            clf
+                            plotnearridf(ridf,neardiffs(:,j),false)
+                        end
+                        cnearridffigfn = fullfile(cfigdir,sprintf('z%03d_nearridf180.%s',j,figtype));
+                        g_fig_save(cnearridffigfn,ridffigsz,figtype,figtype,[],false);
                     end
                                         
                     % save details to text file
@@ -506,7 +520,30 @@ if ~isempty(head)
 end
 
 %%
-function [rsnaphi,rsnap,minval,nearsnapi,nearheads]=plotnearestridfs(xi,yi,snx,sny,snth,shortwhd,zht,snapszht, ...
+function plotnearridf(ridf,nearridf,ridfx360) %,head)
+diffs = [ridf nearridf];
+
+if ridfx360
+    xlo = 0; xhi = 360;
+else
+    xlo = -180; xhi = 180;
+    diffs = circshift(diffs,floor(size(diffs,1)/2));
+end
+
+diffs(end+1,:) = diffs(1,:);
+ths = repmat(linspace(xlo,xhi,size(diffs,1))',1,size(diffs,2));
+plot(ths,diffs);
+
+xlim([xlo xhi])
+set(gca,'XTick',xlo:90:xhi)
+xlabel('Angle (deg)')
+legend('Selected snapshot','Nearest snapshot'); %,'Location','BestOutside');
+
+g_fig_setfont
+andy_setbox
+
+%%
+function [rsnaphi,rsnap,minval,nearsnapi,nearheads,neardiffs]=plotallnearridfs(xi,yi,snx,sny,snth,shortwhd,zht,snapszht, ...
     csnapszhti,p,improc,imsz,ridfx360)
 	
 % nearest snap (Euclidean distance)
@@ -528,15 +565,15 @@ if nargout
     rsnaphi = rotim(snaphi,snth(nearsnapi));
 end
 
-diffs = NaN(imsz(2),length(zht));
+neardiffs = NaN(imsz(2),length(zht));
 [nearheads,minval] = deal(NaN(length(zht),1));
 for i = 1:length(zht)
-    [nearheads(i),minval(i),~,diffs(:,i)] = ridfheadmulti(ims(:,:,i),rsnap);
+    [nearheads(i),minval(i),~,neardiffs(:,i)] = ridfheadmulti(ims(:,:,i),rsnap);
 end
-diffs = diffs / prod(imsz);
+neardiffs = neardiffs / prod(imsz);
 minval = minval / prod(imsz);
 
-plotridf(diffs,zht,snapszht,ridfx360,csnapszhti);
+plotridf(neardiffs,zht,snapszht,ridfx360,csnapszhti);
 
 %%
 function savebestworstfig(figdir,showpos,shownearest,figfn,figtype)
@@ -552,7 +589,7 @@ figfn = [figfn '.' figtype];
 g_fig_save(figfn,[(showpos+1)*15 15],figtype,figtype,[],false);
 
 %%
-function csnapi=plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos, ...
+function [csnapi,ridf]=plotforbestworst(xi,yi,czhti,csnapszhti,head,showpos, ...
     shownearest,improc,bestridfs,bestsnap,snx,sny,snth,p,zht,snapszht, ...
     shortwhd,imsz,imxi,imyi,allheads,imxyi,ccoordi,errs,allerrs,dosave, ...
     pubgrade,cfigdir,figtype,ridfx360,rnearsnap,rnearsnaphi,nrminval)
@@ -594,18 +631,18 @@ if ~pubgrade
     alsubplot(5,1+showpos,1:2,[1 1+showpos])
 end
 if shownearest
-    [head,minval,~,diffs] = ridfheadmulti(im,rsnap);
+    [head,minval,~,ridf] = ridfheadmulti(im,rsnap);
     if ~ridfx360
-        diffs = circshift(diffs,floor(imsz(2)/2));
+        ridf = circshift(ridf,floor(imsz(2)/2));
     end
-    diffs = diffs / prod(imsz);
-    diffs(end+1) = diffs(1);
+    ridf = ridf / prod(imsz);
+    ridf(end+1) = ridf(1);
     if ridfx360
         xlo = 0; xhi = 360;
     else
         xlo = -180; xhi = 180;
     end
-    plot(linspace(xlo,xhi,imsz(2)+1),diffs)
+    plot(linspace(xlo,xhi,imsz(2)+1),ridf)
     set(gca,'XTick',xlo:90:xhi)
     xlim([xlo xhi]);
     minval = minval / prod(imsz);
@@ -617,6 +654,7 @@ else
             snapszht,ridfx360,head);
     end
     minval = min(cridfs(:,czhti));
+    ridf = cridfs(:,czhti);
 end
 
 % get correctly rotated versions of im and snap
