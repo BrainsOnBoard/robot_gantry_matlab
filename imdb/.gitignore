@@ -1,0 +1,4 @@
+# ignore processed imdb files (for now)
+green_*
+skyline_*
+skylinebg_*

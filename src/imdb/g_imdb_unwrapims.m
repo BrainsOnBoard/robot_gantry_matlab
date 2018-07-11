@@ -3,11 +3,11 @@ function g_imdb_unwrapims(ds,procfun,fprefix)
 % need to call this function.
 
 if nargin < 1 || isempty(ds)
-    d = dir(fullfile(g_dir_imdb,'wrapped_imdb_*'));
+    d = dir(fullfile(g_dir_imdb_raw,'wrapped_imdb_*'));
     ds = {};
     for i = 1:length(d)
         if d(i).isdir
-            ds{end+1} = d(i).name;
+            ds{end+1} = d(i).name; %#ok<AGROW>
         end
     end
 elseif ~iscell(ds)
@@ -34,7 +34,7 @@ switch length(ds)
             fprintf('%3d. %s\n',i,ds{i});
         end
         imdbi = input('Which dir [all]: ');
-        if isempty(imdbi);
+        if isempty(imdbi)
             imdbi = 1:length(ds);
         end
 end
@@ -42,7 +42,7 @@ end
 for i = imdbi
     fprintf('unwrapping %s...\n', ds{i})
     
-    olddir = fullfile(g_dir_imdb,ds{i});
+    olddir = fullfile(g_dir_imdb_raw,ds{i});
     uwdir = fullfile(g_dir_imdb,[fprefix ds{i}(9:end)]);
     if ~exist(uwdir,'dir')
         mkdir(uwdir)

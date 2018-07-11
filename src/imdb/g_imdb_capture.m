@@ -48,11 +48,11 @@ if isempty(params.resume) % then we're not resuming a previous imdb capture
     end
     p.imsz = [576,720,3];
     
-    imdirrt = fullfile(g_dir_imdb,['wrapped_imdb_' datestr(now,'yyyy-mm-dd') '_']);
+    imdirrt = fullfile(g_dir_imdb_raw,['wrapped_imdb_' datestr(now,'yyyy-mm-dd') '_']);
     dind = 1;
     while true
         p.imdir = sprintf('%s%03d',imdirrt,dind);
-        if ~exist(fullfile(p.imdir,'im_params.mat'),'file');
+        if ~exist(fullfile(p.imdir,'im_params.mat'),'file')
             break;
         end
         dind = dind+1;
@@ -77,7 +77,7 @@ else % we're resuming a previous imdb capture
     whdshort = sprintf('wrapped_imdb_%s_%03d',olddate,oldind);
     fprintf('resuming previous session: %s\n', whdshort)
     
-    imdirrt = fullfile(g_dir_imdb,whdshort);
+    imdirrt = fullfile(g_dir_imdb_raw,whdshort);
     load(fullfile(imdirrt,'im_params.mat')); % load parameters from previous capture
 end
 
@@ -101,7 +101,7 @@ nim = length(p.xs)*length(p.ys)*length(p.zs);
 fprintf('getting image database\n%dx%dx%d (=%d) ims\nx: [%g %g]\ny: [%g %g]\nz: [%g %g]\n\n', ...
     length(p.ys),length(p.xs),length(p.zs),nim,p.xs(1),p.xs(end),p.ys(1),p.ys(end),p.zs(1),p.zs(end))
 
-if ~p.dummy    
+if ~p.dummy
     g.home_gantry(false);
 end
 
@@ -151,12 +151,12 @@ try
                 minghtpath = 0;
             else % then work out if going to collide
                 
-%                 fprintf('x: %g, %g\ny: %g, %g\n',lastx,curx,lasty,cury)
-%                 figure(1);clf
-%                 subplot(1,2,1)
-%                 imshow(objtf)
-%                 subplot(1,2,2)
-%                 imshow(headpath)
+                %                 fprintf('x: %g, %g\ny: %g, %g\n',lastx,curx,lasty,cury)
+                %                 figure(1);clf
+                %                 subplot(1,2,1)
+                %                 imshow(objtf)
+                %                 subplot(1,2,2)
+                %                 imshow(headpath)
                 
                 oendx = find(curx<=oxs,1)-1;
                 oendy = find(cury<=oys,1)-1;
@@ -230,9 +230,9 @@ try
                     fr = g.get_frame;
                     timestamp = now;
                     
-%                     figure(10);clf
-%                     imshow(fr)
-%                     drawnow
+                    %                     figure(10);clf
+                    %                     imshow(fr)
+                    %                     drawnow
                     
                     imwrite(fr,curimfn);
                 end
