@@ -2,3 +2,6 @@
 green_*
 skyline_*
 skylinebg_*
+
+# ignore imdbs with new file names (for now)
+new/*
