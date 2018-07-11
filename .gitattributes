@@ -1,6 +1,4 @@
-
 *	text=auto
-
 *.m	text
 *.mat	binary
-
+*.png filter=lfs diff=lfs merge=lfs -text
