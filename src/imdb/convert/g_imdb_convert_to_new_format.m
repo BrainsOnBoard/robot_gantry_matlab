@@ -2,7 +2,7 @@ function g_imdb_convert_to_new_format(shortwhd)
 p = g_imdb_getparams(shortwhd);
 
 fprintf('Processing %s...\n',shortwhd);
-newname = matfileremext(p.arenafn);
+newname = [matfileremext(p.arenafn) '_grid'];
 newdir = fullfile(g_dir_imdb,'new',newname);
 mkdir(newdir)
 fid = fopen(fullfile(newdir,[newname '.csv']),'w');
