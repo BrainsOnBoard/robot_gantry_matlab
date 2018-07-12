@@ -33,7 +33,7 @@ for useinfomax = douseinfomax
                     hold on
                     if ~isempty(p.arenafn)
                         load(fullfile(g_dir_arenas,p.arenafn));
-                        g_fig_drawobjverts(objverts,[],'k')
+                        g_arena_drawobjverts(objverts,[],'k')
                     end
                     
                     anglequiver(p.xs(imxi),p.ys(imyi),snth(nearest));

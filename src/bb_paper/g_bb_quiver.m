@@ -121,7 +121,7 @@ for i = 1:length(useinfomax)
                             
                             if ~isempty(p.arenafn)
                                 objverts=g_arena_load(p.arenafn);
-                                g_fig_drawobjverts(objverts,[],'k')
+                                g_arena_drawobjverts(objverts,[],'k')
                             end
                             
                             anglequiver(p.xs(imxi(~errsel)),p.ys(imyi(~errsel)),heads(~errsel));

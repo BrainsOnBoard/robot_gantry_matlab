@@ -74,7 +74,7 @@ for czi = zi(:)'
     hold on
     if ~isempty(p.arenafn)
         load(fullfile(g_dir_arenas,p.arenafn));
-        g_fig_drawobjverts(objverts,[],'k')
+        g_arena_drawobjverts(objverts,[],'k')
     end
     anglequiver(p.xs,p.ys,heads);
     plot(p.xs(refxi),p.ys(refyi),'ro','LineWidth',4,'MarkerSize',10)
