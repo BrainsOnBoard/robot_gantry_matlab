@@ -1,4 +1,7 @@
 function g_imdb_convert_to_new_format(shortwhd)
+if ~nargin
+    [~,shortwhd] = g_imdb_choosedb;
+end
 p = g_imdb_getparams(shortwhd);
 
 fprintf('Processing %s...\n',shortwhd);
@@ -17,10 +20,10 @@ for xi = 1:length(p.xs)
             if ~exist(oldpath,'file')
                 continue
             end
-            newfn = sprintf('%s_%04d_%04d_%04d.png',newname,p.xs(xi),p.ys(yi),p.zs(zi));
+            newfn = sprintf('%s_%05d_%05d_%05d.png',newname,p.xs(xi),p.ys(yi),p.zs(zi));
             copyfile(oldpath,fullfile(newdir,newfn));
             
-            fprintf(fid,'%d, %d, %d, 0, %s\n',xi-1,yi-1,zi-1,newfn);
+            fprintf(fid,'%d, %d, %d, 0, %s\n',p.xs(xi),p.ys(yi),p.zs(zi),newfn);
         end
     end
 end
