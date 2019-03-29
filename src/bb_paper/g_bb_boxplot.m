@@ -2,13 +2,15 @@ function g_bb_boxplot(shortwhd,routenums,zht,snapszht,userealsnaps,useinfomax,im
 close all
 
 if nargin < 1 || isempty(shortwhd)
-    shortwhd={
-        'imdb_2017-02-09_001'  % open, pile
-%         'imdb_2016-03-29_001' % open, boxes
-%         'imdb_2016-02-08_003' % closed, boxes (z=250mm)
-%         'imdb_2017-06-06_001' % closed, plants
-        };
-elseif ~iscell(shortwhd)
+%     shortwhd={
+%         'imdb_2017-02-09_001'  % open, pile
+% %         'imdb_2016-03-29_001' % open, boxes
+% %         'imdb_2016-02-08_003' % closed, boxes (z=250mm)
+% %         'imdb_2017-06-06_001' % closed, plants
+%         };
+    [~,shortwhd] = g_imdb_choosedb;
+end
+if ~iscell(shortwhd)
     shortwhd = {shortwhd};
 end
 if nargin < 2 || isempty(routenums)
@@ -74,8 +76,12 @@ if dosave
     flabel = g_imdb_getlabel(shortwhd{1});
 end
 
-domultiboxplots('pm',shiftdim(errs(~useinfomax,:,:,:,:,:),1))
-domultiboxplots('infomax',shiftdim(errs(useinfomax,:,:,:,:,:),1))
+if any(~useinfomax)
+    domultiboxplots('pm',shiftdim(errs(~useinfomax,:,:,:,:,:),1))
+end
+if any(useinfomax)
+    domultiboxplots('infomax',shiftdim(errs(useinfomax,:,:,:,:,:),1))
+end
 
     function domultiboxplots(name,cerrs)
         fprintf('Plotting %s results...\n',name)
