@@ -9,7 +9,7 @@ if ~nargin
 end
 
 ddir = g_dir_imdb;
-d = dir(fullfile(ddir,[fprefix 'imdb_*']));
+d = dir(fullfile(ddir,[fprefix 'unwrapped_*']));
 
 if isempty(d)
     error('no image databases found');
