@@ -3,14 +3,13 @@ function g_bb_quiver(shortwhd,routenums,zht,snapszht,userealsnaps, ...
     figtype,selx,sely)
 
 if nargin < 1 || isempty(shortwhd)
-    shortwhd={
-        'imdb_2017-02-09_001'  % open, pile
-%         'imdb_2016-03-29_001' % open, boxes
-%         'imdb_2016-02-08_003' % closed, boxes (z=250mm)
-%         'imdb_2017-06-06_001' % closed, plants
-        };
-elseif ~iscell(shortwhd)
-    shortwhd = {shortwhd};
+%     shortwhd={
+%         'imdb_2017-02-09_001'  % open, pile
+% %         'imdb_2016-03-29_001' % open, boxes
+% %         'imdb_2016-02-08_003' % closed, boxes (z=250mm)
+% %         'imdb_2017-06-06_001' % closed, plants
+%         };
+    [~,shortwhd] = g_imdb_choosedb;
 end
 if nargin < 2 || isempty(routenums)
     routenums = 1;
@@ -55,6 +54,10 @@ if plotquiver
 end
 if plotwhsn
     plotstr = 'whsn';
+end
+
+if ~iscell(shortwhd)
+    shortwhd = {shortwhd};
 end
 
 newonly = false;
@@ -104,8 +107,8 @@ for i = 1:length(useinfomax)
                             methodstr = 'ridf';
                         end
                         if doseparateplots
-                            tstr = sprintf('(route %d, res %d, ht %d, snapht %d, %s)', ...
-                                routenum, cres, zht(m), snapszht(k), methodstr);
+                            tstr = sprintf('(Route: %d; Resolution: %d px; Training height: %d mm; Testing height: %d mm; %s)', ...
+                                routenum, cres, snapszht(k), zht(m), methodstr);
                         else
                             tstr = sprintf('Test height: %d mm',zht(m)+50);
                         end
