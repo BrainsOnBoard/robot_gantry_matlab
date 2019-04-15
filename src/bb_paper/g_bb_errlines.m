@@ -46,7 +46,7 @@ end
 improcforinfomax = false;
 res = 90;
 forcegen = false;
-figsz = [15 10];
+figsz = [15 5];
 
 errs = cell(length(useinfomax),length(res),length(shortwhd), ...
     length(snapszht),length(routenums),length(zht));
@@ -78,13 +78,21 @@ if dosave
 end
 
 figure(2);clf
-subplot(2,1,1)
-errlines('pm','Perfect memory',shiftdim(errs(~useinfomax,:,:,:,:,:),1), ...
-    ymax(1))
+if any(~useinfomax)
+    if length(useinfomax) > 1
+        subplot(2,1,1)
+    end
+    errlines('pm','Perfect memory',shiftdim(errs(~useinfomax,:,:,:,:,:),1), ...
+        ymax(~useinfomax))
+end
 
-subplot(2,1,2)
-errlines('infomax','Infomax',shiftdim(errs(useinfomax,:,:,:,:,:),1), ...
-    ymax(2))
+if any(useinfomax)
+    if length(useinfomax) > 1
+        subplot(2,1,2)
+    end
+    errlines('infomax','Infomax',shiftdim(errs(useinfomax,:,:,:,:,:),1), ...
+        ymax(useinfomax))
+end
 
 iqrstr = '';
 if useiqr
@@ -92,7 +100,7 @@ if useiqr
 end
 
 g_fig_save(sprintf('errlines_%s_%s%sres%03d',flabel,iqrstr,improc,res), ...
-    figsz,figtype);
+    [1 length(useinfomax)] .* figsz,figtype);
 
     function errlines(name,ttl,cerrs,cymax)
         fprintf('Plotting %s results...\n',name)
@@ -112,23 +120,25 @@ g_fig_save(sprintf('errlines_%s_%s%sres%03d',flabel,iqrstr,improc,res), ...
 end
 
 function doerrlines(errs,zht,useiqr,ymax)
-errs = cell2mat(shiftdim(errs)');
+errs = shiftdim(errs)';
 zht = zht+50;
 
 if useiqr
-    med = median(errs);
-    lower = prctile(errs,25)-med;
-    upper = prctile(errs,75)-med;
+    med = cellfun(@median,errs);
+    lower = cellfun(@(x)prctile(x,25),errs)-med;
+    upper = cellfun(@(x)prctile(x,75),errs)-med;
     errorbar(zht,med,lower,upper);
 else
-    means = mean(errs);
-    stderrs = stderr(errs);
+    means = cellfun(@mean,errs);
+    stderrs = cellfun(@stderr,errs);
     errorbar(zht,means,stderrs);
 end
 
 set(gca,'XTick',zht)
 xlabel('Test height (mm)')
-ylim([0 ymax])
+if ~isnan(ymax)
+    ylim([0 ymax])
+end
 set(gca,'YTick',0:15:90)
 ylabel('Error (deg)')
 

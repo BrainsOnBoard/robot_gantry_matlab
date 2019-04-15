@@ -108,7 +108,7 @@ for i = 1:length(useinfomax)
                         end
                         if doseparateplots
                             tstr = sprintf('(Route: %d; Resolution: %d px; Training height: %d mm; Testing height: %d mm; %s)', ...
-                                routenum, cres, snapszht(k), zht(m), methodstr);
+                                routenum, cres, snapszht(k)+50, zht(m)+50, methodstr);
                         else
                             tstr = sprintf('Test height: %d mm',zht(m)+50);
                         end
