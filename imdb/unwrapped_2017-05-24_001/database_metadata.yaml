@@ -1,0 +1,22 @@
+metadata:
+  time: '2017-05-24'
+  description: plastic plants [partial x]
+  type: grid
+  grid:
+    beginAtMM: [500.0, 0.0, 0.0]
+    separationMM: [100.0, 100.0, 100.0]
+    size: [24.0, 17.0, 6.0]
+  gantry:
+    innerLimits: [2800.0, 1601.0, 1203.0]
+    offset: [98.0, 96.0, 0.0]
+    zClearance: 50.0
+    baseHeight: 50.0
+    objectGridSpacing: 10.0
+    headClearance: 100.0
+    arenaName: arena_plants
+  needsUnwrapping: 0.0
+  isGreyscale: 0.0
+  camera:
+    name: gantry
+    resolution: [720.0, 58.0]
+    isPanoramic: 1.0

@@ -1,0 +1,23 @@
+metadata:
+  time: '2016-02-09'
+  description: 'z=250mm: boxes, open'
+  type: grid
+  grid:
+    beginAtMM: [0.0, 0.0, 250.0]
+    separationMM: [100.0, 100.0, 100.0]
+    size: [29.0, 17.0, 1.0]
+  gantry:
+    innerLimits: [2800.0, 1601.0, 1203.0]
+    offset: [98.0, 96.0, 0.0]
+    zClearance: 700.0
+    objectGridSpacing: 10.0
+    headClearance: 150.0
+    arenaName: arena1_boxes
+    maximumAcceleration: [20.0, 20.0, 20.0]
+    maximumVelocity: [240.0, 240.0, 151.0]
+  needsUnwrapping: 0.0
+  isGreyscale: 0.0
+  camera:
+    name: gantry
+    resolution: [720.0, 58.0]
+    isPanoramic: 1.0
