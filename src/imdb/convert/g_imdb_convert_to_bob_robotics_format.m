@@ -77,8 +77,8 @@ for i = 1:length(d)
     end
     
     % other properties
-    data.metadata.needsUnwrapping = 0;
-    data.metadata.isGreyscale = double(size(params.p.imsz==2 || params.p.imsz(3)==1);
+    data.metadata.needsUnwrapping = double(~startswith(dname,'unwrapped_'));
+    data.metadata.isGreyscale = double(numel(params.p.imsz)==2 || params.p.imsz(3)==1);
     
     % write entries file
     fid = fopen('database_entries.csv','w');
@@ -88,7 +88,15 @@ for i = 1:length(d)
         for yi = 1:length(params.p.ys)
             for xi = 1:length(params.p.xs)
                 fname = sprintf('im_%03d_%03d_%03d.png',xi,yi,zi);
-                if exist(fname,'file')
+                fname_old = sprintf('im_%03d_%03d.png',yi,xi);
+                fexist = exist(fname,'file');
+                if ~fexist
+                    fexist = exist(fname_old,'file');
+                    if fexist
+                        fname = fname_old;
+                    end
+                end
+                if fexist
                     fprintf(fid, '%d, %d, %d, 0, %s, %d, %d, %d\n', params.p.xs(xi), params.p.ys(yi), params.p.zs(zi), fname, xi-1, yi-1, zi-1);
                     if isempty(imsz)
                         % read size from image, as p.imsz appears to be
