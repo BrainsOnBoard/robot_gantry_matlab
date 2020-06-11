@@ -3,7 +3,7 @@ function g_imdb_unwrapims(ds,procfun,fprefix)
 % need to call this function.
 
 if nargin < 1 || isempty(ds)
-    d = dir(fullfile(g_dir_imdb_raw,'wrapped_imdb_*'));
+    d = dir(fullfile(g_dir_imdb_raw,'20*'));
     ds = {};
     for i = 1:length(d)
         if d(i).isdir

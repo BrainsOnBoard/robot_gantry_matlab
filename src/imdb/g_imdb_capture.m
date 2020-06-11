@@ -48,7 +48,7 @@ if isempty(params.resume) % then we're not resuming a previous imdb capture
     end
     p.imsz = [576,720,3];
     
-    imdirrt = fullfile(g_dir_imdb_raw,['wrapped_imdb_' datestr(now,'yyyy-mm-dd') '_']);
+    imdirrt = fullfile(g_dir_imdb_raw,[datestr(now,'yyyy-mm-dd') '_']);
     dind = 1;
     while true
         p.imdir = sprintf('%s%03d',imdirrt,dind);
@@ -74,7 +74,7 @@ else % we're resuming a previous imdb capture
         olddate = datestr(now,'yyyy-mm-dd');
     end
     
-    whdshort = sprintf('wrapped_imdb_%s_%03d',olddate,oldind);
+    whdshort = sprintf('%s_%03d',olddate,oldind);
     fprintf('resuming previous session: %s\n', whdshort)
     
     imdirrt = fullfile(g_dir_imdb_raw,whdshort);
