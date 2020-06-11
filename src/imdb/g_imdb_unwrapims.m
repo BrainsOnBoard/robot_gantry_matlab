@@ -3,7 +3,7 @@ function g_imdb_unwrapims(ds,procfun,fprefix)
 % need to call this function.
 
 if nargin < 1 || isempty(ds)
-    d = dir(fullfile(g_dir_imdb_raw,'20*'));
+    d = dir(fullfile(g_dir_imdb,'20*'));
     ds = {};
     for i = 1:length(d)
         if d(i).isdir
@@ -42,7 +42,7 @@ end
 for i = imdbi
     fprintf('unwrapping %s...\n', ds{i})
     
-    olddir = fullfile(g_dir_imdb_raw,ds{i});
+    olddir = fullfile(g_dir_imdb,ds{i});
     uwdir = fullfile(g_dir_imdb,[fprefix ds{i}(9:end)]);
     if ~exist(uwdir,'dir')
         mkdir(uwdir)
