@@ -1,5 +1,0 @@
-- sort out fovsnaps/snaps mess
-- clean up imdb routes code
-- clean up live code
-- comment
-- add basic documentation
