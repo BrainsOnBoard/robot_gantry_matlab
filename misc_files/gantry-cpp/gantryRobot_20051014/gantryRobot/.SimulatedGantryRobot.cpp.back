@@ -1,0 +1,362 @@
+#include "SimulatedGantryRobot.h"
+
+SimulatedGantryRobot::~SimulatedGantryRobot() { }
+
+void SimulatedGantryRobot::getRealPosition( Position& positionBuffer ) const {
+  positionBuffer = m_CurrentPosition;
+}
+
+const Position& SimulatedGantryRobot::getRealPosition() const {
+  return m_CurrentPosition;
+}
+
+void SimulatedGantryRobot::getLogicalPosition( Position& position ) const {
+  NotImplementedException e( "getLogicalPosition" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+const Position& SimulatedGantryRobot::getLogicalPosition() const {
+  NotImplementedException e( "getLogicalPosition" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void SimulatedGantryRobot::setCurrentDirection(
+    const Direction& desiredDirection ) {
+  if ( m_Observers.size() > 0 ) {
+    Command command( Command::SET_CURRENT_DIRECTION,
+			     desiredDirection );
+    updateObservers( command );
+  }
+
+  NotImplementedException e( "setCurrentDirection" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void SimulatedGantryRobot::getCurrentDirection(
+    Direction& currentDirection ) const {
+  NotImplementedException e( "getCurrentDirection" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+const Direction& SimulatedGantryRobot::getCurrentDirection() const {
+  NotImplementedException e( "getCurrentDirection" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+bool SimulatedGantryRobot::playRecordTrack( const RecordTrack& recordTrack,
+					    bool               waitFlag ) {
+  NotImplementedException e( "playRecordTrack" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void SimulatedGantryRobot::moveToHomePosition( bool waitFlag,
+					       int  waitTimeInSeconds,
+					       int  speed ) {
+  NotImplementedException e( "moveToHomePosition" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void SimulatedGantryRobot::moveToHomeXPosition( bool waitFlag,
+						int  waitTimeInSeconds,
+						int  speed ) {
+  NotImplementedException e( "moveToHomeXPosition" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void SimulatedGantryRobot::moveToHomeYPosition( bool waitFlag,
+						int  waitTimeInSeconds,
+						int  speed ) {
+  NotImplementedException e( "moveToHomeYPosition" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void SimulatedGantryRobot::moveToHomeZPosition( bool waitFlag,
+						int  waitTimeInSeconds,
+						int  speed ) {
+  NotImplementedException e( "moveToHomeZPosition" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void SimulatedGantryRobot::moveToPosition( const Position& position,
+					   bool            waitFlag ) {
+  m_CurrentPosition = position;
+}
+
+void SimulatedGantryRobot::moveToPosition( unsigned int x,
+					   unsigned int y,
+					   unsigned int z,
+					   bool         waitFlag ) {
+  NotImplementedException e( "moveToPosition" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void SimulatedGantryRobot::moveToXPosition( int x,
+					    bool         waitFlag ) {
+  NotImplementedException e( "moveToXPosition" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void SimulatedGantryRobot::moveToYPosition( int y,
+					    bool         waitFlag ) {
+  NotImplementedException e( "moveToYPosition" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void SimulatedGantryRobot::moveToZPosition( int z,
+					    bool         waitFlag ) {
+  NotImplementedException e( "moveToZPosition" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void SimulatedGantryRobot::moveIncrementalDistance( int  xDisplacement,
+						    int  yDisplacement,
+						    int  zDisplacement,
+						    bool waitFlag ) {
+  NotImplementedException e( "moveIncrementalDistance" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void SimulatedGantryRobot::moveIncrementalXDistance( int  xDisplacement,
+						     bool waitFlag ) {
+  NotImplementedException e( "moveIncrementalXDistance" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void SimulatedGantryRobot::moveIncrementalYDistance( int  yDisplacement,
+						     bool waitFlag ) {
+  NotImplementedException e( "moveIncrementalYDistance" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void SimulatedGantryRobot::moveIncrementalZDistance( int  zDisplacement,
+						     bool waitFlag ) {
+  NotImplementedException e( "moveIncrementalZDistance" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void SimulatedGantryRobot::setParameters(
+	 GantryRobotAttributes::AccelerationType accelerationType,
+	 unsigned int                            initialSpeed,
+	 unsigned int                            driveSpeed,
+	 unsigned int                            maxSpeed,
+	 unsigned int                            accelerationSpeed,
+	 unsigned int                            accelerationRate ) {
+  NotImplementedException e( "setParameters" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void SimulatedGantryRobot::setXParameters(
+         GantryRobotAttributes::AccelerationType accelerationType,
+	 unsigned int                            initialSpeed,
+	 unsigned int                            driveSpeed,
+	 unsigned int                            maxSpeed,
+	 unsigned int                            accelerationSpeed,
+	 unsigned int                            accelerationRate ) {
+  NotImplementedException e( "setXParameters" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void SimulatedGantryRobot::setYParameters(
+         GantryRobotAttributes::AccelerationType accelerationType,
+	 unsigned int                            initialSpeed,
+	 unsigned int                            driveSpeed,
+	 unsigned int                            maxSpeed,
+	 unsigned int                            accelerationSpeed,
+	 unsigned int                            accelerationRate ) {
+  NotImplementedException e( "setYParameters" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void SimulatedGantryRobot::setZParameters(
+         GantryRobotAttributes::AccelerationType accelerationType,
+	 unsigned int                            initialSpeed,
+	 unsigned int                            driveSpeed,
+	 unsigned int                            maxSpeed,
+	 unsigned int                            accelerationSpeed,
+	 unsigned int                            accelerationRate ) {
+  NotImplementedException e( "setZParameters" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void SimulatedGantryRobot::setOutputBit( unsigned int outputBit,
+					 bool         bitState  ) {
+  NotImplementedException e( "setOutputBit" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+bool SimulatedGantryRobot::getInputBit( unsigned int inputBit  ) const {
+  NotImplementedException e( "getInputBit" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+bool SimulatedGantryRobot::stopAllAxis() {
+  NotImplementedException e( "stopAllAxis" );
+  e.fillInStackTrace();
+  throw e;
+}
+bool SimulatedGantryRobot::stopXAxis() {
+  NotImplementedException e( "stopXAxis" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+bool SimulatedGantryRobot::stopYAxis() {
+  NotImplementedException e( "stopYAxis" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+bool SimulatedGantryRobot::stopZAxis() {
+  NotImplementedException e( "stopZAxis" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+bool SimulatedGantryRobot::setXSpeed( unsigned int speed ) {
+  NotImplementedException e( "setXSpeed" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+bool SimulatedGantryRobot::setYSpeed( unsigned int speed ) {
+  NotImplementedException e( "setYSpeed" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+bool SimulatedGantryRobot::setZSpeed( unsigned int speed ) {
+  NotImplementedException e( "setZSpeed" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void SimulatedGantryRobot::reset() {
+  NotImplementedException e( "reset" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+bool SimulatedGantryRobot::getIsXAxisBusy() const {
+  NotImplementedException e( "getIsXAxisBusy" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+bool SimulatedGantryRobot::getIsYAxisBusy() const {
+  NotImplementedException e( "getIsYAxisBusy" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+bool SimulatedGantryRobot::getIsZAxisBusy() const {
+  NotImplementedException e( "getIsZAxisBusy" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+bool SimulatedGantryRobot::getAreAnyAxisBusy() const {
+  NotImplementedException e( "getAreAnyAxisBusy" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+bool SimulatedGantryRobot::getEmergencyStopButtonFlag() const {
+  NotImplementedException e( "getEmergencyStopButtonFlag" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void SimulatedGantryRobot::waitUntilXAxisHasStopped() const {
+  NotImplementedException e( "waitUntilXAxisHasStopped" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void SimulatedGantryRobot::waitUntilYAxisHasStopped() const {
+  NotImplementedException e( "waitUntilYAxisHasStopped" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void SimulatedGantryRobot::waitUntilZAxisHasStopped() const {
+  NotImplementedException e( "waitUntilZAxisHasStopped" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void SimulatedGantryRobot::waitUntilAllAxisHaveStopped() const {
+  NotImplementedException e( "waitUntilAllAxisHaveStopped" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+const char *SimulatedGantryRobot::getDescriptionOfOutputDevice(
+    unsigned int outputBit ) const {
+  NotImplementedException e( "getDescriptionOfOutputDevice" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+const char *SimulatedGantryRobot::getDescriptionOfInputDevice(
+    unsigned int inputBit  ) const {
+  NotImplementedException e( "getDescriptionOfInputDevice" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+const char *SimulatedGantryRobot::getDescriptionOfXAxis() const {
+  NotImplementedException e( "getDescriptionOfXAxis" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+const char *SimulatedGantryRobot::getDescriptionOfYAxis() const {
+  NotImplementedException e( "getDescriptionOfYAxis" );
+  throw e;
+}
+
+const char *SimulatedGantryRobot::getDescriptionOfZAxis() const {
+  NotImplementedException e( "getDescriptionOfZAxis" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void SimulatedGantryRobot::addCommandObserver( CommandObserver *observer ) {
+  m_Observers.push_back( observer );
+}
+
+void SimulatedGantryRobot::updateObservers( const Command& command ) {
+  try {
+    vector<CommandObserver *>::iterator i;
+    for ( i = m_Observers.begin(); i != m_Observers.end(); i++ ) {
+      (*i)->commandEvent( command );
+    }
+  } catch( SimpleException& e ) {
+    e.fillInStackTrace();
+    throw;
+  }
+}

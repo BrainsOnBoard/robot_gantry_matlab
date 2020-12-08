@@ -1,0 +1,581 @@
+#include "RealGantryRobot.h"
+#include <math.h>
+#include <string>
+#include <stdio.h>
+#include <windows.h>
+
+using namespace std;
+
+double round( double d ) {
+  return (double)((int)( d + 0.5 ) );
+}
+
+CLSID        RealGantryRobot::clsid;
+_clsPCI1240 *RealGantryRobot::t;
+
+RealGantryRobot::RealGantryRobot() {
+  try {
+	HRESULT hresult;
+
+    CoInitialize( NULL );
+
+	hresult = CLSIDFromProgID( OLESTR( "frmPCI1240.clsPCI1240" ), &clsid );
+	if ( hresult != S_OK ) {
+	  string errMsg;
+	  errMsg += "Couldn't get program ID - error states: ";
+
+	  switch( hresult ) {
+	  case CO_E_CLASSSTRING:
+		errMsg += "registered CLSID for ProgID is invalid";
+		break;
+
+	  case REGDB_E_WRITEREGDB:
+		errMsg += "error occurred writing to the CLSID to the registry";
+		break;
+
+	  default:
+		errMsg += "unknown error (sorry!)";
+		break;
+	  }
+
+	  CannotInitialiseException e( errMsg.c_str() );
+      e.fillInStackTrace();
+      throw e;
+    }
+
+	hresult = CoCreateInstance( clsid,
+                                NULL,
+                                CLSCTX_INPROC_SERVER,
+                                __uuidof( _clsPCI1240 ),
+                                (LPVOID *)&(RealGantryRobot::t) );
+
+    if ( hresult != S_OK ) {
+      string errMsg;
+      errMsg += "Couldn't open PCI1240 Object - error states: ";
+
+      switch( hresult ) {
+      case REGDB_E_CLASSNOTREG:
+        errMsg += "class not registered";
+        break;
+
+      case E_OUTOFMEMORY:
+        errMsg += "out of memory";
+        break;
+
+      case E_INVALIDARG:
+        errMsg += "invalid argument";
+        break;
+
+	  case E_NOINTERFACE:
+		errMsg += "no interface";
+		break;
+
+      case E_UNEXPECTED:
+        errMsg += "unexpected error";
+        break;
+
+      case CLASS_E_NOAGGREGATION:
+        errMsg += "cannot be treated as aggregation";
+        break;
+
+      default:
+        errMsg += "unknown error (sorry!)";
+        break;
+      }
+
+      CannotInitialiseException e( errMsg.c_str() );
+      e.fillInStackTrace();
+      throw e;
+    }
+
+    if ( RealGantryRobot::t->blnInitialize( "c:\\PCI1240.ini" ) == false ) {
+      CannotInitialiseException e( "Cannot initialise PCI1240 card" );
+      e.fillInStackTrace();
+      throw e;
+    }
+
+	{ // DEBUG
+	  unsigned long returnVal = 0;
+	  P1240MotRdReg(0,
+		            1,
+					0x100,
+					&returnVal );
+      fprintf( stderr, "ret=%lu\n", returnVal );
+	}
+
+	RealGantryRobot::t->blnSwitchOutput( 1, true );
+  } catch( SimpleException& e ) {
+    e.fillInStackTrace();
+    throw;
+  }
+}
+
+RealGantryRobot::~RealGantryRobot() { }
+
+void RealGantryRobot::getRealPosition( Position& positionBuffer ) const {
+  { // DEBUG
+	  unsigned long returnVal = 0;
+	  P1240MotRdReg(0,
+		            1,
+					0x101,
+					&returnVal );
+      fprintf( stderr, "ret=%lu\n", returnVal );
+	}
+  
+
+  positionBuffer.setX( (int)round( t->dblGetLogicalPosition( X_AXIS ) ) );
+  positionBuffer.setY( (int)round( t->dblGetLogicalPosition( Y_AXIS ) ) );
+  positionBuffer.setZ( (int)round( t->dblGetLogicalPosition( Z_AXIS ) ) );
+}
+
+const Position& RealGantryRobot::getRealPosition() const {
+  getRealPosition( m_LastRecordedPosition );
+  return m_LastRecordedPosition;
+}
+
+void RealGantryRobot::getLogicalPosition( Position& position ) const {
+  NotImplementedException e( "getLogicalPosition" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+const Position& RealGantryRobot::getLogicalPosition() const {
+  NotImplementedException e( "getLogicalPosition" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void
+RealGantryRobot::setCurrentDirection( const Direction& desiredDirection ) {
+  if ( m_Observers.size() > 0 ) {
+    Command command( Command::SET_CURRENT_DIRECTION, desiredDirection );
+    updateObservers( command );
+  }
+
+  NotImplementedException e( "setCurrentDirection" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void
+RealGantryRobot::getCurrentDirection( Direction& currentDirection ) const {
+  NotImplementedException e( "getCurrentDirection" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+const Direction& RealGantryRobot::getCurrentDirection() const {
+  NotImplementedException e( "getCurrentDirection" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+bool RealGantryRobot::playRecordTrack( const RecordTrack& recordTrack,
+				       bool               waitFlag ) {
+  NotImplementedException e( "playRecordTrack" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void RealGantryRobot::moveToHomePosition( bool waitFlag,
+					  int  waitTimeInSeconds,
+					  int  speed ) {
+  NotImplementedException e( "moveToHomePosition" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void RealGantryRobot::moveToHomeXPosition( bool waitFlag,
+					   int  waitTimeInSeconds,
+					   int  speed ) {
+  NotImplementedException e( "moveToHomeXPosition" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void RealGantryRobot::moveToHomeYPosition( bool waitFlag,
+					   int  waitTimeInSeconds,
+					   int  speed ) {
+  NotImplementedException e( "moveToHomeYPosition" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void RealGantryRobot::moveToHomeZPosition( bool waitFlag,
+					   int  waitTimeInSeconds,
+					   int  speed ) {
+  NotImplementedException e( "moveToHomeZPosition" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void RealGantryRobot::moveToPosition( const Position& position,
+									 bool            waitFlag ) {
+  /**
+   * We'll cheat. We'll move the axis seperately and then wait if need be.
+   */
+  /*if ( t->blnMoveAbs( X_AXIS, position.getX(), false ) == false ) {
+    char errMsg[ 1024 ];
+    sprintf( errMsg, "Cannot moveToPosition( %d, %d, %d )",
+             position.getX(), position.getY(), position.getZ() );
+
+    CommandErrorException e( errMsg );
+    e.fillInStackTrace();
+    throw e;
+  }
+
+  if ( t->blnMoveAbs( Y_AXIS, position.getY(), false ) == false ) {
+    char errMsg[ 1024 ];
+    sprintf( errMsg, "Cannot moveToPosition( %d, %d, %d )",
+             position.getX(), position.getY(), position.getZ() );
+
+    CommandErrorException e( errMsg );
+    e.fillInStackTrace();
+    throw e;
+  }
+
+  if ( t->blnMoveAbs( Z_AXIS, position.getZ(), false ) == false ) {
+    char errMsg[ 1024 ];
+    sprintf( errMsg, "Cannot moveToPosition( %d, %d, %d )",
+             position.getX(), position.getY(), position.getZ() );
+
+    CommandErrorException e( errMsg );
+    e.fillInStackTrace();
+    throw e;
+  }
+
+  if ( waitFlag == true ) {
+	  t->WaitForClear( X_AXIS );
+	  t->WaitForClear( Y_AXIS );
+	  t->WaitForClear( Z_AXIS );
+  }*/
+
+    /*if ( t->blnSetParameters( 0, 
+							  0, 
+							  100, 
+							  1000, 
+							  1000,
+							  4000, 
+							  1000000 ) == false ) {
+    char errMsg[ 1024 ];
+	sprintf( errMsg, "Cannot moveToPosition( %d, %d, %d ) - cannot set parameters",
+             position.getX(), position.getY(), position.getZ() );
+
+    CommandErrorException e( errMsg );
+    e.fillInStackTrace();
+    throw e;
+  }*/
+
+	P1240MotAxisParaSet(0,
+			            0,
+						0,
+						100,
+					    1000,
+						1000,
+						4000,
+						1000000 );
+
+	if ( t->blnMoveLine( (frmPCI1240::Axis)( X_AXIS | Y_AXIS ),
+					  true, position.getX(),
+					  true, position.getY(),
+					  false, position.getZ(),
+					  false, 0 ) == false ) {
+    char errMsg[ 1024 ];
+    sprintf( errMsg, "Cannot moveToPosition( %d, %d, %d )",
+             position.getX(), position.getY(), position.getZ() );
+
+    CommandErrorException e( errMsg );
+    e.fillInStackTrace();
+    throw e;
+  }
+  if ( waitFlag == true ) {
+	  t->WaitForClear( X_AXIS );
+	  t->WaitForClear( Y_AXIS );
+	  t->WaitForClear( Z_AXIS );
+  }
+}
+
+void RealGantryRobot::moveToPosition( unsigned int x,
+				      unsigned int y,
+				      unsigned int z,
+				      bool         waitFlag ) {
+  NotImplementedException e( "moveToPosition" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void RealGantryRobot::moveToXPosition( int  x,
+		                               bool waitFlag ) {
+  if ( t->blnMoveAbs( X_AXIS, x, waitFlag ) == false ) {
+    char errMsg[ 1024 ];
+    sprintf( errMsg, "Cannot moveToXPosition( %d )", x );
+
+    CommandErrorException e( errMsg );
+    e.fillInStackTrace();
+    throw e;
+  }
+}
+
+void RealGantryRobot::moveToYPosition( int y,
+				       bool         waitFlag ) {
+  if ( t->blnMoveAbs( Y_AXIS, y, waitFlag ) == false ) {
+    char errMsg[ 1024 ];
+    sprintf( errMsg, "Cannot moveToXPosition( %d )", y );
+
+    CommandErrorException e( errMsg );
+    e.fillInStackTrace();
+    throw e;
+  }
+}
+
+void RealGantryRobot::moveToZPosition( int z,
+				       bool         waitFlag ) {
+  if ( t->blnMoveAbs( Z_AXIS, z, waitFlag ) == false ) {
+    char errMsg[ 1024 ];
+    sprintf( errMsg, "Cannot moveToXPosition( %d )", z );
+
+    CommandErrorException e( errMsg );
+    e.fillInStackTrace();
+    throw e;
+  }
+}
+
+void RealGantryRobot::moveIncrementalDistance( int  xDisplacement,
+					       int  yDisplacement,
+					       int  zDisplacement,
+					       bool waitFlag ) {
+  NotImplementedException e( "moveIncrementalDistance" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void RealGantryRobot::moveIncrementalXDistance( int  xDisplacement,
+						bool waitFlag ) {
+  NotImplementedException e( "moveIncrementalXDistance" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void RealGantryRobot::moveIncrementalYDistance( int  yDisplacement,
+						bool waitFlag ) {
+  NotImplementedException e( "moveIncrementalYDistance" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void RealGantryRobot::moveIncrementalZDistance( int  zDisplacement,
+						bool waitFlag ) {
+  NotImplementedException e( "moveIncrementalZDistance" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void RealGantryRobot::setParameters(
+         GantryRobotAttributes::AccelerationType accelerationType,
+	 unsigned int                            initialSpeed,
+	 unsigned int                            driveSpeed,
+	 unsigned int                            maxSpeed,
+	 unsigned int                            accelerationSpeed,
+	 unsigned int                            accelerationRate ) {
+  NotImplementedException e( "setParameters" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void RealGantryRobot::setXParameters(
+         GantryRobotAttributes::AccelerationType accelerationType,
+	 unsigned int                            initialSpeed,
+	 unsigned int                            driveSpeed,
+	 unsigned int                            maxSpeed,
+	 unsigned int                            accelerationSpeed,
+	 unsigned int                            accelerationRate ) {
+  NotImplementedException e( "setXParameters" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void RealGantryRobot::setYParameters(
+         GantryRobotAttributes::AccelerationType accelerationType,
+	 unsigned int                            initialSpeed,
+	 unsigned int                            driveSpeed,
+	 unsigned int                            maxSpeed,
+	 unsigned int                            accelerationSpeed,
+	 unsigned int                            accelerationRate ) {
+  NotImplementedException e( "setYParameters" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void RealGantryRobot::setZParameters(
+         GantryRobotAttributes::AccelerationType accelerationType,
+	 unsigned int                            initialSpeed,
+	 unsigned int                            driveSpeed,
+	 unsigned int                            maxSpeed,
+	 unsigned int                            accelerationSpeed,
+	 unsigned int                            accelerationRate ) {
+  NotImplementedException e( "setZParameters" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void RealGantryRobot::setOutputBit( unsigned int outputBit,
+				    bool         bitState  ) {
+  NotImplementedException e( "setOutputBit" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+bool RealGantryRobot::getInputBit( unsigned int inputBit  ) const {
+  NotImplementedException e( "getInputBit" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+bool RealGantryRobot::stopAllAxis() {
+  NotImplementedException e( "stopAllAxis" );
+  e.fillInStackTrace();
+  throw e;
+}
+bool RealGantryRobot::stopXAxis() {
+  NotImplementedException e( "stopXAxis" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+bool RealGantryRobot::stopYAxis() {
+  NotImplementedException e( "stopYAxis" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+bool RealGantryRobot::stopZAxis() {
+  NotImplementedException e( "stopZAxis" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+bool RealGantryRobot::setXSpeed( unsigned int speed ) {
+  NotImplementedException e( "setXSpeed" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+bool RealGantryRobot::setYSpeed( unsigned int speed ) {
+  NotImplementedException e( "setYSpeed" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+bool RealGantryRobot::setZSpeed( unsigned int speed ) {
+  NotImplementedException e( "setZSpeed" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void RealGantryRobot::reset() {
+  NotImplementedException e( "reset" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+bool RealGantryRobot::getIsXAxisBusy() const {
+  NotImplementedException e( "getIsXAxisBusy" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+bool RealGantryRobot::getIsYAxisBusy() const {
+  NotImplementedException e( "getIsYAxisBusy" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+bool RealGantryRobot::getIsZAxisBusy() const {
+  NotImplementedException e( "getIsZAxisBusy" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+bool RealGantryRobot::getAreAnyAxisBusy() const {
+  NotImplementedException e( "getAreAnyAxisBusy" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+bool RealGantryRobot::getEmergencyStopButtonFlag() const {
+  NotImplementedException e( "getEmergencyStopButtonFlag" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void RealGantryRobot::waitUntilXAxisHasStopped() const {
+  NotImplementedException e( "waitUntilXAxisHasStopped" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void RealGantryRobot::waitUntilYAxisHasStopped() const {
+  NotImplementedException e( "waitUntilYAxisHasStopped" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void RealGantryRobot::waitUntilZAxisHasStopped() const {
+  NotImplementedException e( "waitUntilZAxisHasStopped" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void RealGantryRobot::waitUntilAllAxisHaveStopped() const {
+  NotImplementedException e( "waitUntilAllAxisHaveStopped" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+const char *
+RealGantryRobot::getDescriptionOfOutputDevice( unsigned int outputBit ) const {
+  NotImplementedException e( "getDescriptionOfOutputDevice" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+const char *
+RealGantryRobot::getDescriptionOfInputDevice( unsigned int inputBit  ) const {
+  NotImplementedException e( "getDescriptionOfInputDevice" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+const char *RealGantryRobot::getDescriptionOfXAxis() const {
+  NotImplementedException e( "getDescriptionOfXAxis" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+const char *RealGantryRobot::getDescriptionOfYAxis() const {
+  NotImplementedException e( "getDescriptionOfYAxis" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+const char *RealGantryRobot::getDescriptionOfZAxis() const {
+  NotImplementedException e( "getDescriptionOfZAxis" );
+  e.fillInStackTrace();
+  throw e;
+}
+
+void RealGantryRobot::addCommandObserver( CommandObserver *observer ) {
+  m_Observers.push_back( observer );
+}
+
+void RealGantryRobot::updateObservers( const Command& command ) {
+  try {
+    vector<CommandObserver *>::iterator i;
+    for ( i = m_Observers.begin(); i != m_Observers.end(); i++ ) {
+      (*i)->commandEvent( command );
+    }
+  } catch( SimpleException& e ) {
+    e.fillInStackTrace();
+    throw;
+  }
+}

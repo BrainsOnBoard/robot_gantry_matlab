@@ -1,0 +1,12 @@
+#include "Recorder.h"
+
+void Recorder::update( const Command& command ) {
+  try {
+    if ( m_CurrentlyRecording == true ) {
+      m_RecordTrack.addCommand( command );
+    }
+  } catch( SimpleException& e ) {
+    e.fillInStackTrace();
+    throw;
+  }
+}

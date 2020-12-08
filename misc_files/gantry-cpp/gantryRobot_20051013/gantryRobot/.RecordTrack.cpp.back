@@ -1,0 +1,62 @@
+#include "RecordTrack.h"
+#include <stdio.h>
+
+RecordTrack::RecordTrack( const string& storedRecordTrack ) {
+  try {
+    /**
+     * We'll have to parse the string provided.
+     */
+    readObject( storedRecordTrack.c_str() );
+  } catch( SimpleException& e ) {
+    e.fillInStackTrace();
+    throw;
+  }
+}
+
+void RecordTrack::addCommand( const Command& command ) {
+  m_Commands.push_back( command );
+}
+
+const char *RecordTrack::readObject( const char *str ) {
+  try {
+    m_Commands.clear();
+
+    str = skipToken( str, "<recordTrack>" );
+    str = skipToken( str, "<noOfCommands>" );
+    
+    unsigned int noOfCommands;
+    parseUnsignedInteger( str, &noOfCommands );
+    str = skipToken( str, "</noOfCommands>" );
+
+    while ( noOfCommands-- > 0 ) {
+      m_Commands.push_back( Command( &str ) );
+    }
+
+    str = skipToken( str, "</recordTrack>" );
+    return str;
+  } catch( SimpleException& e ) {
+    e.fillInStackTrace();
+    throw;
+  }
+}
+
+void RecordTrack::writeObject( string& buffer ) {
+  try {
+    buffer += "<recordTrack>\n"
+              "  <noOfCommands>";
+    
+    char number[ 100 ];
+    sprintf( number, "%d", m_Commands.size() );
+    buffer += number;
+
+    buffer += "</noOfCommands>\n";
+
+    vector<Command>::iterator i;
+    for ( i = m_Commands.begin(); i != m_Commands.end(); i++ ) {
+      i->writeObject( buffer );
+    }
+  } catch( SimpleException& e ) {
+    e.fillInStackTrace();
+    throw;
+  }
+}

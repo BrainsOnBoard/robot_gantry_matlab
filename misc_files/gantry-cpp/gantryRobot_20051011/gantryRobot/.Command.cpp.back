@@ -1,0 +1,186 @@
+#include "Command.h"
+#include <stdio.h>
+
+const char *Command::s_CommandNames[] = {
+  "setCurrentDirection",
+  "moveToPosition",
+  NULL 
+};
+
+Command::Command( CommandCode   commandCode,
+		  const Position& position ) :
+    m_CommandCode( commandCode ),
+    m_Position(  position  ),
+    m_Direction( 0, 0, 0   ) {
+  try {
+    switch( m_CommandCode ) {
+    case MOVE_TO_POSITION:
+      // All is OK...
+      break;
+
+    default:
+      {
+	string errMsg;
+	errMsg += "Parameters for command \"";
+	errMsg += getCommandName( m_CommandCode );
+	errMsg += "\" do not match";
+
+	InvalidParametersException e( errMsg.c_str() );
+	e.fillInStackTrace();
+	throw e;
+      }
+    }
+  } catch( SimpleException& e ) {
+    e.fillInStackTrace();
+    throw;
+  }
+}
+
+Command::Command( CommandCode    commandCode,
+		  const Direction& direction ) :
+    m_CommandCode( commandCode ),
+    m_Position(  0, 0, 0   ),
+    m_Direction( direction ) {
+  try {
+    switch( m_CommandCode ) {
+    case SET_CURRENT_DIRECTION:
+      // All is OK...
+      break;
+
+    default:
+      {
+	string errMsg;
+	errMsg += "Parameters for command \"";
+	errMsg += getCommandName( m_CommandCode );
+	errMsg += "\" do not match";
+
+	InvalidParametersException e( errMsg.c_str() );
+	e.fillInStackTrace();
+	throw e;
+      }
+    }
+  } catch( SimpleException& e ) {
+    e.fillInStackTrace();
+    throw;
+  }
+}
+
+Command::Command( const char **str ) {
+  try {
+    *str = readObject( *str );
+  } catch( SimpleException& e ) {
+    e.fillInStackTrace();
+    throw;
+  }
+}
+
+const char *Command::readObject( const char *str ) {
+  try {
+    m_SerialisedBuffer = "";
+
+    /**
+     * First we read in the command number...
+     */
+    str = skipToken( str, "<command>" );
+    str = skipToken( str, "<commandCode>" );
+    str = parseInteger( str, (int *)&m_CommandCode );
+    str = skipToken( str, "</commandCode>" );
+
+    if ( m_CommandCode >= NO_OF_COMMANDS ) {
+      char number[ 100 ];
+      sprintf( number, "%d", m_CommandCode );
+      string errMsg;
+      errMsg += "Invalid command code of ";
+      errMsg += number;
+
+      InvalidCommandCodeException e( errMsg.c_str() );
+      e.fillInStackTrace();
+      throw e;
+    }
+
+    /**
+     * Now we have to read in a different type and number of 
+     * parameters, depending upon the command.
+     */
+    switch( m_CommandCode ) {
+    case MOVE_TO_POSITION:
+      str = m_Position.readObject( str );
+      break;
+
+    case SET_CURRENT_DIRECTION:
+      str = m_Direction.readObject( str );
+      break;
+
+    default:
+      {
+        char number[ 100 ];
+        sprintf( number, "%d", m_CommandCode );
+        string errMsg;
+        errMsg += "Invalid command code of ";
+        errMsg += number;
+
+        InvalidCommandCodeException e( errMsg.c_str() );
+        e.fillInStackTrace();
+        throw e;
+      }
+    }
+
+    str = skipToken( str, "</command>" );
+
+    return str;
+  } catch( SimpleException& e ) {
+    e.fillInStackTrace();
+    throw;
+  }
+}
+
+void Command::writeObject( string& buffer ) {
+  if ( m_SerialisedBuffer.size() == 0 ) {
+    m_SerialisedBuffer += "  <command>\n"
+                          "    <commandCode>";
+  
+    char number[ 100 ];
+    sprintf( number, "%u", m_CommandCode );
+    m_SerialisedBuffer += number;
+  
+    m_SerialisedBuffer += "</commandCode>\n";
+
+    /**
+     * Different bits get written out depending upon the command.
+     */
+    switch( m_CommandCode ) {
+    case MOVE_TO_POSITION:
+      m_Position.writeObject( m_SerialisedBuffer );
+      break;
+
+    case SET_CURRENT_DIRECTION:
+      m_Direction.writeObject( m_SerialisedBuffer );
+      break;
+    }
+
+    m_SerialisedBuffer += "  </command>\n";
+  }
+
+  buffer += m_SerialisedBuffer;
+}
+
+const char *Command::getCommandName( CommandCode commandCode ) const {
+  try {
+    if ( commandCode >= NO_OF_COMMANDS ) {
+      char number[ 100 ];
+      sprintf( number, "%d", commandCode );
+      string errMsg;
+      errMsg += "Invalid command code of ";
+      errMsg += number;
+
+      InvalidCommandCodeException e( errMsg.c_str() );
+      e.fillInStackTrace();
+      throw e;
+    }
+
+    return s_CommandNames[ commandCode ];
+  } catch( SimpleException& e ) {
+    e.fillInStackTrace();
+    throw;
+  }
+}

@@ -1,0 +1,2 @@
+mouse 1
+goat 1 - 50

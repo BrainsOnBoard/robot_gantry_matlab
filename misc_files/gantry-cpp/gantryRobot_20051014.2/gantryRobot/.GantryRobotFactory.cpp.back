@@ -1,0 +1,49 @@
+#include "GantryRobotFactory.h"
+#include "SimulatedGantryRobot.h"
+#include "RealGantryRobot.h"
+
+GantryRobotFactory::GantryRobotFactory( 
+    GantryRobotAttributes::GantryRobotType gantryRobotType ) :
+    m_GantryRobotType( gantryRobotType ) {
+  try {
+    if ( m_GantryRobotType != GantryRobotAttributes::SIMULATED_GANTRY_ROBOT &&
+         m_GantryRobotType != GantryRobotAttributes::REAL_GANTRY_ROBOT ) {
+      InvalidGantryRobotTypeException e( "Invalid gantry robot "
+					 "type requested" );
+      e.fillInStackTrace();
+      throw e;
+    }
+  } catch( SimpleException& e ) {
+    e.fillInStackTrace();
+    throw;
+  }
+}
+
+GantryRobot *GantryRobotFactory::createGantryRobot() {
+  try {
+    GantryRobot *gantryRobot = NULL;
+
+    switch( m_GantryRobotType ) {
+    case GantryRobotAttributes::SIMULATED_GANTRY_ROBOT:
+      gantryRobot = new SimulatedGantryRobot;
+      break;
+
+    case GantryRobotAttributes::REAL_GANTRY_ROBOT:
+      gantryRobot = new RealGantryRobot;
+      break;
+    
+    default:
+      {
+	InvalidGantryRobotTypeException e( "Invalid gantry robot "
+					   "type requested" );
+	e.fillInStackTrace();
+	throw e;
+      }
+    }
+
+    return gantryRobot;
+  } catch( SimpleException& e ) {
+    e.fillInStackTrace();
+    throw;
+  }
+}

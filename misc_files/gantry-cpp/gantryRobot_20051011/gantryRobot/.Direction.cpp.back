@@ -1,0 +1,118 @@
+#include "Direction.h"
+#include <math.h>
+#include <stdio.h>
+
+#define EPS ((double)0.01)
+
+Direction::Direction() : m_X( 1.0 ),
+                         m_Y( 0 ),
+                         m_Z( 0 ) { }
+                         
+Direction::Direction( double x, 
+		      double y,
+		      double z ) : m_X( x ),
+				   m_Y( y ),
+				   m_Z( z ) {
+  try {
+    checkVectorIsNormalised();
+  } catch( SimpleException& e ) {
+    e.fillInStackTrace();
+    throw;
+  }
+}
+
+void Direction::setVector( double x, double y, double z ) {
+  try {
+    m_X = x;
+    m_Y = y;
+    m_Z = z;
+    checkVectorIsNormalised();
+  } catch( SimpleException& e ) {
+    e.fillInStackTrace();
+    throw;
+  }
+}
+
+const char *Direction::readObject( const char *str ) {
+  try {
+    /**
+     * First the X number...
+     */
+    str = skipToken( str, "<direction>" );
+    str = skipToken( str, "<x>" );
+    str = parseDouble( str, &m_X );
+    str = skipToken( str, "</x>" );
+
+    /**
+     * Now the Y number...
+     */
+    str = skipToken( str, "<y>" );
+    str = parseDouble( str, &m_Y );
+    str = skipToken( str, "</y>" );
+
+    /**
+     * Finally the Z number...
+     */
+    str = skipToken( str, "<z>" );
+    str = parseDouble( str, &m_Z );
+    str = skipToken( str, "</z>" );
+
+    str = skipToken( str, "</direction>" );
+
+    checkVectorIsNormalised();
+
+    return str;
+  } catch( SimpleException& e ) {
+    e.fillInStackTrace();
+    throw;
+  }
+}
+
+void Direction::writeObject( string& buffer ) {
+  buffer += "    <direction>\n"
+            "      <x>";
+  addDouble( buffer, m_X );
+  buffer += "</x>\n"
+            "      <y>";
+  addDouble( buffer, m_Y );
+  buffer += "</y>\n"
+            "      <z>";
+  addDouble( buffer, m_Z );
+  buffer += "</z>\n"
+            "    </direction>\n";
+}
+
+void Direction::checkVectorIsNormalised() const {
+  try {
+    double tempNumber = sqrt( m_X * m_X + m_Y * m_Y + m_Z * m_Z );
+    
+    if ( m_X < 1.0 - EPS || m_X > 1.0 + EPS ||
+	 m_Y < 1.0 - EPS || m_Y > 1.0 + EPS ||
+	 m_Z < 1.0 - EPS || m_Z > 1.0 + EPS ||
+	 tempNumber >  1.0 + EPS            || 
+	 tempNumber < -1.0 - EPS ) {
+      string errMsg;
+      errMsg += "Vector of ";
+      
+      char number[ 100 ];
+      sprintf( number, "%2.2f", m_X );
+      errMsg += number;
+      errMsg += ",";
+    
+      sprintf( number, "%2.2f", m_Y );
+      errMsg += number;
+      errMsg += ",";
+      
+      sprintf( number, "%2.2f", m_Z );
+      errMsg += number;
+      errMsg += " isn't normalised";
+      
+      InvalidVectorException e( errMsg.c_str() );
+      e.fillInStackTrace();
+      throw e;
+    }
+  } catch( SimpleException& e ) {
+    e.fillInStackTrace();
+    throw;
+  }
+}
