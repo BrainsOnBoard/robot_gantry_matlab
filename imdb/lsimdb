@@ -1,0 +1,11 @@
+#!/usr/bin/python3
+
+from glob import glob
+import os
+import pathlib
+import yaml
+
+mydir = pathlib.Path(__file__).parent.absolute()
+for imdb in glob(os.path.join(mydir, 'unwrapped_*')):
+    with open(os.path.join(imdb, 'database_metadata.yaml'), 'r') as file:
+        print(os.path.basename(imdb) + ': ' + yaml.full_load(file)['metadata']['description'])
